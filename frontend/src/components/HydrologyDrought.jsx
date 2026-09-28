@@ -8,7 +8,7 @@ import '../niwis/hydrology.css'
 
 // Helper to format real numerical values from hydrology.csv
 function formatMetric(val) {
-  if (val === null || val === undefined || isNaN(val)) return '—'
+  if (val === null || val === undefined || isNaN(val)) return 'N/A'
   const num = Number(val)
   if (num === 0) return '0.00'
   const abs = Math.abs(num)
@@ -20,9 +20,10 @@ function formatMetric(val) {
 
 export default function HydrologyDrought() {
   const [selectedDistrict, setSelectedDistrict] = useState('City of Tshwane')
-  const [selectedDate, setSelectedDate] = useState('2025-08-01')
+  const [selectedDate, setSelectedDate] = useState(null)
   const [allStations, setAllStations] = useState([])
   const [availableDates, setAvailableDates] = useState([])
+  const [latestDate, setLatestDate] = useState(null)
   const [historyData, setHistoryData] = useState(null)
   const [districtsGeoJson, setDistrictsGeoJson] = useState([])
   const [loading, setLoading] = useState(true)
@@ -37,6 +38,11 @@ export default function HydrologyDrought() {
       setAllStations(stationsRes.stations || [])
       setAvailableDates(stationsRes.available_dates || [])
       setDistrictsGeoJson(geojsonRes.features || [])
+      // set latest dataset date from backend
+      if (stationsRes.date) {
+        setLatestDate(stationsRes.date)
+        if (!selectedDate) setSelectedDate(stationsRes.date)
+      }
     }).catch((err) => {
       console.error('Failed to load stations or GeoJSON', err)
     })
@@ -145,30 +151,30 @@ export default function HydrologyDrought() {
             <Calendar size={18} className="icon" />
             <div className="meta-col">
               <span className="meta-label">Observation Date</span>
-              <select
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#ffffff',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  outline: 'none',
-                  cursor: 'pointer'
-                }}
-                aria-label="Select Date from hydrology.csv"
-              >
-                {availableDates.length > 0 ? (
-                  availableDates.map((d) => (
-                    <option key={d} value={d} style={{ background: '#092031', color: '#ffffff' }}>
-                      {new Date(d).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })} ({d})
-                    </option>
-                  ))
-                ) : (
-                  <option value="2025-08-01" style={{ background: '#092031' }}>August 2025</option>
-                )}
-              </select>
+            <select
+              value={selectedDate || latestDate || ''}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#ffffff',
+                fontSize: '12px',
+                fontWeight: '600',
+                outline: 'none',
+                cursor: 'pointer'
+              }}
+              aria-label="Select Date from hydrology.csv"
+            >
+              {availableDates.length > 0 ? (
+                availableDates.map((d) => (
+                  <option key={d} value={d} style={{ background: '#092031', color: '#ffffff' }}>
+                    {new Date(d).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })} ({d})
+                  </option>
+                ))
+              ) : (
+                <option value="">No dates</option>
+              )}
+            </select>
             </div>
           </div>
 
@@ -199,11 +205,11 @@ export default function HydrologyDrought() {
               {allStations.length > 0 ? (
                 allStations.map((s) => (
                   <option key={s.name} value={s.name}>
-                    {s.name} ({s.province})
+                    {s.name}
                   </option>
                 ))
               ) : (
-                <option value="City of Tshwane">City of Tshwane (Gauteng)</option>
+                <option value="City of Tshwane">City of Tshwane</option>
               )}
             </select>
           </div>

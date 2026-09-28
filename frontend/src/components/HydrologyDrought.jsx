@@ -68,10 +68,75 @@ export default function HydrologyDrought() {
       .finally(() => setLoading(false))
   }, [selectedDistrict, selectedDate])
 
+  // Developer logs: track changes to selectedDistrict/Date and historyData
+  useEffect(() => {
+    console.debug('[Hydrology] selectedDistrict changed ->', { selectedDistrict, selectedDate })
+  }, [selectedDistrict, selectedDate])
+
+  useEffect(() => {
+    if (historyData) console.debug('[Hydrology] historyData updated', {
+      district: historyData?.district,
+      date: historyData?.date,
+      metrics: historyData?.metrics ? {
+        river_discharge: historyData.metrics.river_discharge,
+        ssi: historyData.metrics.ssi,
+        dam_inflow: historyData.metrics.dam_inflow,
+        dam_outflow: historyData.metrics.dam_outflow,
+        surface_runoff: historyData.metrics.surface_runoff,
+        baseflow: historyData.metrics.baseflow,
+      } : null,
+    })
+  }, [historyData])
+
   const m = historyData?.metrics
   const districtName = historyData?.district || selectedDistrict
   const provinceName = historyData?.province || 'South Africa'
   const droughtStatus = historyData?.drought_status
+
+  // Classification helpers (transparent, documented thresholds)
+  const classifySSI = (ssi) => {
+    if (ssi === null || ssi === undefined || isNaN(ssi)) return { label: 'N/A', severity: 'unknown' }
+    const v = Number(ssi)
+    if (v >= -0.5) return { label: 'Normal', severity: 'normal' }
+    if (v >= -0.99) return { label: 'Mild dryness', severity: 'mild' }
+    if (v >= -1.49) return { label: 'Moderate drought', severity: 'moderate' }
+    if (v >= -1.99) return { label: 'Severe drought', severity: 'severe' }
+    return { label: 'Extreme drought', severity: 'extreme' }
+  }
+
+  const classifySGI = (sgi) => {
+    if (sgi === null || sgi === undefined || isNaN(sgi)) return { label: 'N/A', severity: 'unknown' }
+    const v = Number(sgi)
+    if (v >= -0.5) return { label: 'Normal', severity: 'normal' }
+    if (v >= -1.0) return { label: 'Below Normal', severity: 'mild' }
+    if (v >= -1.5) return { label: 'Moderate Groundwater Drought', severity: 'moderate' }
+    return { label: 'Severe Groundwater Drought', severity: 'severe' }
+  }
+
+  const computeAlerts = (metrics) => {
+    if (!metrics) return []
+    const alerts = []
+    const ssi = metrics.ssi
+    const sgi = metrics.sgi
+    // SSI based alerts
+    if (ssi != null) {
+      if (ssi <= -1.5) alerts.push({ level: 'Severe', reason: 'SSI <= -1.5', variable: 'SSI', current: ssi, threshold: -1.5 })
+      else if (ssi <= -1.0) alerts.push({ level: 'Warning', reason: 'SSI <= -1.0', variable: 'SSI', current: ssi, threshold: -1.0 })
+    }
+    // SGI based alerts
+    if (sgi != null && sgi <= -1.0) alerts.push({ level: 'Warning', reason: 'SGI <= -1.0', variable: 'SGI', current: sgi, threshold: -1.0 })
+    // Low flow: compare current discharge to historical monthly average
+    if (metrics.discharge_hist_avg != null && metrics.river_discharge != null) {
+      const pct = metrics.discharge_change
+      if (pct <= -25) alerts.push({ level: 'Warning', reason: 'River discharge >25% below historical average', variable: 'River Discharge', current: metrics.river_discharge, baseline: metrics.discharge_hist_avg, change_pct: pct })
+    }
+    // Runoff and baseflow
+    if (metrics.runoff_change != null && metrics.runoff_change <= -25) alerts.push({ level: 'Warning', reason: 'Surface runoff substantially below historical', variable: 'Surface Runoff', current: metrics.surface_runoff, change_pct: metrics.runoff_change })
+    if (metrics.baseflow_change != null && metrics.baseflow_change <= -25) alerts.push({ level: 'Warning', reason: 'Baseflow substantially below historical', variable: 'Baseflow', current: metrics.baseflow, change_pct: metrics.baseflow_change })
+    return alerts
+  }
+
+  const alerts = computeAlerts(m)
 
   // Render SVG Sparkline Chart dynamically from points
   const renderSparkline = (points = [], strokeColor = '#38bdf8') => {
@@ -234,7 +299,7 @@ export default function HydrologyDrought() {
               </span>
             )}
           </div>
-          <div className="hydro-kpi-note">(vs. historical avg)</div>
+          <div className="hydro-kpi-note">vs historical average: {formatMetric(m?.discharge_hist_avg)} m³/s</div>
         </div>
 
         {/* 2. Flow Percentile (P10) */}
@@ -263,9 +328,9 @@ export default function HydrologyDrought() {
             <Gauge size={16} className="hydro-kpi-icon" />
           </div>
           <div className="hydro-kpi-val-row">
-            <span className="hydro-kpi-val">{m?.ssi != null ? m.ssi.toFixed(2) : '—'}</span>
+            <span className="hydro-kpi-val">{m?.ssi != null ? Number(m.ssi).toFixed(2) : 'N/A'}</span>
           </div>
-          <div className="hydro-kpi-note">({droughtStatus?.condition?.toLowerCase() || 'conditions'})</div>
+          <div className="hydro-kpi-note">{classifySSI(m?.ssi).label}</div>
         </div>
 
         {/* 4. Groundwater Level */}
@@ -294,9 +359,9 @@ export default function HydrologyDrought() {
             <Gauge size={16} className="hydro-kpi-icon" />
           </div>
           <div className="hydro-kpi-val-row">
-            <span className="hydro-kpi-val">{m?.sgi != null ? m.sgi.toFixed(2) : '—'}</span>
+            <span className="hydro-kpi-val">{m?.sgi != null ? Number(m.sgi).toFixed(2) : 'N/A'}</span>
           </div>
-          <div className="hydro-kpi-note">({m?.sgi < -0.5 ? 'dry condition' : 'normal condition'})</div>
+          <div className="hydro-kpi-note">{classifySGI(m?.sgi).label}</div>
         </div>
 
         {/* 6. Surface Runoff */}
@@ -503,7 +568,7 @@ export default function HydrologyDrought() {
             </div>
           </div>
 
-          <div style={{ height: '170px', width: '100%', position: 'relative' }}>
+              <div style={{ height: '170px', width: '100%', position: 'relative' }} key={`discharge-${selectedDistrict}-${selectedDate || latestDate}`}>
             {(() => {
               const series = historyData?.river_discharge_12m || []
               if (!series.length) {
@@ -603,7 +668,7 @@ export default function HydrologyDrought() {
             </div>
           </div>
 
-          <div style={{ height: '170px', width: '100%', position: 'relative' }}>
+          <div style={{ height: '170px', width: '100%', position: 'relative' }} key={`fdc-${selectedDistrict}-${selectedDate || latestDate}`}>
             {(() => {
               const points = historyData?.fdc || []
               if (!points.length) return null
@@ -762,8 +827,8 @@ export default function HydrologyDrought() {
                 <small style={{ fontSize: '8.5px', color: '#688fa5' }}>(vs. last month)</small>
               </div>
 
-              <div className="hydro-spark-chart">
-                {renderSparkline(historyData?.groundwater_6m, '#38bdf8')}
+                <div className="hydro-spark-chart" key={`gw-${selectedDistrict}-${selectedDate || latestDate}`}>
+                  {renderSparkline(historyData?.groundwater_6m, '#38bdf8')}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '7px', color: '#648da4', marginTop: '2px' }}>
                   {historyData?.groundwater_6m?.map((g, i) => (
                     <span key={i}>{g.month}</span>
@@ -788,7 +853,7 @@ export default function HydrologyDrought() {
                 <small style={{ fontSize: '8.5px', color: '#688fa5' }}>(vs. last month)</small>
               </div>
 
-              <div className="hydro-spark-chart">
+              <div className="hydro-spark-chart" key={`sgi-${selectedDistrict}-${selectedDate || latestDate}`}>
                 {renderSparkline(historyData?.sgi_6m, '#06b6d4')}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '7px', color: '#648da4', marginTop: '2px' }}>
                   {historyData?.sgi_6m?.map((s, i) => (
@@ -822,7 +887,7 @@ export default function HydrologyDrought() {
                 </div>
               </div>
 
-              <div className="hydro-spark-chart">
+              <div className="hydro-spark-chart" key={`runoff-${selectedDistrict}-${selectedDate || latestDate}`}>
                 {renderSparkline(historyData?.runoff_6m, '#38bdf8')}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '7px', color: '#648da4', marginTop: '2px' }}>
                   {historyData?.runoff_6m?.map((r, i) => (
@@ -847,7 +912,7 @@ export default function HydrologyDrought() {
                 </div>
               </div>
 
-              <div className="hydro-spark-chart">
+              <div className="hydro-spark-chart" key={`baseflow-${selectedDistrict}-${selectedDate || latestDate}`}>
                 {renderSparkline(historyData?.baseflow_6m, '#06b6d4')}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '7px', color: '#648da4', marginTop: '2px' }}>
                   {historyData?.baseflow_6m?.map((b, i) => (

@@ -53,10 +53,13 @@ export default function HydrologyDrought() {
     setLoading(true)
     const url = `/api/hydrology/history?district=${encodeURIComponent(selectedDistrict)}&date=${encodeURIComponent(selectedDate)}`
     console.debug('[Hydrology] fetching history ->', { selectedDistrict, selectedDate, url })
+    // attach last-request for in-page debugging
+    try { window.__lastHydrologyRequest = { url, selectedDistrict, selectedDate, time: Date.now() } } catch (e) {}
     fetch(url)
       .then((r) => r.ok ? r.json() : Promise.reject(r))
       .then((data) => {
         console.debug('[Hydrology] history response', { district: selectedDistrict, items: data })
+        try { window.__lastHydrologyResponse = { url, status: 200, data, time: Date.now() } } catch (e) {}
         setHistoryData(data)
         if (data.available_dates && data.available_dates.length) {
           setAvailableDates(data.available_dates)

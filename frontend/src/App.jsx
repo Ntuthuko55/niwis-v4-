@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
+import LoadingProgress from './components/LoadingProgress'
 import { Clock, CloudRain, Database, Map, Sparkles } from 'lucide-react'
-import SpatialAnalysis from './components/SpatialAnalysis'
-import MultivariateStatistics from './components/MultivariateStatistics'
-import TimeSeriesDashboard from './components/TimeSeriesDashboard'
+const SpatialAnalysis = lazy(() => import('./components/SpatialAnalysis'))
+const MultivariateStatistics = lazy(() => import('./components/MultivariateStatistics'))
+const TimeSeriesDashboard = lazy(() => import('./components/TimeSeriesDashboard'))
 import NIWISPortal from './components/NIWISPortal'
 
 export default function App() {
@@ -13,7 +14,7 @@ export default function App() {
   }
 
   return (
-    <>
+    <Suspense fallback={<LoadingProgress message="Loading workspace" />}>
       <nav className="workspace-tabs" aria-label="Analysis workspaces">
         <div className="workspace-brand">
           <span><Sparkles size={17} /></span>
@@ -59,6 +60,6 @@ export default function App() {
       {activeWorkspace === 'timeseries' && <TimeSeriesDashboard />}
       {activeWorkspace === 'spatial' && <SpatialAnalysis />}
       {activeWorkspace === 'multivariate' && <MultivariateStatistics />}
-    </>
+    </Suspense>
   )
 }

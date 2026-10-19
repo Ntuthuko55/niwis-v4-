@@ -128,7 +128,7 @@ def _train_prophet_monthly(data: pd.DataFrame, date_column: str, target: str, fo
     # This deliberately mirrors the user's proven notebook configuration.
     validation_model = Prophet(yearly_seasonality=True)
     validation_model.fit(prophet_train)
-    validation_future = validation_model.make_future_dataframe(periods=test_points, freq='M')
+    validation_future = validation_model.make_future_dataframe(periods=test_points, freq='ME')
     validation_predictions = validation_model.predict(validation_future)[['ds', 'yhat']].tail(test_points)
     prophet_eval = prophet_test.merge(validation_predictions, on='ds', how='inner')
     if prophet_eval.empty:
@@ -140,7 +140,7 @@ def _train_prophet_monthly(data: pd.DataFrame, date_column: str, target: str, fo
     full_train['ds'] = pd.to_datetime(full_train['ds'])
     final_model = Prophet(yearly_seasonality=True, interval_width=0.95)
     final_model.fit(full_train)
-    future = final_model.make_future_dataframe(periods=horizon, freq='M')
+    future = final_model.make_future_dataframe(periods=horizon, freq='ME')
     forecast = final_model.predict(future).tail(horizon)
 
     return {
@@ -191,7 +191,11 @@ def _train_lstm_monthly(data: pd.DataFrame, date_column: str, target: str, featu
     frame = frame.dropna(subset=[date_column]).sort_values(date_column)
     monthly = frame.set_index(date_column)[[target, *selected_features]].resample('ME').mean().dropna().reset_index()
     if len(monthly) < 36:
-        raise ValueError('LSTM needs at least 36 complete monthly observations after feature cleaning.')
+        raise ValueError(
+            f'LSTM needs at least 36 complete monthly observations after feature cleaning; '
+            f'only {len(monthly)} were available. Check that the source has a real date '
+            'column or year/month fields and that the selected inputs are populated.'
+        )
 
     split_index = int(len(monthly) * 0.80)
     train_data, test_data = monthly.iloc[:split_index].copy(), monthly.iloc[split_index:].copy()
@@ -406,14 +410,16 @@ def _niwis_forecast(data: pd.DataFrame, config: Dict[str, Any], numeric_cols: li
     raw = data[[date_column, target]].copy()
     raw.columns = ['date', 'value']
 
-    result = forecast_time_series(
-        df=raw,
-        date_column='date',
-        target_column='value',
-        horizon=horizon,
-        validation_cutoffs=[2021, 2022, 2023, 2024],
-        preferred_model=config.get('model_type'),
-    )
+    from threadpoolctl import threadpool_limits
+    with threadpool_limits(limits=1):
+        result = forecast_time_series(
+            df=raw,
+            date_column='date',
+            target_column='value',
+            horizon=horizon,
+            validation_cutoffs=[2021, 2022, 2023, 2024],
+            preferred_model=config.get('model_type'),
+        )
 
     # Build future dates from the result
     forecast_dates = result.get('forecast_dates', [])
@@ -543,12 +549,67 @@ def _future_projection(data: pd.DataFrame, config: Dict[str, Any], numeric_cols:
     raise ValueError('Future projection is not supported for this model type.')
 
 
+def _train_multivariate_monthly(data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
+    """Fit multivariate models on scaled monthly climate inputs."""
+    from statsmodels.tsa.api import VAR
+    from statsmodels.tsa.statespace.varmax import VARMAX
+
+    target, date_column = config['target'], config['date_column']
+    model_type = config['model_type'].lower()
+    features = list(dict.fromkeys(f for f in config.get('features', []) if f != target))
+    monthly = data.set_index(date_column)[[target, *features]].resample('ME').mean().dropna()
+    if len(monthly) < 36:
+        raise ValueError(f'{model_type.upper()} requires at least 36 complete monthly observations.')
+    split = int(len(monthly) * .8)
+    train, test = monthly.iloc[:split], monthly.iloc[split:]
+    usable = [f for f in features if train[f].std() > 1e-8]
+    if not usable:
+        raise ValueError(f'{model_type.upper()} requires at least one input feature that varies over time.')
+    if train[target].std() <= 1e-8:
+        raise ValueError('The selected target is constant; choose a target that varies over time.')
+    columns = [target, *usable]
+    order = config.get('order', [1, 1, 1])
+
+    def project(frame, steps):
+        mean, scale = frame[columns].mean(), frame[columns].std()
+        scaled = (frame[columns] - mean) / scale
+        if model_type == 'var':
+            fit = VAR(scaled).fit(maxlags=max(1, min(order[0], len(frame) // 10)))
+            predicted = fit.forecast(scaled.values[-fit.k_ar:], steps)[:, 0]
+        else:
+            fit = VARMAX(scaled, order=(max(1, order[0]), max(0, order[2])), trend='c').fit(disp=False, maxiter=50)
+            predicted = fit.forecast(steps).iloc[:, 0].to_numpy()
+        return np.asarray(predicted) * scale[target] + mean[target]
+
+    from threadpoolctl import threadpool_limits
+    horizon = _forecast_horizon_months(config.get('forecast_steps', 365))
+    # Small state-space matrices run faster without BLAS thread oversubscription.
+    with threadpool_limits(limits=1):
+        prediction = project(train, len(test))
+        future = project(monthly, horizon)
+    dates = pd.date_range(monthly.index[-1] + pd.offsets.MonthEnd(1), periods=horizon, freq='ME')
+    omitted = [f for f in features if f not in usable]
+    return {
+        'model_type': model_type, 'selected_model': model_type,
+        'observations': len(monthly), 'train_observations': len(train), 'test_observations': len(test),
+        'features_used': usable, 'metrics': _metrics(test[target], prediction),
+        'actual': test[target].tolist(), 'predicted': prediction.tolist(),
+        'dates': [d.isoformat() for d in test.index],
+        'history_dates': [d.isoformat() for d in monthly.index], 'history_values': monthly[target].tolist(),
+        'forecast_dates': [d.isoformat() for d in dates], 'forecast_values': future.tolist(),
+        'warnings': [f'Excluded constant inputs: {", ".join(omitted)}.'] if omitted else [],
+    }
+
+
 def train_model(df: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
     """Train a forecasting model and return results."""
     data, numeric_cols = prepare_training_data(df, config)
     model_type = config['model_type'].lower()
     target = config['target']
     date_column = config['date_column']
+
+    if model_type in {'var', 'varmax'}:
+        return _train_multivariate_monthly(data, config)
 
     # LSTM keeps the selected feature columns through monthly aggregation; it
     # must run before the univariate monthly-preparation branch below.

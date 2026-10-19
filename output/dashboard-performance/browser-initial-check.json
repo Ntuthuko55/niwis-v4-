@@ -1,0 +1,223 @@
+{
+  "results": [
+    {
+      "path": "/reservoirs",
+      "status": "failed",
+      "error": "locator.waitFor: Timeout 150000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.rs-main-chart .recharts-surface').first() to be visible\u001b[22m\n"
+    },
+    {
+      "path": "/climate",
+      "status": "passed",
+      "milliseconds": 723,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/temperature",
+      "status": "passed",
+      "milliseconds": 471,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/spells",
+      "status": "passed",
+      "milliseconds": 463,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/rainfall",
+      "status": "passed",
+      "milliseconds": 437,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/evaporation",
+      "status": "passed",
+      "milliseconds": 449,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/irrigation",
+      "status": "passed",
+      "milliseconds": 418,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/streamflow",
+      "status": "passed",
+      "milliseconds": 451,
+      "map_paths": 52
+    },
+    {
+      "path": "/vegetation",
+      "status": "passed",
+      "milliseconds": 18712,
+      "map_paths": 52
+    },
+    {
+      "path": "/rainfall",
+      "status": "passed",
+      "milliseconds": 28291,
+      "map_paths": 52
+    },
+    {
+      "path": "/runoff",
+      "status": "passed",
+      "milliseconds": 8860,
+      "map_paths": 52
+    },
+    {
+      "path": "/surface-water",
+      "status": "passed",
+      "milliseconds": 16589,
+      "map_paths": 52
+    },
+    {
+      "path": "/groundwater",
+      "status": "passed",
+      "milliseconds": 5808,
+      "map_paths": 52
+    },
+    {
+      "path": "/groundwater-reserve",
+      "status": "passed",
+      "milliseconds": 9882,
+      "map_paths": 52
+    },
+    {
+      "path": "/water-quality",
+      "status": "passed",
+      "milliseconds": 19646,
+      "map_paths": 52
+    },
+    {
+      "path": "/hydrological-drought",
+      "status": "passed",
+      "milliseconds": 5319,
+      "map_paths": 0
+    },
+    {
+      "path": "/satellite-drought",
+      "status": "passed",
+      "milliseconds": 1215,
+      "map_paths": 52
+    },
+    {
+      "path": "/meteorological",
+      "status": "passed",
+      "milliseconds": 3304,
+      "map_paths": 52
+    },
+    {
+      "path": "/drought",
+      "status": "passed",
+      "milliseconds": 10416,
+      "map_paths": 52
+    }
+  ],
+  "errors": [],
+  "requests": [
+    "http://127.0.0.1:5184/reservoirs",
+    "http://127.0.0.1:5184/assets/index-D_mZYfGM.js",
+    "http://127.0.0.1:5184/assets/index-YQk7ebWJ.css",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap",
+    "http://127.0.0.1:5184/assets/ReservoirStatus-JIRR977n.js",
+    "http://127.0.0.1:5184/assets/ClimateChart-D-ZQjMQY.js",
+    "http://127.0.0.1:5184/assets/generateCategoricalChart-bDHvYB0n.js",
+    "http://127.0.0.1:5184/assets/index-B885Kgme.js",
+    "http://127.0.0.1:5184/assets/AreaChart-C7AvI5XF.js",
+    "http://127.0.0.1:5184/assets/RainfallStatus-DBsbQxt5.js",
+    "http://127.0.0.1:5184/assets/download-CknozIa1.js",
+    "http://127.0.0.1:5184/assets/map-pin-CQoG8912.js",
+    "http://127.0.0.1:5184/assets/info-Cq8jscXz.js",
+    "http://127.0.0.1:5184/assets/droplets-9pcuXkq-.js",
+    "http://127.0.0.1:5184/assets/calendar-days-siXTEDuj.js",
+    "http://127.0.0.1:5184/assets/activity-B_9LZhEC.js",
+    "http://127.0.0.1:5184/assets/gauge-D0XZ2vuD.js",
+    "http://127.0.0.1:5184/assets/arrow-down-right-DV9yUbZ9.js",
+    "http://127.0.0.1:5184/assets/ComposedChart-B7tveIko.js",
+    "http://127.0.0.1:5184/assets/RainfallStatus-C4z8a-tt.css",
+    "http://127.0.0.1:5184/assets/climate-dashboard-BhmnH_3q.css",
+    "http://127.0.0.1:5184/assets/waves-CGsVVbRK.js",
+    "http://127.0.0.1:5184/assets/triangle-alert-CZv6kNW7.js",
+    "http://127.0.0.1:5184/assets/ReservoirStatus-DDSsVTvi.css",
+    "http://127.0.0.1:5184/Water-and-Sanitation.png",
+    "http://127.0.0.1:5184/niwis-api/api/predictions/latest",
+    "http://127.0.0.1:5184/api/reservoirs/metadata?as_of=2026-10-18",
+    "http://127.0.0.1:5184/south_africa_adm2.display.geojson",
+    "http://127.0.0.1:5184/assets/ClimateDashboard-J9VDRyb-.js",
+    "http://127.0.0.1:5184/assets/trending-up-Dq_ZUPRw.js",
+    "http://127.0.0.1:5184/assets/chart-column-Bx6-FP9m.js",
+    "http://127.0.0.1:5184/assets/thermometer-B3snDGB5.js",
+    "http://127.0.0.1:5184/api/climate/metadata",
+    "http://127.0.0.1:5184/api/climate/dashboard?region=National&start=2018&end=2026&season=Annual",
+    "http://127.0.0.1:5184/api/climate/monthly?region=National&start=2018-01&end=2026-09&month=2026-09",
+    "http://127.0.0.1:5184/api/climate/dashboard?region=National&start=2018&end=2026&season=Annual",
+    "http://127.0.0.1:5184/api/climate/monthly?region=National&start=2018-01&end=2026-09&month=2026-09",
+    "http://127.0.0.1:5184/api/climate/dashboard?region=National&start=2018&end=2026&season=Annual",
+    "http://127.0.0.1:5184/api/climate/monthly?region=National&start=2018-01&end=2026-09&month=2026-09",
+    "http://127.0.0.1:5184/api/climate/dashboard?region=National&start=2018&end=2026&season=Annual",
+    "http://127.0.0.1:5184/api/climate/monthly?region=National&start=2018-01&end=2026-09&month=2026-09",
+    "http://127.0.0.1:5184/api/climate/dashboard?region=National&start=2018&end=2026&season=Annual",
+    "http://127.0.0.1:5184/api/climate/monthly?region=National&start=2018-01&end=2026-09&month=2026-09",
+    "http://127.0.0.1:5184/api/climate/dashboard?region=National&start=2018&end=2026&season=Annual",
+    "http://127.0.0.1:5184/api/climate/monthly?region=National&start=2018-01&end=2026-09&month=2026-09",
+    "http://127.0.0.1:5184/api/climate/dashboard?region=National&start=2018&end=2026&season=Annual",
+    "http://127.0.0.1:5184/api/climate/monthly?region=National&start=2018-01&end=2026-09&month=2026-09",
+    "http://127.0.0.1:5184/assets/VegetationCondition-KR2eFpmP.js",
+    "http://127.0.0.1:5184/assets/sprout-BQPatAJ1.js",
+    "http://127.0.0.1:5184/assets/VegetationCondition-7mltkz4G.css",
+    "http://127.0.0.1:5184/api/vegetation/metadata",
+    "http://127.0.0.1:5184/api/vegetation/dashboard?region=National&start=2024-09&end=2026-08&lag=0",
+    "http://127.0.0.1:5184/api/rainfall/metadata",
+    "http://127.0.0.1:5184/api/rainfall/dashboard?region=National&start=2024-09&end=2026-08",
+    "http://127.0.0.1:5184/api/rainfall/daily?region=National&month=2026-08",
+    "http://127.0.0.1:5184/assets/RunoffStatus-DgE1H45D.js",
+    "http://127.0.0.1:5184/assets/layers-JKGzE_gp.js",
+    "http://127.0.0.1:5184/assets/RunoffStatus-D7BMK2Nx.css",
+    "http://127.0.0.1:5184/api/runoff/metadata",
+    "http://127.0.0.1:5184/api/runoff/dashboard?region=National&start=2024-09&end=2026-08",
+    "http://127.0.0.1:5184/api/runoff/daily?region=National&month=2026-08",
+    "http://127.0.0.1:5184/assets/SurfaceWaterNetwork-CzyPHxjS.js",
+    "http://127.0.0.1:5184/assets/SurfaceWaterNetwork-BMxAbckL.css",
+    "http://127.0.0.1:5184/api/surface-water/metadata",
+    "http://127.0.0.1:5184/api/surface-water/dashboard?region=National&start=2024-09&end=2026-08",
+    "http://127.0.0.1:5184/api/surface-water/daily?region=National&month=2026-08",
+    "http://127.0.0.1:5184/assets/GroundwaterLevelMonitoring-TVw-KGVN.js",
+    "http://127.0.0.1:5184/assets/GroundwaterLevelMonitoring-2TNxa0qZ.css",
+    "http://127.0.0.1:5184/api/groundwater/metadata",
+    "http://127.0.0.1:5184/api/groundwater/dashboard?region=National&start=2025-01&end=2026-12",
+    "http://127.0.0.1:5184/api/groundwater/daily?region=National&month=2026-12",
+    "http://127.0.0.1:5184/assets/GroundwaterReserveAssessment-CgHkzpvA.js",
+    "http://127.0.0.1:5184/assets/shield-check-CWjHaVt_.js",
+    "http://127.0.0.1:5184/assets/GroundwaterReserveAssessment-Baj8YnOv.css",
+    "http://127.0.0.1:5184/api/groundwater-reserve/metadata",
+    "http://127.0.0.1:5184/api/groundwater-reserve/dashboard?region=National&start=2000&end=2026",
+    "http://127.0.0.1:5184/api/groundwater-reserve/monthly?region=National&year=2026",
+    "http://127.0.0.1:5184/assets/WaterQualityMonitoring-B4tnBPYg.js",
+    "http://127.0.0.1:5184/assets/WaterQualityMonitoring-NIz1VA1v.css",
+    "http://127.0.0.1:5184/api/water-quality/metadata",
+    "http://127.0.0.1:5184/api/water-quality/dashboard?region=National&start=2000&end=2026",
+    "http://127.0.0.1:5184/api/water-quality/monthly?region=National&year=2026",
+    "http://127.0.0.1:5184/assets/HydrologyDrought-BaFz3J98.js",
+    "http://127.0.0.1:5184/assets/calendar-CDSYn9Wk.js",
+    "http://127.0.0.1:5184/assets/circle-alert-Djy-WRB1.js",
+    "http://127.0.0.1:5184/assets/circle-check-CoUeDetJ.js",
+    "http://127.0.0.1:5184/assets/HydrologyDrought-CNA5k7mt.css",
+    "http://127.0.0.1:5184/api/hydrology/metadata",
+    "http://127.0.0.1:5184/api/hydrology/observations?region=city+of+tshwane",
+    "http://127.0.0.1:5184/assets/SatelliteDrought-1zVzl2MT.js",
+    "http://127.0.0.1:5184/api/satellite/stations",
+    "http://127.0.0.1:5184/api/satellite/stations?date=2025-12-01",
+    "http://127.0.0.1:5184/api/satellite/history?district=alfred%20nzo",
+    "http://127.0.0.1:5184/assets/MeteorologicalDrought-B2QFn5iZ.js",
+    "http://127.0.0.1:5184/api/meteorological/regions",
+    "http://127.0.0.1:5184/api/meteorological/regions?date=2026-09-06",
+    "http://127.0.0.1:5184/api/meteorological/history?region=Alfred%20Nzo",
+    "http://127.0.0.1:5184/assets/DroughtMonitoring-CoezvyCT.js",
+    "http://127.0.0.1:5184/assets/DroughtMonitoring-BME9uflf.css",
+    "http://127.0.0.1:5184/api/drought-monitoring/regions",
+    "http://127.0.0.1:5184/api/drought-monitoring/region?region=City%20Of%20Tshwane",
+    "http://127.0.0.1:5184/api/drought-monitoring/regions?date=2025-12"
+  ]
+}

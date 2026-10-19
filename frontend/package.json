@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/build.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,15 +16,10 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.468.0",
     "plotly.js": "^4.0.0",
-    "plotly.js-dist-min": "^2.35.2",
-    "proj4": "^2.22.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-leaflet": "^4.2.1",
     "react-plotly.js": "^2.6.0",
-    "react-simple-maps": "^3.0.0",
-    "recharts": "^2.8.0",
-    "xlsx": "^0.18.5"
+    "recharts": "^2.8.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.5.1",

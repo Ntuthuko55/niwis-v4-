@@ -1,0 +1,7 @@
+date,year,month,district_name,surface_water_extent_km2,ndwi_mean,turbidity_proxy_ratio,chlorophyll_a_mg_m3,sediment_plume_pct,flood_inundation_extent_km2
+2000-01-01,2000,1,City of Cape Town,51.17,0.33,0.95,19.8,18.5,7.0
+2000-07-01,2000,7,City of Cape Town,39.16,0.1,0.65,13.5,6.8,7.0
+2025-01-01,2025,1,City of Cape Town,51.17,0.33,0.95,19.8,18.5,7.0
+2025-07-01,2025,7,City of Cape Town,39.16,0.1,0.65,13.5,6.8,7.0
+2026-01-01,2026,1,City of Cape Town,51.17,0.33,0.95,19.8,18.5,7.0
+2026-07-01,2026,7,City of Cape Town,39.16,0.1,0.65,13.5,6.8,7.0

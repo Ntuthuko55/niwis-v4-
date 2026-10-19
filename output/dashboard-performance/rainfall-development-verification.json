@@ -1,0 +1,21 @@
+{
+  "mode": "development",
+  "early_map_milliseconds": 496,
+  "initial_ready_milliseconds": 1080,
+  "district_milliseconds": 751,
+  "status": "passed",
+  "map_districts": 52,
+  "errors": [],
+  "checks": [
+    "early independent map",
+    "district reuses national colors",
+    "map and daily month isolation",
+    "ranking retains chart end month",
+    "independent failures and retries",
+    "leap-day and dekadal detail",
+    "19 indicators and CSV units",
+    "partial month and unavailable future seasons",
+    "mobile layout",
+    "forecast remains deferred"
+  ]
+}

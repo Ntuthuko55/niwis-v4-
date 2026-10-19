@@ -1,0 +1,14 @@
+{
+  "entry_javascript": {
+    "file": "assets/index-DqC3Tybw.js",
+    "bytes": 273689,
+    "gzip_bytes": 92763,
+    "eager_imports": []
+  },
+  "display_map": {
+    "original_bytes": 4274862,
+    "display_bytes": 561214,
+    "reduction_percent": 86.9,
+    "districts": 52
+  }
+}

@@ -1,0 +1,1404 @@
+{
+  "workspace": "C:\\Users\\student\\Pictures\\New folder (2)",
+  "status": "complete",
+  "recovery_archive": "C:\\Users\\student\\AppData\\Local\\Temp\\niwis-cleanup-20261019-151101.zip",
+  "files": [
+    {
+      "path": ".ipynb_checkpoints/11.3_aquifer_sustainability_unified_timeseries-checkpoint.csv",
+      "bytes": 1193004,
+      "sha256": "f0316a374a1c8633fe5ea9bbf2c7583f687a1d0691fd87b746d38e344b9dfc92",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": ".ipynb_checkpoints/Untitled-checkpoint.ipynb",
+      "bytes": 72,
+      "sha256": "4a62b68a633d79c53a6fd8893e8ea42dcf2b9a8a3e907b1b9861661f04f21517",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": ".ipynb_checkpoints/aesthetic-car-5il85ct1b3x5oqyd-checkpoint.jpg",
+      "bytes": 61817,
+      "sha256": "10943eaf2131b07ef4651d29f3175b02df4a1ac711edb5f1dc41113c87945d09",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": ".pytest_cache/.gitignore",
+      "bytes": 37,
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": ".pytest_cache/CACHEDIR.TAG",
+      "bytes": 191,
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": ".pytest_cache/README.md",
+      "bytes": 302,
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": ".pytest_cache/v/cache/lastfailed",
+      "bytes": 942,
+      "sha256": "a3eb62c6676a00762e7054e6142153a4f687af25f499e949e9e7cb49ad7934d0",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": ".pytest_cache/v/cache/nodeids",
+      "bytes": 142,
+      "sha256": "661c1aede7ff9f028e21b706f7a0938e46a32042c0e2235791549c044e2475f7",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "Dam and Reservoir Status/.ipynb_checkpoints/south_africa_reservoir_master_12vars_mapped-checkpoint.csv",
+      "bytes": 144552281,
+      "sha256": "ecd8ac46e527dc3f51b9ea02c6ff664d20fe0a15891a11c23d2f6514a92cf4d3",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "Groundwater Level Monitoring/.ipynb_checkpoints/section_10_1_complete_master_long_2000_2026-checkpoint.csv",
+      "bytes": 7607847,
+      "sha256": "448b4bdb50cae6b60d7920df7f7e9d9b3e25a49e75babd5f77c8ea19d7d3099b",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "Groundwater Reserve Assessment/.ipynb_checkpoints/11.1_hydrogeology_unified_timeseries-checkpoint.csv",
+      "bytes": 3576600,
+      "sha256": "ea4cc588204255fd1055f68ca65d600f256df0073816beeb6465fc6ed4216efc",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "Groundwater Reserve Assessment/.ipynb_checkpoints/11.2_recharge_discharge_unified_timeseries-checkpoint.csv",
+      "bytes": 1236564,
+      "sha256": "002d708fe258354fb94a38d15de9d1541f75292f6f89181298c8088d7b8bfdf2",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "Groundwater Reserve Assessment/.ipynb_checkpoints/Untitled-checkpoint.ipynb",
+      "bytes": 72,
+      "sha256": "4a62b68a633d79c53a6fd8893e8ea42dcf2b9a8a3e907b1b9861661f04f21517",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "Runoff Status Monitoring/.ipynb_checkpoints/7.1_runoff_variables_master-checkpoint.csv",
+      "bytes": 69056687,
+      "sha256": "87a32d234b387bd4de1c583d6ac2af91eacb050f4ae3d511b542318923c948f1",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "Runoff Status Monitoring/.ipynb_checkpoints/7.2_derived_runoff_indicators_master-checkpoint.csv",
+      "bytes": 1531283,
+      "sha256": "fda18fb1bb5799a659617d985ec4dc36109ee2c55729030bc54d06b1e1b0aabc",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "Runoff Status Monitoring/.ipynb_checkpoints/Untitled-checkpoint.ipynb",
+      "bytes": 72,
+      "sha256": "4a62b68a633d79c53a6fd8893e8ea42dcf2b9a8a3e907b1b9861661f04f21517",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "aesthetic-car-5il85ct1b3x5oqyd.jpg",
+      "bytes": 61817,
+      "sha256": "10943eaf2131b07ef4651d29f3175b02df4a1ac711edb5f1dc41113c87945d09",
+      "reason": "Unreferenced public data copy, placeholder, or unrelated image; active source retained."
+    },
+    {
+      "path": "backend/New folder (2) - Shortcut.lnk",
+      "bytes": 907,
+      "sha256": "60aeaead6bb75b584342f5c6d3e5648e151185c8f31ea075c44319079242dba4",
+      "reason": "Temporary inspection/startup file or local shortcut; outside application flow."
+    },
+    {
+      "path": "backend/__pycache__/__init__.cpython-311.pyc",
+      "bytes": 128,
+      "sha256": "bee51211b73995117f435d760d36ce0c619ed37c5d5a8ea461e988b9fd2b11df",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/compare_climate_sources.cpython-311.pyc",
+      "bytes": 20042,
+      "sha256": "c307846eaeb5e9f0d059ee119955c27f007862e6482dda9e71cef9670c018fd9",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_all_models.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 3648,
+      "sha256": "22b7c1e1ffe64cfdb2cc7c45db42b3df44e8365112a37e7f9bfaf7e21fde56c8",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_all_models.cpython-311.pyc",
+      "bytes": 3472,
+      "sha256": "54cd98a8f36633c5bfde6c69784cc61f18fa08f68b2a40acec824cc7c21a9cd6",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_climate_performance.cpython-311.pyc",
+      "bytes": 24398,
+      "sha256": "92406e4c1a6c455ef76815a1a974099dc53ffeffc31fa09de70a69ce8df144ef",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_dashboard_performance.cpython-311.pyc",
+      "bytes": 32993,
+      "sha256": "f89db79c01a4f64f8c68f6a1a4340fdd46e4ed28938ed5ab0151ed589acf02a3",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_drought_monitoring.cpython-311.pyc",
+      "bytes": 6107,
+      "sha256": "75c971c851312573b9cf03cf173a2e3297579929d7d0e0187ac9aa5f92ac7538",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_full_suite.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 10392,
+      "sha256": "bccfa9d04c57bc8d6eed0347808293c2cafd6fe3b6bbe79f39458f99fe9fc4e9",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_full_suite.cpython-311.pyc",
+      "bytes": 5801,
+      "sha256": "68e2c6a397b686346166d2384576d5b08253e6c55cf9f0567cdb664f755a8f8f",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_groundwater_performance.cpython-311.pyc",
+      "bytes": 28788,
+      "sha256": "40d96b37a3604f3aacdc93cf388f5d4e792976577530473c34db71a37c38ebe2",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_groundwater_reserve_service.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 4271,
+      "sha256": "d83960c9a9132a6cd0f138f992a20fe968f8127f29d0648feab078dcb2e6cd78",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_groundwater_reserve_service.cpython-311.pyc",
+      "bytes": 4136,
+      "sha256": "4e157b3b1fbcc846516295891ff7ebdb16dc41f4c6433d54340cf1c99862ac1b",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_groundwater_service.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 2730,
+      "sha256": "a3e6924107bd4682fea4264b99802752e28b11b055f60925145eff4fddb8bb26",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_groundwater_service.cpython-311.pyc",
+      "bytes": 2595,
+      "sha256": "478a514d9478e6826a41f2e38a3fc7c7a1c29f41c84ab23bf6a96ade7ffc2d5a",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 2543,
+      "sha256": "377999aab8900d71714bcde4a79c9b825597dc5731131d974a67ca2ff21182e5",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn.cpython-311.pyc",
+      "bytes": 2366,
+      "sha256": "0728ebcdae23cdc4443be04e890c443286131f6a2fbf130177e046cdc3e713c2",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_models.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 3625,
+      "sha256": "73751a5878148d72a41a56f725c31c8c78aa36ff2162838b9337a3db1a854d69",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_models.cpython-311.pyc",
+      "bytes": 3448,
+      "sha256": "09ff9d5bdf2022fec1e73b5ac51906c52ba005ea5e55a19344b90c4be16970d6",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_one.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 2269,
+      "sha256": "e49a5957aa73e57879a5afc19e0f17c937ad16bb7c69f3a21e03e551c5c9f7b9",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_one.cpython-311.pyc",
+      "bytes": 2092,
+      "sha256": "a764a324b4240956c53affde45019d6ef92a2c5dd92d70d9963bc8f79159fdf9",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_prep.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 1901,
+      "sha256": "06df251d3903ad78a71e90f3aa4c3432c0a27f1f6bcef6c4f4a1942505431966",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_prep.cpython-311.pyc",
+      "bytes": 1724,
+      "sha256": "5aad58cf703a746fc5747831c7ad2356237865b80fc791699352bed47f93c740",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_slow.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 3423,
+      "sha256": "db8e2f14d6cbfcc988ade485c5cda6f22fbba21f74e4e312e0e7aea5b02b8061",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_slow.cpython-311.pyc",
+      "bytes": 3246,
+      "sha256": "afc23a9b7436107c6f2c1ae1bf5c17aeb4f1da34f18ab6de78774237a7e74ca6",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_speed.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 2552,
+      "sha256": "72fe30cbbed2b78dfab3ba16fda7f724b4c044d66cac5dd8c5c0b2f5e77ab60d",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_kzn_speed.cpython-311.pyc",
+      "bytes": 2375,
+      "sha256": "7561e1f86e9fe02e56b9caf02e57e212b336fd76f7fc4207c701ba8b01599ad1",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_prophet_speed.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 2574,
+      "sha256": "4528af41f92c9c7bb70cd58dcd8464de19d7e094b50f8c97ecd8a4bcf138bf3f",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_prophet_speed.cpython-311.pyc",
+      "bytes": 2398,
+      "sha256": "a0dd1af407fa6b0ff6c247a78899a043eeebdde8d390e1e9c55aa6b21fcff621",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_rainfall_performance.cpython-311.pyc",
+      "bytes": 26663,
+      "sha256": "8437a4c8df320a96a2c7b9e8270d71489cd4e70a7f6ddc4a43aebc137dd7aa6f",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_rainfall_service.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 11487,
+      "sha256": "eb7019702738192003d2467c905249ea697377aeaaddda5e0a7bea559d98984b",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_rainfall_service.cpython-311.pyc",
+      "bytes": 11352,
+      "sha256": "0bfaa3cdf3e4d6c970ccd2ceb313c840c39954ee9b32b733d093a327ebe217b6",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_reservoir_service.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 15691,
+      "sha256": "ea532231f49cdd6e4ab8ca480ca1d5cc04f0c945644d7a113ae2baa4ac881000",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_reservoir_service.cpython-311.pyc",
+      "bytes": 19280,
+      "sha256": "c1de58f191af464776a46cf013c6b117f2bbf42d131fab65f7f03d8994434a1f",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_runoff_service.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 11951,
+      "sha256": "67f99fb2b0f48fd5cf49822f3c3bc0d5d1dea764eeb8d5111d45bd6382690d93",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_runoff_service.cpython-311.pyc",
+      "bytes": 11816,
+      "sha256": "270fb4815c4952732535d7dd0ebf77b6afe6397e5d64aa0426b699de9c97f1b0",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_sarima_regression.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 3246,
+      "sha256": "c6e3d24941307b4f914a85214824b2fb7f39f96ea54efe222c15c740526c55ed",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_sarima_regression.cpython-311.pyc",
+      "bytes": 1394,
+      "sha256": "2c4f74762522cea4f17a6eb8e395b438816b52042c0be32373d979309074e44c",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_sarima_single.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 2544,
+      "sha256": "5e5411882c4346cf717d0d73c85b0786492e75cd7e8f27a05e2d7b6655427901",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_sarima_single.cpython-311.pyc",
+      "bytes": 2368,
+      "sha256": "9e0b2f270c95c2268fa71fc037e4544c0f5442b1df34194c35702db75c45b6e3",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_sarima_speed.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 2041,
+      "sha256": "4fcdd7b9f40df16b09936a175878a5acff58adb55c1c2acbabfaf811c07303a0",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_sarima_speed.cpython-311.pyc",
+      "bytes": 1865,
+      "sha256": "4cb7e7adc8bd0862f20e7d0d4237abd67b1b8cb4c437a6b86d6338d6bc8ea368",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_supabase_province_dataset.cpython-311.pyc",
+      "bytes": 2103,
+      "sha256": "8c3516e0142b8299d28181211e708083216f89659f698b0240c76d9cb62e6f68",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_surface_water_service.cpython-311.pyc",
+      "bytes": 13108,
+      "sha256": "5fde9371183088861d81f292492b86411795fbc24a54dd128ef5412cb463b5c8",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_vegetation_performance.cpython-311.pyc",
+      "bytes": 21901,
+      "sha256": "23fb11cc2ff67aa2ab2ada67a7d3dbcaf4cc2e7c7ee50723657862dbbc8d73eb",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_vegetation_service.cpython-311.pyc",
+      "bytes": 11543,
+      "sha256": "2dfb47f2a16b3917bab5eaca14b9259b09da663c9754b43a068f2f92e9afdc33",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_water_quality_service.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 3969,
+      "sha256": "952dbc2594589d3d7df1a24eaec9ca291cc7072ada881ac21fa5aa17480eec43",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/test_water_quality_service.cpython-311.pyc",
+      "bytes": 3834,
+      "sha256": "df8bdc50d3ad8cfb6fc263ae4849f8da3b5d4ac81bf911d1f333c9624e511b2e",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/tmp_forecast_test.cpython-311-pytest-9.1.1.pyc",
+      "bytes": 2302,
+      "sha256": "54fcd958668307d01ff68a40e8c1ec8369ac229a3c67182fa67e16aad2457531",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/tmp_forecast_test.cpython-311.pyc",
+      "bytes": 2125,
+      "sha256": "e0b9dfaba1bc810e5807a0b4c114e994094798104dc6cdbb45863f000d84ace4",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/tmp_start_training.cpython-311.pyc",
+      "bytes": 2331,
+      "sha256": "195fe891124da65d7f88e93b0d8ccbd257b75d38f20dcd079ced39468552b35b",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/verify_climate_values.cpython-311.pyc",
+      "bytes": 6711,
+      "sha256": "20f12ddbcc5416d65816fcfa216dec0a1b2dfa781051bc2f43471d76a0d1d45a",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/verify_dashboard_performance.cpython-311.pyc",
+      "bytes": 5540,
+      "sha256": "4baf7a334e5362785b20f25ead0631e6d4b8188d88e7b77059d1cea483b317af",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/verify_endpoints.cpython-311.pyc",
+      "bytes": 2670,
+      "sha256": "91a90df6ecbcf5fc746183707f0018eabebaab7b18659c93e12ee270fa80cbcf",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/verify_regional_forecast.cpython-311.pyc",
+      "bytes": 7548,
+      "sha256": "9d5675275a521f3c77f44e0852131a724e61956daa2b5b7a38eec1657c6104ff",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/__pycache__/verify_setup.cpython-311.pyc",
+      "bytes": 1441,
+      "sha256": "3ed554922bb71dae7775e08c2843f2697bb55e236fe6434920c10d87319a1450",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/__init__.cpython-311.pyc",
+      "bytes": 172,
+      "sha256": "6d258ca7fb191ecb83da13f77004a1c4b253e619fbf2537463e17603606f0c68",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/climate_csv_source.cpython-311.pyc",
+      "bytes": 9236,
+      "sha256": "89a1ef9d2cbded6d29ac86c4302f0ef3596b024913ab8945ab89045405e7d61d",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/climate_service.cpython-311.pyc",
+      "bytes": 58383,
+      "sha256": "01e2c14a77bb6d3902b6741eca8b54d185835810078091595316db4689de0961",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/climate_source.cpython-311.pyc",
+      "bytes": 23343,
+      "sha256": "84557ad576966fc6cabf738414d8e61b6fe12226ef791bb6c10958857175f157",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/dashboard_loader.cpython-311.pyc",
+      "bytes": 8365,
+      "sha256": "878c596e0f9b59c83eaad2adb653c09d949f29f3b26ac458545f0f3d072424a3",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/dashboard_response_cache.cpython-311.pyc",
+      "bytes": 7781,
+      "sha256": "e5a15a2925dd4c129592852c6d5312ec23583e5fc4fe8ed065e4d8fef662e306",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/data_processing.cpython-311.pyc",
+      "bytes": 105029,
+      "sha256": "75e480d32b60adeb9a8ae68ee1e39760620b3bb195dc437d694d28df9f2ee42e",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/database.cpython-311.pyc",
+      "bytes": 7644,
+      "sha256": "271469a77765fe1d5000bdb66118c5273131e5fe6763a7bb0df2735e21bd9afe",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/drought_monitoring.cpython-311.pyc",
+      "bytes": 18831,
+      "sha256": "2d8be559bedd2b6088c05299c2b248d1045182e45515bd8b127aaea44b226dda",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/drought_source.cpython-311.pyc",
+      "bytes": 15848,
+      "sha256": "57f1c222c4ba89132b7d347d961a5db081891fbf947a0d0185d31aa922cc0a13",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/feature_engineering.cpython-311.pyc",
+      "bytes": 18093,
+      "sha256": "57e7298ae57125faff474ecbc5c23fe1e8ffaea88651c0d82a009e28242fbc91",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/groundwater_reserve_service.cpython-311.pyc",
+      "bytes": 46999,
+      "sha256": "b2db8bba2806db29a2c5cdc9b422226dd73608e316c00f6d55ff879dbf4bee40",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/groundwater_service.cpython-311.pyc",
+      "bytes": 65518,
+      "sha256": "df9937abfe533d659ecf8988c5ea4463add984a783da542994f7e7454feefbf6",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/hydrology_dashboard.cpython-311.pyc",
+      "bytes": 8823,
+      "sha256": "0d9ac0bb7dd5486f3e412d0708ef00c031dda667e00edcfe1590c7b644ad58e3",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/hydrology_service.cpython-311.pyc",
+      "bytes": 29728,
+      "sha256": "adad2d97dd4f972e296f0380d9ee4c168abb6b0686b8a921752e9a7da9c0867c",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/main.cpython-311.pyc",
+      "bytes": 71401,
+      "sha256": "a6b41ca26ff03851e9d8844bb8acaf095ed048bf5d3b8fa78db02912a27d7c25",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/meteorological_service.cpython-311.pyc",
+      "bytes": 3492,
+      "sha256": "4a2c3b4444ca56d8cfca66134d7687b7917783abb8170aab7b04b9d51a2a953e",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/model_training.cpython-311.pyc",
+      "bytes": 82742,
+      "sha256": "476129b49b448225f18c8c981457577f120d88a8aed02eb59fa52de37602b143",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/multivariate_flask.cpython-311.pyc",
+      "bytes": 12756,
+      "sha256": "94e5ff1701e0c71ff608e9297186881b23d5f00511d53063a603662ee1538c15",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/niwis_flask.cpython-311.pyc",
+      "bytes": 14568,
+      "sha256": "ef6930f0483e819951fe7e34bd0168d30c2a0131270156be2cdbf8afd526be96",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/postgres_source.cpython-311.pyc",
+      "bytes": 18670,
+      "sha256": "0915299139a1100c824e06b3621f205264ed6963e549dc81e8d12f40cda7b3cf",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/rainfall_service.cpython-311.pyc",
+      "bytes": 89352,
+      "sha256": "067b6e1b9e031336a3a972abb0b000c748b9e500f4740d9c8115af85c1ef0cb0",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/reservoir_service.cpython-311.pyc",
+      "bytes": 47850,
+      "sha256": "c9d0fd695db2a03851f695e8c384275a8b409f4fd7da8db5a385ae3e8c754f9e",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/runoff_service.cpython-311.pyc",
+      "bytes": 23615,
+      "sha256": "753f49a7389ba9f94efb659612fcefbd4793956fa3fd535cd9f377e2db5bb96c",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/satellite_service.cpython-311.pyc",
+      "bytes": 6183,
+      "sha256": "ddc65b87b4c45b0a4180a44e5c51b2edcb600acd76149bda01828d72a1b06f5c",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/schemas.cpython-311.pyc",
+      "bytes": 12112,
+      "sha256": "4df66d9ebad6eb5d64f8e54a23dcf71b84544436f712c91c95e133da3bda17fb",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/spatial_flask.cpython-311.pyc",
+      "bytes": 62822,
+      "sha256": "75e7891344385b864cc31dffe4757a2b89171a1f02f7029f3d36cc5d570b433b",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/supabase_source.cpython-311.pyc",
+      "bytes": 20289,
+      "sha256": "9b14f8325a97a619d11225c5241937571d38b62b4a1a3fe8b155c7dbc111fbd5",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/surface_water_service.cpython-311.pyc",
+      "bytes": 67922,
+      "sha256": "55609087843244ae02d5d365c383ca8d9abe4539080275fbfb1195ba96338b41",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/training_worker.cpython-311.pyc",
+      "bytes": 2917,
+      "sha256": "69a52eeb0e5088debb9ae20ebeb9614dfd013fe991ef3a53758ad9d57939d7bd",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/trend_analysis.cpython-311.pyc",
+      "bytes": 19543,
+      "sha256": "1951a0f28bcc6d4de7d4a47f587f14e6711c444c6cd7bd53188acb2511c0da39",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/vegetation_service.cpython-311.pyc",
+      "bytes": 63840,
+      "sha256": "8a537f27b0a6b16a0fb5615d9f67681a909ae6b5c4fb5d5e834daa6f43b2eed3",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/__pycache__/water_quality_service.cpython-311.pyc",
+      "bytes": 46804,
+      "sha256": "39338f0868c2efc4682bc5024cc183501da5193b4374453f6645e9236fe1971a",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/forecasting/__pycache__/__init__.cpython-311.pyc",
+      "bytes": 722,
+      "sha256": "3e60c2fbcf4f2b25fddc3e26decc03a51e9ee82f6a61a4e594e5b2e7163c9dde",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/forecasting/__pycache__/diagnostics.cpython-311.pyc",
+      "bytes": 10126,
+      "sha256": "97ebf6fb1deca59d7c56a78a618a8a9c443a27afc60bceb5192fb9375cad4d00",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/forecasting/__pycache__/evaluator.cpython-311.pyc",
+      "bytes": 4239,
+      "sha256": "f80947cfa607b11b6f518b44c8549707aea7e983814a53085cb042507d241f84",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/forecasting/__pycache__/features.cpython-311.pyc",
+      "bytes": 1555,
+      "sha256": "0488378b26c14f98ada91e867bbed2c09e031f087f5305ef73b40d9cc47d2a42",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/forecasting/__pycache__/forecaster.cpython-311.pyc",
+      "bytes": 18622,
+      "sha256": "a9a485ad2a453023894231414ea68343cf4debe5c81f32962095dff79de2e628",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/forecasting/__pycache__/kzn_pipeline.cpython-311.pyc",
+      "bytes": 51272,
+      "sha256": "04d55a68447a94df5235f64ee654bc819bd9183cf54b572a8d5d67f9d68c9b22",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/forecasting/__pycache__/models.cpython-311.pyc",
+      "bytes": 24342,
+      "sha256": "dae5d41ff556f6f473c9aaba079b845f0ffb4abfd29555d7c0d473ceffde9d11",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/forecasting/__pycache__/preprocessing.cpython-311.pyc",
+      "bytes": 6036,
+      "sha256": "47873f1c827db057fcdb60824e4aa54fb24d18dba7be5bc3be3b362a57461151",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/forecasting/__pycache__/validation.cpython-311.pyc",
+      "bytes": 11583,
+      "sha256": "ad43b6af02c2b0dd154c8f31d55376b38303c461f3e97d5d5fc16fca8b524965",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/__pycache__/__init__.cpython-311.pyc",
+      "bytes": 254,
+      "sha256": "ed3df7f2d83ed2fa997bc3703624435d351ddf47602da724e5b897945e06ff55",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/__pycache__/utils.cpython-311.pyc",
+      "bytes": 6911,
+      "sha256": "e381f1dccaed651fe44ae9e25bc27d417d8affd3f2c2651b87b61cd4520c6c34",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/analyses/__pycache__/__init__.cpython-311.pyc",
+      "bytes": 401,
+      "sha256": "96f08da49a2e8097f02a79fae1da106943ffc2d3abac4cfa5482aadf80b60e68",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/analyses/__pycache__/additional.cpython-311.pyc",
+      "bytes": 31244,
+      "sha256": "b7f712a4bdec36559cd1d53445f3a42437205d6cad555480f6a5d3b6a3802d13",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/analyses/__pycache__/base.cpython-311.pyc",
+      "bytes": 9999,
+      "sha256": "2b4cc4a37d6747300c04ce64db168c5fdb5aed891a8403060a243743c0a46f75",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/analyses/__pycache__/clustering.cpython-311.pyc",
+      "bytes": 27290,
+      "sha256": "5d601bb5478772d3bcf52f919fa0901ebb8beac0503130544ed8582a94fd490a",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/analyses/__pycache__/pca.cpython-311.pyc",
+      "bytes": 22569,
+      "sha256": "4bde6c799e520464c666538f898c01fbef2d702730c052ed5dbeb2918bde62b2",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/analyses/__pycache__/registry.cpython-311.pyc",
+      "bytes": 3893,
+      "sha256": "b37eec3f9c9053c957cd97e6f6d82457be1cf2db35ee468aff5a2233116dc88f",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/analyses/__pycache__/regression.cpython-311.pyc",
+      "bytes": 28095,
+      "sha256": "60d12d4e7744f485a7b5bfd7fa02607a62a28e21823672dddaff0e19e039d74f",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/core/__pycache__/__init__.cpython-311.pyc",
+      "bytes": 558,
+      "sha256": "87d65b3e61a714577b7bb04872c9b98a9b717545874baace020ef25020d3c11a",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/core/__pycache__/assumptions.cpython-311.pyc",
+      "bytes": 11586,
+      "sha256": "c725a0c2143c7cf264e41fc14d18a51d7342a7233de1b0ed2630cdfd93feb3df",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/core/__pycache__/dataset_engine.cpython-311.pyc",
+      "bytes": 11380,
+      "sha256": "aca6498c6237acf7ff778bf84551eede802eba22017fcbd9ba8d2d57dc5ab015",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/app/multivariate/core/__pycache__/type_detector.cpython-311.pyc",
+      "bytes": 9994,
+      "sha256": "02ec36787ce22c444191ae3b8a21b6de779e916cc912823d267b745b25c1593e",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/scripts/__pycache__/force_models.cpython-311.pyc",
+      "bytes": 6037,
+      "sha256": "c8b7dffbdf9078e8845e8596942374ac8286d20b656e1a08bbe36d98abea5775",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/scripts/__pycache__/force_prophet.cpython-311.pyc",
+      "bytes": 3755,
+      "sha256": "22e93037dbf87a642f5e96039f49b8990747cc88dda8cc80cbe41f13e9717b70",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/scripts/__pycache__/run_prophet_train.cpython-311.pyc",
+      "bytes": 3101,
+      "sha256": "4206d9aac0e3c543c8ed9a0311b4ad57bc6a0a6caf8fd8cbead15ef801a86aa8",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/scripts/__pycache__/run_var_models.cpython-311.pyc",
+      "bytes": 5482,
+      "sha256": "d7f6cb37c40b80cdbff1dd10f134ea30f129e9196cafa6d05db3b44c0aa3d212",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "backend/tmp_forecast_test.py",
+      "bytes": 1021,
+      "sha256": "6d4e94da6043205df48a74d5d56138de9942cd50334ed4753d579be022c4491a",
+      "reason": "Temporary inspection/startup file or local shortcut; outside application flow."
+    },
+    {
+      "path": "backend/tmp_start_training.py",
+      "bytes": 1060,
+      "sha256": "d6928b2eb45508ecd13f581164450632dfe2c0918226b83f6a5b135fd2b0008b",
+      "reason": "Temporary inspection/startup file or local shortcut; outside application flow."
+    },
+    {
+      "path": "chris.json",
+      "bytes": 66810,
+      "sha256": "b93825dd6152ef6686d909852c2bb64d8e5ba3c7caac418cd75776dd8ad075fd",
+      "reason": "Unreferenced captured API response used during debugging."
+    },
+    {
+      "path": "csv's/.ipynb_checkpoints/hydrology-checkpoint.csv",
+      "bytes": 3078253,
+      "sha256": "59d267cd0c7199cc4ab04e78f6a3811cb6ce4a361e68ee5f69c4439d5bd29417",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "csv's/.ipynb_checkpoints/mateological-checkpoint.csv",
+      "bytes": 73636686,
+      "sha256": "a6a4e3d45d89f60516f2c10b41752bbf03946fb848a1e53e7492c3d1fcd08de9",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "frontend/.tmp-vite.mjs",
+      "bytes": 351,
+      "sha256": "b057f6dc36f0bee706f9076e8f17f7337d7a3e33462e54574b6ad785815f6a54",
+      "reason": "Temporary inspection/startup file or local shortcut; outside application flow."
+    },
+    {
+      "path": "frontend/hydrology.png",
+      "bytes": 264355,
+      "sha256": "266f0fabf211a2a01c558ecdb8de25e2b5c424eb7a87f23078bd35ecc008ca03",
+      "reason": "Unreferenced development screenshot."
+    },
+    {
+      "path": "frontend/output/debug-surface-loaded.png",
+      "bytes": 299097,
+      "sha256": "4dd9fb29241ea0cac4998cb64c63d51bd3ba87898ad894aab4534d8a37a51a8c",
+      "reason": "Generated browser verification screenshot; recreated by verification scripts."
+    },
+    {
+      "path": "frontend/output/debug-surface-start.png",
+      "bytes": 190548,
+      "sha256": "b70f93a754d81fe817895b7b996d426575c4e935b346e24031cf9f565bb5df2b",
+      "reason": "Generated browser verification screenshot; recreated by verification scripts."
+    },
+    {
+      "path": "frontend/output/groundwater-level-monitoring.png",
+      "bytes": 926828,
+      "sha256": "525704d669387716b8456c8d037f01df036bc255807fe398b690d3f061e82125",
+      "reason": "Generated browser verification screenshot; recreated by verification scripts."
+    },
+    {
+      "path": "frontend/output/province-labels-desktop.png",
+      "bytes": 79487,
+      "sha256": "0c01a790003ce512493cddc83ce6650c16c6dcd2424579f17b94ee7fefd98017",
+      "reason": "Generated browser verification screenshot; recreated by verification scripts."
+    },
+    {
+      "path": "frontend/output/province-labels-mobile.png",
+      "bytes": 55147,
+      "sha256": "ab0624a6ec223911b3ee530955d3bbbecf56a47e8c132366cd4f5a8f953f95b4",
+      "reason": "Generated browser verification screenshot; recreated by verification scripts."
+    },
+    {
+      "path": "frontend/output/province-labels-vegetation.png",
+      "bytes": 117322,
+      "sha256": "0c8f705a084a1c9cdf9b6e26670e6381958bbbb360aef2e74fc28fbd56d5f5ce",
+      "reason": "Generated browser verification screenshot; recreated by verification scripts."
+    },
+    {
+      "path": "frontend/output/surface-water-desktop.png",
+      "bytes": 1498234,
+      "sha256": "44621f43a13e78d23463efeebb2a238790b28c6e4075a73b2362199d020519ba",
+      "reason": "Generated browser verification screenshot; recreated by verification scripts."
+    },
+    {
+      "path": "frontend/output/surface-water-mobile.png",
+      "bytes": 1187314,
+      "sha256": "0a690132d235e1dd29c276b41db74d932d41fe812f5cb1a72bdb952a6367d5fe",
+      "reason": "Generated browser verification screenshot; recreated by verification scripts."
+    },
+    {
+      "path": "frontend/public/csvs/hydrology.csv",
+      "bytes": 3078253,
+      "sha256": "59d267cd0c7199cc4ab04e78f6a3811cb6ce4a361e68ee5f69c4439d5bd29417",
+      "reason": "Unreferenced public data copy, placeholder, or unrelated image; active source retained."
+    },
+    {
+      "path": "frontend/public/csvs/mateological.csv",
+      "bytes": 564,
+      "sha256": "2911b251d96600d05b3fec5be49de0a064021cc66a9b112bd7b6b504f3a60655",
+      "reason": "Unreferenced public data copy, placeholder, or unrelated image; active source retained."
+    },
+    {
+      "path": "frontend/public/za_provinces.json",
+      "bytes": 3721,
+      "sha256": "1bc296491ec4ebfc098fdb3f1783581f20772f61113c1767b895885f068799d9",
+      "reason": "Unreferenced public data copy, placeholder, or unrelated image; active source retained."
+    },
+    {
+      "path": "frontend/src/components/AnalysisChart.jsx",
+      "bytes": 9917,
+      "sha256": "b6cbfce6e85627d1f9516760335a034354b6bece26171530ad7805474a3a9c55",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/src/components/DataUpload.jsx",
+      "bytes": 4821,
+      "sha256": "b08b5c81c4bb8c4215cdaeabaa8c3e703408096bb14bb4ab0470041983341790",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/src/components/FeatureEngineering.jsx",
+      "bytes": 13987,
+      "sha256": "c5b6aeee2bb48a91841a939ba410e7d3ceef3357e03561f6f64310acee2a54ef",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/src/components/ModelGuide.jsx",
+      "bytes": 2647,
+      "sha256": "444012d4ae60366868f32e0b466c972c03ccbf504a4cd569afb44929eb3cfeb1",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/src/components/NIWISDashboard.jsx",
+      "bytes": 23388,
+      "sha256": "46deccd1ba76ac683ee81a5068981ed8e0ede0090346f354b999e76debc7b840",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/src/components/ProvinceForecasting.jsx",
+      "bytes": 2906,
+      "sha256": "d960bfc45f40cad83f0b7a17a57bdba35578c79f1b826674a61c12026951fce9",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/src/components/SouthAfricaMap.jsx",
+      "bytes": 3575,
+      "sha256": "d7ce957fc95eb2dcfe2c859dd28e0dae71b3825c240e74a9bfa237b72ed90e2f",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/src/lib/supabaseClient.js",
+      "bytes": 213,
+      "sha256": "0bb8e0ddfd36bedda3c895d24a5f82f2232720c6581d10aaab545e044c216e6c",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/src/niwis/mateoData.js",
+      "bytes": 2029,
+      "sha256": "13f9bc4255e7a4bb5124cb56f7dad4c159427ec58c0c6be7da3b031ce2ee7836",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/src/services/supabaseClient.js",
+      "bytes": 1048,
+      "sha256": "539a66413f28294f4562d99ccdb3f19bc8c4e6f81df8dbc770ce5d66193910e1",
+      "reason": "No active frontend entry-point import; references checked before removal."
+    },
+    {
+      "path": "frontend/vite-dev.err.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Generated Vite development log."
+    },
+    {
+      "path": "frontend/vite-dev.log",
+      "bytes": 855,
+      "sha256": "5dd36962a97be7d050a7ef6d07091518578cda5715e4f3fb5eb2327c12effa5d",
+      "reason": "Generated Vite development log."
+    },
+    {
+      "path": "hydrology_stations.json",
+      "bytes": 58434,
+      "sha256": "8d1cce8dd55820ede38a3495c181c44d23a6e09f3b6567dac8b915e12102f032",
+      "reason": "Unreferenced captured API response used during debugging."
+    },
+    {
+      "path": "scripts/__pycache__/audit_reservoir_data.cpython-311.pyc",
+      "bytes": 12346,
+      "sha256": "f875839cd8e39022a7204134d2a9db1bf3fef5853b0dcef1aa8212d6738c5ea1",
+      "reason": "Regenerable Python bytecode or test cache."
+    },
+    {
+      "path": "tmp_css_snippet.css",
+      "bytes": 900,
+      "sha256": "4f84d120166f83cd15dcac41227cb3f3a22fcf82d4374b51efaef49864923c74",
+      "reason": "Temporary inspection/startup file or local shortcut; outside application flow."
+    },
+    {
+      "path": "tmp_hydro_inspect.py",
+      "bytes": 857,
+      "sha256": "07e232077cb996b8df27fcc18094b3a13444145d3d61d5463175b9ef9254ce95",
+      "reason": "Temporary inspection/startup file or local shortcut; outside application flow."
+    },
+    {
+      "path": "tshwane.json",
+      "bytes": 66824,
+      "sha256": "a5c0b211d867724c1c81a16eab9a69145c38094f0ff15cc631a36f776fef1458",
+      "reason": "Unreferenced captured API response used during debugging."
+    },
+    {
+      "path": "vegetation/.ipynb_checkpoints/5.1_primary_satellite_vegetation_variables_sansa_master-checkpoint.csv",
+      "bytes": 66112899,
+      "sha256": "52cc0aff76f8f5eecdaf775291b81e149a3b62b4a23dc4ef0c8cb3afbfa2a396",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    },
+    {
+      "path": "vegetation/.ipynb_checkpoints/5.2_meteorological_drivers_saws_master-checkpoint.csv",
+      "bytes": 1564104,
+      "sha256": "8c682474dc1beec3ebf8109cfaa3e71fbb211896244001c5ff59ec6734f99090",
+      "reason": "Generated Jupyter checkpoint; corresponding original file retained."
+    }
+  ],
+  "total_bytes": 383044016,
+  "preserved_runtime_graph": {
+    "frontend": [
+      "frontend/src/App.jsx",
+      "frontend/src/components/AutocorrelationAnalysis.jsx",
+      "frontend/src/components/ClimateChart.jsx",
+      "frontend/src/components/ClimateDashboard.jsx",
+      "frontend/src/components/ClimateSectionCharts.jsx",
+      "frontend/src/components/CycleAnalysis.jsx",
+      "frontend/src/components/DashboardForecastStudio.jsx",
+      "frontend/src/components/DataFreshness.jsx",
+      "frontend/src/components/DataPreview.jsx",
+      "frontend/src/components/DecompositionAnalysis.jsx",
+      "frontend/src/components/DeferredPanel.jsx",
+      "frontend/src/components/DistrictMap.jsx",
+      "frontend/src/components/DroughtMonitoring.jsx",
+      "frontend/src/components/ForecastingWorkspace.jsx",
+      "frontend/src/components/GroundwaterLevelMonitoring.jsx",
+      "frontend/src/components/GroundwaterReserveAssessment.jsx",
+      "frontend/src/components/HydrologyDrought.jsx",
+      "frontend/src/components/LazyPlot.jsx",
+      "frontend/src/components/LoadingProgress.jsx",
+      "frontend/src/components/MeteorologicalDrought.jsx",
+      "frontend/src/components/ModelTraining.jsx",
+      "frontend/src/components/MultivariateStatistics.tsx",
+      "frontend/src/components/MunicipalityMapLabel.jsx",
+      "frontend/src/components/NIWISPortal.jsx",
+      "frontend/src/components/PartialAutocorrelationAnalysis.jsx",
+      "frontend/src/components/ProvinceMapLabels.jsx",
+      "frontend/src/components/RainfallStatus.jsx",
+      "frontend/src/components/ReservoirStatus.jsx",
+      "frontend/src/components/RunoffStatus.jsx",
+      "frontend/src/components/SatelliteDrought.jsx",
+      "frontend/src/components/SeasonalAnalysis.jsx",
+      "frontend/src/components/SouthAfricaProvinceMap.jsx",
+      "frontend/src/components/SpatialAnalysis.jsx",
+      "frontend/src/components/SpectralAnalysis.jsx",
+      "frontend/src/components/StationarityAnalysis.jsx",
+      "frontend/src/components/SurfaceWaterNetwork.jsx",
+      "frontend/src/components/TimeSeriesDashboard.jsx",
+      "frontend/src/components/VegetationCondition.jsx",
+      "frontend/src/components/WaterQualityMonitoring.jsx",
+      "frontend/src/components/WaveletAnalysis.jsx",
+      "frontend/src/lib/forecastDates.js",
+      "frontend/src/lib/modelOptions.js",
+      "frontend/src/lib/reservoirLocations.js",
+      "frontend/src/main.jsx",
+      "frontend/src/niwis/climate-dashboard.css",
+      "frontend/src/niwis/dashboard-theme.css",
+      "frontend/src/niwis/demoData.js",
+      "frontend/src/niwis/drought-monitoring.css",
+      "frontend/src/niwis/groundwater-level-monitoring.css",
+      "frontend/src/niwis/groundwater-reserve.css",
+      "frontend/src/niwis/hydrology.css",
+      "frontend/src/niwis/niwis-portal.css",
+      "frontend/src/niwis/rainfall-status.css",
+      "frontend/src/niwis/reservoir-status.css",
+      "frontend/src/niwis/runoff-status.css",
+      "frontend/src/niwis/surface-water-network.css",
+      "frontend/src/niwis/svgCharts.jsx",
+      "frontend/src/niwis/vegetation-condition.css",
+      "frontend/src/niwis/water-quality.css",
+      "frontend/src/services/api.js",
+      "frontend/src/services/dashboardFetch.js",
+      "frontend/src/spatial.css",
+      "frontend/src/styles.css"
+    ],
+    "backend": [
+      "backend/app/__init__.py",
+      "backend/app/climate_csv_source.py",
+      "backend/app/climate_service.py",
+      "backend/app/climate_source.py",
+      "backend/app/dashboard_loader.py",
+      "backend/app/dashboard_response_cache.py",
+      "backend/app/data_processing.py",
+      "backend/app/database.py",
+      "backend/app/drought_monitoring.py",
+      "backend/app/drought_source.py",
+      "backend/app/feature_engineering.py",
+      "backend/app/forecasting/__init__.py",
+      "backend/app/forecasting/diagnostics.py",
+      "backend/app/forecasting/evaluator.py",
+      "backend/app/forecasting/features.py",
+      "backend/app/forecasting/forecaster.py",
+      "backend/app/forecasting/kzn_pipeline.py",
+      "backend/app/forecasting/models.py",
+      "backend/app/forecasting/preprocessing.py",
+      "backend/app/forecasting/validation.py",
+      "backend/app/groundwater_reserve_service.py",
+      "backend/app/groundwater_service.py",
+      "backend/app/hydrology_dashboard.py",
+      "backend/app/hydrology_service.py",
+      "backend/app/main.py",
+      "backend/app/meteorological_service.py",
+      "backend/app/model_training.py",
+      "backend/app/multivariate/__init__.py",
+      "backend/app/multivariate/analyses/__init__.py",
+      "backend/app/multivariate/analyses/additional.py",
+      "backend/app/multivariate/analyses/base.py",
+      "backend/app/multivariate/analyses/clustering.py",
+      "backend/app/multivariate/analyses/pca.py",
+      "backend/app/multivariate/analyses/registry.py",
+      "backend/app/multivariate/analyses/regression.py",
+      "backend/app/multivariate/core/__init__.py",
+      "backend/app/multivariate/core/assumptions.py",
+      "backend/app/multivariate/core/dataset_engine.py",
+      "backend/app/multivariate/core/type_detector.py",
+      "backend/app/multivariate/utils.py",
+      "backend/app/multivariate_flask.py",
+      "backend/app/niwis_flask.py",
+      "backend/app/postgres_source.py",
+      "backend/app/rainfall_service.py",
+      "backend/app/reservoir_service.py",
+      "backend/app/runoff_service.py",
+      "backend/app/satellite_service.py",
+      "backend/app/schemas.py",
+      "backend/app/spatial_flask.py",
+      "backend/app/supabase_source.py",
+      "backend/app/surface_water_service.py",
+      "backend/app/training_worker.py",
+      "backend/app/trend_analysis.py",
+      "backend/app/vegetation_service.py",
+      "backend/app/water_quality_service.py"
+    ]
+  },
+  "preserved_runtime_data": [
+    {
+      "path": "csv's/mateological.csv",
+      "bytes": 73636686,
+      "reason": "Provincial forecasting history is file-first in supabase_source.py; the latest provincial summary uses a separate database query."
+    },
+    {
+      "path": "csv's/hydrology.csv",
+      "bytes": 3078253,
+      "reason": "Packaged hydrological drought fallback."
+    },
+    {
+      "path": "csv's/satelite.csv",
+      "bytes": 2969761,
+      "reason": "Packaged satellite drought fallback."
+    },
+    {
+      "path": "vegetation/5.2_meteorological_drivers_saws_master.csv",
+      "bytes": 1564104,
+      "reason": "Packaged meteorological drought fallback."
+    },
+    {
+      "path": "Runoff Status Monitoring/7.1_runoff_variables_master.csv",
+      "bytes": 69056687,
+      "reason": "Active runoff dashboard daily source."
+    },
+    {
+      "path": "Runoff Status Monitoring/7.2_derived_runoff_indicators_master.csv",
+      "bytes": 1531283,
+      "reason": "Active runoff dashboard derived source."
+    }
+  ],
+  "removed_files": [
+    ".ipynb_checkpoints/11.3_aquifer_sustainability_unified_timeseries-checkpoint.csv",
+    ".ipynb_checkpoints/Untitled-checkpoint.ipynb",
+    ".ipynb_checkpoints/aesthetic-car-5il85ct1b3x5oqyd-checkpoint.jpg",
+    ".pytest_cache/.gitignore",
+    ".pytest_cache/CACHEDIR.TAG",
+    ".pytest_cache/README.md",
+    ".pytest_cache/v/cache/lastfailed",
+    ".pytest_cache/v/cache/nodeids",
+    "Dam and Reservoir Status/.ipynb_checkpoints/south_africa_reservoir_master_12vars_mapped-checkpoint.csv",
+    "Groundwater Level Monitoring/.ipynb_checkpoints/section_10_1_complete_master_long_2000_2026-checkpoint.csv",
+    "Groundwater Reserve Assessment/.ipynb_checkpoints/11.1_hydrogeology_unified_timeseries-checkpoint.csv",
+    "Groundwater Reserve Assessment/.ipynb_checkpoints/11.2_recharge_discharge_unified_timeseries-checkpoint.csv",
+    "Groundwater Reserve Assessment/.ipynb_checkpoints/Untitled-checkpoint.ipynb",
+    "Runoff Status Monitoring/.ipynb_checkpoints/7.1_runoff_variables_master-checkpoint.csv",
+    "Runoff Status Monitoring/.ipynb_checkpoints/7.2_derived_runoff_indicators_master-checkpoint.csv",
+    "Runoff Status Monitoring/.ipynb_checkpoints/Untitled-checkpoint.ipynb",
+    "aesthetic-car-5il85ct1b3x5oqyd.jpg",
+    "backend/New folder (2) - Shortcut.lnk",
+    "backend/__pycache__/__init__.cpython-311.pyc",
+    "backend/__pycache__/compare_climate_sources.cpython-311.pyc",
+    "backend/__pycache__/test_all_models.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_all_models.cpython-311.pyc",
+    "backend/__pycache__/test_climate_performance.cpython-311.pyc",
+    "backend/__pycache__/test_dashboard_performance.cpython-311.pyc",
+    "backend/__pycache__/test_drought_monitoring.cpython-311.pyc",
+    "backend/__pycache__/test_full_suite.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_full_suite.cpython-311.pyc",
+    "backend/__pycache__/test_groundwater_performance.cpython-311.pyc",
+    "backend/__pycache__/test_groundwater_reserve_service.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_groundwater_reserve_service.cpython-311.pyc",
+    "backend/__pycache__/test_groundwater_service.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_groundwater_service.cpython-311.pyc",
+    "backend/__pycache__/test_kzn.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_kzn.cpython-311.pyc",
+    "backend/__pycache__/test_kzn_models.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_kzn_models.cpython-311.pyc",
+    "backend/__pycache__/test_kzn_one.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_kzn_one.cpython-311.pyc",
+    "backend/__pycache__/test_kzn_prep.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_kzn_prep.cpython-311.pyc",
+    "backend/__pycache__/test_kzn_slow.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_kzn_slow.cpython-311.pyc",
+    "backend/__pycache__/test_kzn_speed.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_kzn_speed.cpython-311.pyc",
+    "backend/__pycache__/test_prophet_speed.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_prophet_speed.cpython-311.pyc",
+    "backend/__pycache__/test_rainfall_performance.cpython-311.pyc",
+    "backend/__pycache__/test_rainfall_service.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_rainfall_service.cpython-311.pyc",
+    "backend/__pycache__/test_reservoir_service.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_reservoir_service.cpython-311.pyc",
+    "backend/__pycache__/test_runoff_service.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_runoff_service.cpython-311.pyc",
+    "backend/__pycache__/test_sarima_regression.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_sarima_regression.cpython-311.pyc",
+    "backend/__pycache__/test_sarima_single.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_sarima_single.cpython-311.pyc",
+    "backend/__pycache__/test_sarima_speed.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_sarima_speed.cpython-311.pyc",
+    "backend/__pycache__/test_supabase_province_dataset.cpython-311.pyc",
+    "backend/__pycache__/test_surface_water_service.cpython-311.pyc",
+    "backend/__pycache__/test_vegetation_performance.cpython-311.pyc",
+    "backend/__pycache__/test_vegetation_service.cpython-311.pyc",
+    "backend/__pycache__/test_water_quality_service.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/test_water_quality_service.cpython-311.pyc",
+    "backend/__pycache__/tmp_forecast_test.cpython-311-pytest-9.1.1.pyc",
+    "backend/__pycache__/tmp_forecast_test.cpython-311.pyc",
+    "backend/__pycache__/tmp_start_training.cpython-311.pyc",
+    "backend/__pycache__/verify_climate_values.cpython-311.pyc",
+    "backend/__pycache__/verify_dashboard_performance.cpython-311.pyc",
+    "backend/__pycache__/verify_endpoints.cpython-311.pyc",
+    "backend/__pycache__/verify_regional_forecast.cpython-311.pyc",
+    "backend/__pycache__/verify_setup.cpython-311.pyc",
+    "backend/app/__pycache__/__init__.cpython-311.pyc",
+    "backend/app/__pycache__/climate_csv_source.cpython-311.pyc",
+    "backend/app/__pycache__/climate_service.cpython-311.pyc",
+    "backend/app/__pycache__/climate_source.cpython-311.pyc",
+    "backend/app/__pycache__/dashboard_loader.cpython-311.pyc",
+    "backend/app/__pycache__/dashboard_response_cache.cpython-311.pyc",
+    "backend/app/__pycache__/data_processing.cpython-311.pyc",
+    "backend/app/__pycache__/database.cpython-311.pyc",
+    "backend/app/__pycache__/drought_monitoring.cpython-311.pyc",
+    "backend/app/__pycache__/drought_source.cpython-311.pyc",
+    "backend/app/__pycache__/feature_engineering.cpython-311.pyc",
+    "backend/app/__pycache__/groundwater_reserve_service.cpython-311.pyc",
+    "backend/app/__pycache__/groundwater_service.cpython-311.pyc",
+    "backend/app/__pycache__/hydrology_dashboard.cpython-311.pyc",
+    "backend/app/__pycache__/hydrology_service.cpython-311.pyc",
+    "backend/app/__pycache__/main.cpython-311.pyc",
+    "backend/app/__pycache__/meteorological_service.cpython-311.pyc",
+    "backend/app/__pycache__/model_training.cpython-311.pyc",
+    "backend/app/__pycache__/multivariate_flask.cpython-311.pyc",
+    "backend/app/__pycache__/niwis_flask.cpython-311.pyc",
+    "backend/app/__pycache__/postgres_source.cpython-311.pyc",
+    "backend/app/__pycache__/rainfall_service.cpython-311.pyc",
+    "backend/app/__pycache__/reservoir_service.cpython-311.pyc",
+    "backend/app/__pycache__/runoff_service.cpython-311.pyc",
+    "backend/app/__pycache__/satellite_service.cpython-311.pyc",
+    "backend/app/__pycache__/schemas.cpython-311.pyc",
+    "backend/app/__pycache__/spatial_flask.cpython-311.pyc",
+    "backend/app/__pycache__/supabase_source.cpython-311.pyc",
+    "backend/app/__pycache__/surface_water_service.cpython-311.pyc",
+    "backend/app/__pycache__/training_worker.cpython-311.pyc",
+    "backend/app/__pycache__/trend_analysis.cpython-311.pyc",
+    "backend/app/__pycache__/vegetation_service.cpython-311.pyc",
+    "backend/app/__pycache__/water_quality_service.cpython-311.pyc",
+    "backend/app/forecasting/__pycache__/__init__.cpython-311.pyc",
+    "backend/app/forecasting/__pycache__/diagnostics.cpython-311.pyc",
+    "backend/app/forecasting/__pycache__/evaluator.cpython-311.pyc",
+    "backend/app/forecasting/__pycache__/features.cpython-311.pyc",
+    "backend/app/forecasting/__pycache__/forecaster.cpython-311.pyc",
+    "backend/app/forecasting/__pycache__/kzn_pipeline.cpython-311.pyc",
+    "backend/app/forecasting/__pycache__/models.cpython-311.pyc",
+    "backend/app/forecasting/__pycache__/preprocessing.cpython-311.pyc",
+    "backend/app/forecasting/__pycache__/validation.cpython-311.pyc",
+    "backend/app/multivariate/__pycache__/__init__.cpython-311.pyc",
+    "backend/app/multivariate/__pycache__/utils.cpython-311.pyc",
+    "backend/app/multivariate/analyses/__pycache__/__init__.cpython-311.pyc",
+    "backend/app/multivariate/analyses/__pycache__/additional.cpython-311.pyc",
+    "backend/app/multivariate/analyses/__pycache__/base.cpython-311.pyc",
+    "backend/app/multivariate/analyses/__pycache__/clustering.cpython-311.pyc",
+    "backend/app/multivariate/analyses/__pycache__/pca.cpython-311.pyc",
+    "backend/app/multivariate/analyses/__pycache__/registry.cpython-311.pyc",
+    "backend/app/multivariate/analyses/__pycache__/regression.cpython-311.pyc",
+    "backend/app/multivariate/core/__pycache__/__init__.cpython-311.pyc",
+    "backend/app/multivariate/core/__pycache__/assumptions.cpython-311.pyc",
+    "backend/app/multivariate/core/__pycache__/dataset_engine.cpython-311.pyc",
+    "backend/app/multivariate/core/__pycache__/type_detector.cpython-311.pyc",
+    "backend/scripts/__pycache__/force_models.cpython-311.pyc",
+    "backend/scripts/__pycache__/force_prophet.cpython-311.pyc",
+    "backend/scripts/__pycache__/run_prophet_train.cpython-311.pyc",
+    "backend/scripts/__pycache__/run_var_models.cpython-311.pyc",
+    "backend/tmp_forecast_test.py",
+    "backend/tmp_start_training.py",
+    "chris.json",
+    "csv's/.ipynb_checkpoints/hydrology-checkpoint.csv",
+    "csv's/.ipynb_checkpoints/mateological-checkpoint.csv",
+    "frontend/.tmp-vite.mjs",
+    "frontend/hydrology.png",
+    "frontend/output/debug-surface-loaded.png",
+    "frontend/output/debug-surface-start.png",
+    "frontend/output/groundwater-level-monitoring.png",
+    "frontend/output/province-labels-desktop.png",
+    "frontend/output/province-labels-mobile.png",
+    "frontend/output/province-labels-vegetation.png",
+    "frontend/output/surface-water-desktop.png",
+    "frontend/output/surface-water-mobile.png",
+    "frontend/public/csvs/hydrology.csv",
+    "frontend/public/csvs/mateological.csv",
+    "frontend/public/za_provinces.json",
+    "frontend/src/components/AnalysisChart.jsx",
+    "frontend/src/components/DataUpload.jsx",
+    "frontend/src/components/FeatureEngineering.jsx",
+    "frontend/src/components/ModelGuide.jsx",
+    "frontend/src/components/NIWISDashboard.jsx",
+    "frontend/src/components/ProvinceForecasting.jsx",
+    "frontend/src/components/SouthAfricaMap.jsx",
+    "frontend/src/lib/supabaseClient.js",
+    "frontend/src/niwis/mateoData.js",
+    "frontend/src/services/supabaseClient.js",
+    "frontend/vite-dev.err.log",
+    "frontend/vite-dev.log",
+    "hydrology_stations.json",
+    "scripts/__pycache__/audit_reservoir_data.cpython-311.pyc",
+    "tmp_css_snippet.css",
+    "tmp_hydro_inspect.py",
+    "tshwane.json",
+    "vegetation/.ipynb_checkpoints/5.1_primary_satellite_vegetation_variables_sansa_master-checkpoint.csv",
+    "vegetation/.ipynb_checkpoints/5.2_meteorological_drivers_saws_master-checkpoint.csv"
+  ],
+  "removed_bytes": 383044016,
+  "skipped": [],
+  "recovery_archive_bytes": 73311111,
+  "preserved_files_checked": 128,
+  "changed_preserved_files": [],
+  "removed_frontend_dependencies": [
+    "@supabase/supabase-js",
+    "plotly.js-dist-min",
+    "proj4",
+    "react-leaflet",
+    "react-simple-maps",
+    "xlsx"
+  ],
+  "dependency_changes": {
+    "method": "Offline package-lock-only uninstall; existing local node_modules preserved.",
+    "removed_lockfile_entries": 29,
+    "added_lockfile_entries": 0,
+    "retained_package_versions_changed": []
+  },
+  "verification": {
+    "import_audit": {
+      "frontend_files": 63,
+      "backend_files": 55,
+      "unresolved_imports": [],
+      "frontend_files_outside_graph": [],
+      "backend_files_outside_graph": []
+    },
+    "backend_unit_tests": {
+      "command": ".venv/Scripts/python.exe -B -m unittest test_dashboard_performance",
+      "passed": 8
+    },
+    "live_checks": {
+      "http_200": 5,
+      "checks": [
+        "/health",
+        "/spatial-api/api/health",
+        "/multivariate-api/api/health",
+        "/niwis-api/api/health",
+        "/api/openapi.json"
+      ],
+      "fastapi_openapi_paths": 75
+    },
+    "frontend_build": {
+      "command": "npm run build",
+      "passed": true,
+      "modules_transformed": 2527,
+      "warnings": [
+        "Existing large-chunk warnings for plotting/analysis bundles."
+      ]
+    },
+    "active_files_unchanged": 128,
+    "removed_paths_remaining": [],
+    "report_link_errors": [],
+    "backend_reload_regenerated_caches_removed": 42
+  }
+}

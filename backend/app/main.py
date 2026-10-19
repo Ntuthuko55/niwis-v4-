@@ -3,6 +3,7 @@ import uuid
 import threading
 import time
 import csv
+import asyncio
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
@@ -11,6 +12,9 @@ import pandas as pd
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Query
 import numpy as np
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
+from app.dashboard_response_cache import DashboardResponseCache
+from app.training_worker import submit_training, shutdown_training
 from fastapi.responses import StreamingResponse
 from starlette.middleware.wsgi import WSGIMiddleware
 
@@ -37,6 +41,18 @@ from app.trend_analysis import TrendAnalyzer
 from app.model_training import train_model
 from app.forecasting.kzn_pipeline import run_kzn_forecast
 from app.supabase_source import SupabaseSourceError, load_province_dataframe
+from app.meteorological_service import router as meteorological_router, history as meteorological_history
+from app.drought_monitoring import router as drought_monitoring_router
+from app.climate_service import router as climate_router
+from app.vegetation_service import router as vegetation_router
+from app.rainfall_service import router as rainfall_router
+from app.runoff_service import router as runoff_router
+from app.surface_water_service import router as surface_water_router
+from app.reservoir_service import router as reservoir_router
+from app.groundwater_service import router as groundwater_router
+from app.groundwater_reserve_service import router as groundwater_reserve_router
+from app.water_quality_service import router as water_quality_router
+from app.hydrology_dashboard import router as hydrology_dashboard_router
 from app.schemas import (
     AnalysisRequest, AnalysisResponse, DateColumnRequest, 
     ModelTrainingRequest, PreviewRequest, PreviewResponse, 
@@ -45,7 +61,8 @@ from app.schemas import (
     TrendAnalysisRequest, TrendAnalysisResponse, 
     ComparisonRequest, AvailableVariablesResponse,
     DashboardOverviewRequest, DashboardOverviewResponse,
-    ForecastingRequest, ForecastingResponse
+    ForecastingRequest, ForecastingResponse, DashboardForecastRequest,
+    DashboardDatasetRequest
 )
 from app.spatial_flask import app as spatial_app
 from app.multivariate_flask import app as multivariate_app
@@ -68,6 +85,26 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(DashboardResponseCache)
+app.add_middleware(GZipMiddleware, minimum_size=1500, compresslevel=4)
+
+
+@app.on_event('shutdown')
+def stop_training_workers():
+    shutdown_training()
+
+app.include_router(meteorological_router)
+app.include_router(drought_monitoring_router)
+app.include_router(climate_router)
+app.include_router(vegetation_router)
+app.include_router(rainfall_router)
+app.include_router(runoff_router)
+app.include_router(surface_water_router)
+app.include_router(reservoir_router)
+app.include_router(groundwater_router)
+app.include_router(groundwater_reserve_router)
+app.include_router(water_quality_router)
+app.include_router(hydrology_dashboard_router)
 
 # The Flask data-analysis applications are mounted inside this FastAPI server.
 # They are available under their own API prefixes, so only this one backend process is needed.
@@ -75,82 +112,57 @@ app.mount("/spatial-api", WSGIMiddleware(spatial_app))
 app.mount("/multivariate-api", WSGIMiddleware(multivariate_app))
 app.mount("/niwis-api", WSGIMiddleware(niwis_app))
 
-# District centroids used to place the satellite-monitoring regions on the
-# national map.  The CSV is district-level rather than point-station data.
-SATELLITE_CENTROIDS = {
-    "alfred nzo": (29.3, -30.7), "amajuba": (30.0, -27.7), "amathole": (27.0, -32.0),
-    "bojanala": (27.2, -25.2), "buffalo city": (27.9, -33.0), "cape town": (18.5, -33.9),
-    "cape winelands": (19.3, -33.5), "capricorn": (29.4, -23.8), "central karoo": (22.5, -32.7),
-    "chris hani": (26.5, -31.5), "dr kenneth kaunda": (26.7, -26.8), "dr ruth segomotsi mompati": (25.0, -26.8),
-    "eden": (22.2, -34.0), "ehlanzeni": (31.0, -25.4), "ekurhuleni": (28.3, -26.2),
-    "ethekwini": (31.0, -29.8), "fezile dabi": (27.8, -27.2), "frances baard": (24.7, -28.6),
-    "gert sibande": (30.0, -27.1), "ilembe": (31.2, -29.2), "joe gqabi": (27.5, -30.5),
-    "johannesburg": (28.0, -26.2), "john taolo gaetsewe": (23.3, -27.7), "lejweleputswa": (26.5, -28.1),
-    "mangaung": (26.2, -29.1), "mopani": (30.5, -23.5), "namakwa": (19.4, -30.2),
-    "nelson mandela bay": (25.5, -33.9), "ngaka modiri molema": (25.6, -26.5), "nkangala": (29.2, -25.3),
-    "ortambo": (28.4, -31.6), "overberg": (20.3, -34.3), "pixley ka seme": (24.3, -30.4),
-    "sarah baartman": (24.8, -33.2), "sedibeng": (28.0, -26.7), "sekhukhune": (30.1, -24.8),
-    "sisonke": (29.7, -30.4), "thabo mofutsanyane": (28.5, -28.5), "tshwane": (28.2, -25.8),
-    "ugu": (30.5, -30.3), "umgungundlovu": (30.3, -29.6), "umkhanyakude": (32.3, -27.7),
-    "umzinyathi": (30.4, -28.5), "uthukela": (29.7, -28.6), "uthungulu": (31.5, -28.7),
-    "vhembe": (30.5, -22.9), "waterberg": (27.9, -24.4), "west coast": (18.4, -32.0),
-    "west rand": (27.7, -26.2), "xhariep": (25.1, -30.2), "z f mgcawu": (21.8, -28.4), "zululand": (31.0, -27.0),
-}
+from app.satellite_service import stations as satellite_stations, history as satellite_history
+from app.satellite_service import forecast_source as satellite_forecast_source
 
-@app.get("/satellite/stations")
-def get_satellite_stations():
-    """Return the latest observation for each district in csv's/satelite.csv."""
-    source = Path(__file__).resolve().parents[2] / "csv's" / "satelite.csv"
-    if not source.exists():
-        raise HTTPException(status_code=404, detail=f"Satellite source file was not found: {source}")
-    frame = pd.read_csv(source)
-    required = {"date", "district_name", "NDVI"}
-    if not required.issubset(frame.columns):
-        raise HTTPException(status_code=422, detail="Satellite CSV is missing required columns.")
-    frame["date"] = pd.to_datetime(frame["date"], errors="coerce")
-    latest = frame.loc[frame["date"] == frame["date"].max()].copy()
-    latest["district_name"] = latest["district_name"].str.strip().str.lower()
-    latest = latest[latest["district_name"].isin(SATELLITE_CENTROIDS)]
-    numeric_columns = ["NDVI", "LST", "NDWI", "VCI", "TCI", "VHI", "rootzone_soil_moisture", "surface_soil_moisture", "surface_water_extent_km2", "GRACE_TWS"]
-    stations = []
-    for row in latest.to_dict("records"):
-        lon, lat = SATELLITE_CENTROIDS[row["district_name"]]
-        stations.append({
-            "name": row["district_name"].title(), "lon": lon, "lat": lat,
-            **{column: float(row[column]) if pd.notna(row.get(column)) else None for column in numeric_columns},
-        })
-    return {"date": latest["date"].max().date().isoformat(), "station_count": len(stations), "stations": stations}
 
-@app.get("/satellite/history")
+@app.get('/satellite/forecast-source')
+def get_satellite_forecast_source(region: str = 'National'):
+    try:
+        return satellite_forecast_source(region)
+    except SupabaseSourceError as exc:
+        raise HTTPException(503, str(exc)) from exc
+
+
+@app.get('/satellite/stations')
+def get_satellite_stations(date: Optional[str] = Query(None)):
+    try:
+        return satellite_stations(date)
+    except SupabaseSourceError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@app.get('/satellite/history')
 def get_satellite_history(district: str = Query(..., min_length=1)):
-    """Return the complete satellite time series for one displayed district."""
-    source = Path(__file__).resolve().parents[2] / "csv's" / "satelite.csv"
-    if not source.exists():
-        raise HTTPException(status_code=404, detail="Satellite source file was not found.")
-    frame = pd.read_csv(source)
-    key = "".join(char for char in district.lower() if char.isalnum())
-    frame["district_key"] = frame["district_name"].astype(str).str.lower().str.replace(r"[^a-z0-9]", "", regex=True)
-    rows = frame.loc[frame["district_key"] == key].copy().sort_values("date")
-    if rows.empty:
-        raise HTTPException(status_code=404, detail="District not found in satellite CSV.")
-    fields = ["date", "NDVI", "LST", "NDWI", "VCI", "TCI", "VHI", "rootzone_soil_moisture", "surface_soil_moisture", "surface_water_extent_km2", "GRACE_TWS"]
-    return {"district": rows.iloc[0]["district_name"].title(), "history": [{field: (str(row[field]) if field == "date" else float(row[field])) for field in fields} for row in rows[fields].to_dict("records")]}
+    try:
+        return satellite_history(district)
+    except SupabaseSourceError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
 
-from app.hydrology_service import get_all_stations, get_district_hydrology_history
+
+from app.hydrology_service import get_all_stations, get_district_hydrology_history, get_hydrology_dataset
 
 @app.get("/hydrology/stations")
-def get_hydrology_stations(date: Optional[str] = Query("2025-08-01")):
-    """Return station summaries and latest indicators for all 52 districts in csv's/hydrology.csv."""
+def get_hydrology_stations(date: Optional[str] = Query(None)):
+    """Return station summaries and latest indicators for all 52 districts in Supabase hydrological_drought_master."""
     try:
-        return get_all_stations(target_date=date or "2025-08-01")
+        return get_all_stations(target_date=date)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
 @app.get("/hydrology/history")
-def get_hydrology_history(district: str = Query(..., min_length=1), date: Optional[str] = Query("2025-08-01")):
+def get_hydrology_history(district: str = Query(..., min_length=1), date: Optional[str] = Query(None)):
     """Return complete hydrological time series, FDC, groundwater, runoff and insights for one district."""
     try:
-        return get_district_hydrology_history(district_name=district, target_date=date or "2025-08-01")
+        return get_district_hydrology_history(district_name=district, target_date=date)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+@app.get("/hydrology/dataset")
+def get_hydrology_full_dataset():
+    """Return all database hydrological observations so the dashboard can filter by district_name client-side."""
+    try:
+        return get_hydrology_dataset()
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
@@ -232,6 +244,79 @@ async def load_province_dataset(province_id: str):
         row_count=len(df), sheet_names=None, current_sheet=None,
         inferred_time_columns=inferred_time_columns, index_column=index_column,
         dataset_summary=DATASETS[dataset_id]['dataset_summary'],
+    )
+
+
+@app.post('/meteorological/load', response_model=UploadResponse)
+def load_meteorological_dataset(region: str = Query(..., min_length=1)):
+    """Register the selected region's observations for the existing training studio."""
+    rows = meteorological_history(region)['history']
+    if not rows:
+        raise HTTPException(status_code=404, detail='No observations found for this region')
+    raw_df = pd.DataFrame(rows).drop(columns=['id', 'year', 'month'], errors='ignore')
+    df, inferred_time_columns, index_column = clean_dataset(raw_df)
+    dataset_id = str(uuid.uuid4())
+    summary = get_dataset_summary(raw_df, inferred_time_columns)
+    DATASETS[dataset_id] = {
+        'df': df, 'filename': f'supabase:meteorological:{region}',
+        'sheet_names': None, 'current_sheet': None,
+        'inferred_time_columns': inferred_time_columns, 'index_column': index_column,
+        'dataset_summary': summary, 'region': region,
+    }
+    return UploadResponse(
+        dataset_id=dataset_id, columns=get_columns(df), preview=get_preview(df, rows=10),
+        row_count=len(df), sheet_names=None, current_sheet=None,
+        inferred_time_columns=inferred_time_columns, index_column=index_column,
+        dataset_summary=summary,
+    )
+
+
+@app.post('/dashboard/dataset', response_model=UploadResponse)
+async def register_dashboard_dataset(request: DashboardDatasetRequest):
+    """Register dashboard rows in the same in-memory dataset registry used by /models/train.
+
+    Dashboard APIs already apply their source filtering and aggregation.  This
+    endpoint only normalizes those returned rows server-side before handing the
+    dataset to the existing forecasting engine; it never accepts database
+    credentials or calls a client-supplied table name.
+    """
+    if not request.rows:
+        raise HTTPException(status_code=422, detail='The selected dashboard has no observations to forecast.')
+    if len(request.rows) > 100_000:
+        raise HTTPException(status_code=413, detail='The dashboard history is too large to register in one request.')
+    raw_df = pd.DataFrame(request.rows)
+    if request.date_column not in raw_df.columns:
+        raise HTTPException(status_code=422, detail=f"Date column '{request.date_column}' was not found in dashboard rows.")
+    try:
+        df, inferred_time_columns, index_column = clean_dataset(raw_df, request.date_column)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    if index_column is None:
+        raise HTTPException(status_code=422, detail='The dashboard history did not contain a usable date column.')
+    dataset_id = str(uuid.uuid4())
+    summary = get_dataset_summary(raw_df, inferred_time_columns)
+    DATASETS[dataset_id] = {
+        'df': df,
+        'filename': f"dashboard:{request.dashboard}:{request.region or 'National'}",
+        'sheet_names': None,
+        'current_sheet': None,
+        'inferred_time_columns': inferred_time_columns,
+        'index_column': index_column,
+        'dataset_summary': summary,
+        'dashboard': request.dashboard,
+        'region': request.region,
+    }
+    return UploadResponse(
+        dataset_id=dataset_id,
+        columns=get_columns(df),
+        preview=get_preview(df, rows=10),
+        row_count=len(df),
+        sheet_names=None,
+        current_sheet=None,
+        inferred_time_columns=inferred_time_columns,
+        index_column=index_column,
+        dataset_summary=summary,
+        source='dashboard',
     )
 
 
@@ -363,36 +448,36 @@ async def set_date_column(request: DateColumnRequest):
 
 def _run_training_job(job_id: str, dataset_id: str, config: dict):
     job = TRAINING_JOBS[job_id]
+    stop_progress = threading.Event()
     try:
         job.update(status='running', progress=5, message='Preparing and cleaning the time series…', started_at=time.time())
 
         # Start a background progress smoother that increments progress
         # while the actual training work runs. This gives the UI feedback
         # so long-running models (Prophet, LSTM, Transformer) show activity.
-        stop_flag = {'stop': False}
 
         def _progress_worker():
             p = 10
-            while not stop_flag['stop'] and p < 95:
+            while not stop_progress.wait(2) and p < 95:
                 try:
                     p = min(95, p + (1 + int((100 - p) * 0.05)))
                     job.update(progress=p, message=f"Training {config.get('model_type','model').upper()}... ({p}%)")
                 except Exception:
                     pass
-                import time as _t
-                _t.sleep(2)
 
         import threading as _thr
         _thr.Thread(target=_progress_worker, daemon=True).start()
 
         job.update(progress=25, message=f"Training {config['model_type'].upper()} model…")
-        result = train_model(DATASETS[dataset_id]['df'], config)
+        result = submit_training(DATASETS[dataset_id]['df'].copy(deep=True), config).result()
 
         # Stop the smoother and finalize
-        stop_flag['stop'] = True
+        stop_progress.set()
         job.update(status='completed', progress=100, message='Training complete.', result=result, completed_at=time.time())
     except Exception as exc:
         job.update(status='failed', progress=100, message=str(exc), completed_at=time.time())
+    finally:
+        stop_progress.set()
 
 
 @app.post('/models/train', response_model=TrainingJobResponse)
@@ -438,7 +523,7 @@ async def training_status(job_id: str):
             return int(obj)
         return obj
 
-    return _json_safe(TRAINING_JOBS[job_id])
+    return _json_safe({**TRAINING_JOBS[job_id], 'job_id': job_id})
 
 
 def compute_analysis(df, analysis_type, column, params, group_by=None):
@@ -891,6 +976,98 @@ async def forecast_values(request: ForecastingRequest):
         )
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+
+
+def _dashboard_forecast_periodic(frame, date_column, target, model_type, periods, frequency):
+    """Forecast annual or monthly dashboard series without changing cadence."""
+    from app.forecasting.kzn_pipeline import (
+        arima_forecast, historic_average_forecast, naive_forecast,
+        seasonal_naive, window_average_forecast,
+    )
+
+    series = frame[[date_column, target]].copy()
+    series[date_column] = pd.to_datetime(series[date_column], errors='coerce')
+    series[target] = pd.to_numeric(series[target], errors='coerce')
+    series = series.dropna().sort_values(date_column)
+    if len(series) < 3:
+        raise ValueError('At least three annual observations are required for a forecast.')
+    values = pd.Series(series[target].astype(float).to_numpy(), index=series[date_column])
+    requested = str(model_type or 'auto').lower()
+    seasonal_period = 12 if frequency == 'monthly' else 5
+    selected = {'auto': 'seasonalnaive' if len(values) >= seasonal_period * 2 else 'windowaverage'}.get(requested, requested)
+    if selected == 'naive':
+        runner = naive_forecast
+    elif selected == 'historicaverage':
+        runner = historic_average_forecast
+    elif selected == 'windowaverage':
+        runner = lambda y, n: window_average_forecast(y, n, window=min(5, len(y)))
+    elif selected == 'seasonalnaive':
+        runner = lambda y, n: seasonal_naive(y, n, seasonal_period=min(seasonal_period, max(2, len(y) // 2)))
+    elif selected in {'arima', 'ar'}:
+        runner = arima_forecast
+    else:
+        selected = 'windowaverage'
+        runner = lambda y, n: window_average_forecast(y, n, window=min(5, len(y)))
+    periods = max(1, min(int(periods), 20))
+    test_count = min(max(1, len(values) // 5), 5)
+    train_values, test_values = values[:-test_count], values[-test_count:]
+    try:
+        prediction = np.asarray(runner(values, periods), dtype=float)
+        holdout = np.asarray(runner(train_values, test_count), dtype=float)
+    except Exception:
+        selected = 'windowaverage'
+        prediction = np.asarray(window_average_forecast(values, periods, window=min(5, len(values))), dtype=float)
+        holdout = np.asarray(window_average_forecast(train_values, test_count, window=min(5, len(train_values))), dtype=float)
+    residual = float(np.nanstd(test_values.to_numpy() - holdout)) if len(test_values) else 0.0
+    offset = pd.offsets.MonthEnd(1) if frequency == 'monthly' else pd.offsets.YearEnd(1)
+    date_frequency = 'ME' if frequency == 'monthly' else 'YE'
+    last_source_date = series[date_column].iloc[-1]
+    if frequency == 'monthly':
+        last_source_date = last_source_date + pd.offsets.MonthEnd(0)
+    future_dates = pd.date_range(last_source_date + offset, periods=periods, freq=date_frequency)
+    history_dates = [value.isoformat() for value in series[date_column]]
+    return {
+        'selected_model': selected, 'history_dates': history_dates,
+        'history_values': [float(value) for value in values.to_numpy()],
+        'forecast_dates': [value.isoformat() for value in future_dates],
+        'forecast_values': [float(value) for value in prediction],
+        'lower_bound': [float(value - 1.96 * residual) for value in prediction],
+        'upper_bound': [float(value + 1.96 * residual) for value in prediction],
+        'metrics': {'mae': float(np.mean(np.abs(test_values.to_numpy() - holdout))), 'rmse': float(np.sqrt(np.mean((test_values.to_numpy() - holdout) ** 2))), 'training_points': len(values)},
+        'warnings': [f'{frequency.title()} source values are forecast at their native cadence; no interpolation was applied.'],
+    }
+
+
+@app.post('/dashboard/forecast')
+async def dashboard_forecast(request: DashboardForecastRequest):
+    """Run the forecasting studio against a dashboard's returned source series."""
+    if not request.rows:
+        raise HTTPException(status_code=422, detail='No dashboard observations are available for forecasting.')
+    if request.forecast_periods < 1 or request.forecast_periods > 60:
+        raise HTTPException(status_code=422, detail='Forecast horizon must be between 1 and 60 periods.')
+    frame = pd.DataFrame(request.rows)
+    required = [request.date_column, request.target]
+    missing = [column for column in required if column not in frame.columns]
+    if missing:
+        raise HTTPException(status_code=422, detail=f'Missing forecast columns: {", ".join(missing)}')
+    try:
+        if request.frequency in {'annual', 'monthly'}:
+            result = _dashboard_forecast_periodic(frame, request.date_column, request.target, request.model_type, request.forecast_periods, request.frequency)
+        else:
+            numeric = [column for column in request.features if column in frame.columns and column != request.target]
+            config = {
+                'date_column': request.date_column, 'target': request.target,
+                'model_type': request.model_type, 'features': numeric,
+                'forecast_steps': max(1, int(request.forecast_periods * 30.437)),
+            }
+            result = await asyncio.to_thread(train_model, frame, config)
+            result['selected_model'] = result.get('selected_model') or result.get('model_type') or request.model_type
+            result.setdefault('warnings', [])
+        result['target'] = request.target
+        result['frequency'] = request.frequency
+        return result
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f'Forecast could not be fitted to this dashboard series: {exc}') from exc
 
 
 # ---------------------------------------------------------------------------

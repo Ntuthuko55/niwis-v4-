@@ -1,0 +1,98 @@
+import { chromium } from 'playwright'
+import assert from 'node:assert/strict'
+import { mkdir, readFile } from 'node:fs/promises'
+
+const browser = await chromium.launch({ channel: 'msedge', headless: true })
+const page = await browser.newPage({ viewport: { width: 1820, height: 1120 } })
+const errors = []
+page.on('pageerror', error => errors.push(error.message))
+let failData = false
+await page.route('**/api/**', async route => {
+  const url = new URL(route.request().url())
+  if (url.pathname.startsWith('/niwis-api/')) return route.fulfill({ json: { predictions: [] } })
+  if (url.pathname.includes('/drought-monitoring/')) return route.fulfill({ status: 503, json: { detail: 'Unrelated drought service excluded from rainfall check' } })
+  if (failData && url.pathname === '/api/rainfall/dashboard') return route.fulfill({ status: 503, json: { detail: 'Rainfall source unavailable for test' } })
+  try {
+    const response = await route.fetch({ url: `http://127.0.0.1:8011${url.pathname.replace(/^\/api/, '')}${url.search}`, timeout: 120000 })
+    await route.fulfill({ response })
+  } catch { await route.abort() }
+})
+try {
+  await page.goto('http://127.0.0.1:5179', { waitUntil: 'domcontentloaded' })
+  await page.locator('.nw-nav').getByRole('button', { name: /Rainfall status/ }).click()
+  await page.getByRole('heading', { name: 'Rainfall Status Monitoring', exact: true }).waitFor()
+  await page.getByRole('heading', { name: 'Satellite rainfall comparison', exact: true }).waitFor({ timeout: 120000 })
+  await page.getByRole('img', { name: 'Daily rainfall, CHIRPS daily chart' }).waitFor()
+  assert.equal(await page.getByLabel('Rainfall region').locator('option').count(), 53)
+  assert.equal(await page.locator('.rf-kpi').count(), 6)
+  assert.equal(await page.locator('.rf-index-strip>button').count(), 8)
+  assert.equal(await page.locator('.rf-map-panel .sat-district-map>svg>path').count(), 52)
+  assert.equal(await page.locator('.rf-map-panel .sat-district-map>svg>path[fill="#254251"]').count(), 0)
+  assert.equal(await page.getByLabel('Rainfall end month').inputValue(), '2026-08')
+  assert.ok((await page.locator('.rf-context').innerText()).includes('historical snapshot'))
+  await mkdir('output', { recursive: true })
+  await page.screenshot({ path: 'output/rainfall-desktop.png', fullPage: true })
+  console.log('PASS both rainfall sources, 52 mapped districts, eight drought indices and daily detail')
+
+  await page.getByLabel('Rainfall map indicator').selectOption('spi24')
+  await page.getByLabel('Rainfall drought index').selectOption('spei12')
+  await page.getByRole('img', { name: 'SPEI-12 chart', exact: true }).waitFor()
+  await page.getByRole('button', { name: 'Depth (mm)', exact: true }).click()
+  await page.getByRole('checkbox', { name: 'Compare previous year' }).uncheck()
+  assert.equal(await page.getByText('Same month previous year', { exact: true }).count(), 0)
+  await page.getByRole('checkbox', { name: 'Compare previous year' }).check()
+  await page.getByRole('button', { name: 'Reported intensity', exact: true }).click()
+  await page.getByRole('img', { name: 'Mean reported intensity chart', exact: true }).waitFor()
+  await page.getByRole('button', { name: 'Highest five', exact: true }).click()
+  const chosen = await page.locator('.rf-ranking strong').first().innerText()
+  await page.locator('.rf-ranking>button').first().click()
+  await page.waitForFunction(name => document.querySelector('.rf-context')?.textContent.includes(name), chosen)
+  assert.equal(await page.getByLabel('Rainfall region').inputValue(), chosen)
+  console.log('PASS map indicators, index selection, anomaly units, year comparison and ranking navigation')
+
+  await page.getByLabel('Rainfall region').selectOption('City of Tshwane')
+  await page.getByLabel('Rainfall start month').fill('2024-01')
+  await page.getByLabel('Rainfall end month').fill('2024-12')
+  await page.getByRole('button', { name: 'Apply filters', exact: true }).click()
+  await page.waitForFunction(() => document.querySelector('.rf-context')?.textContent.includes('City of Tshwane'))
+  const dailyResponse = page.waitForResponse(response => response.url().includes('/api/rainfall/daily?') && response.url().includes('month=2024-02'))
+  await page.getByLabel('Rainfall daily month').selectOption('2024-02')
+  const feb = await (await dailyResponse).json()
+  assert.equal(feb.series.length, 29)
+  assert.equal(feb.dekads.length, 3)
+  await page.getByRole('button', { name: 'Rainfall & CHIRPS', exact: true }).click()
+  const downloadPromise = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Export monthly data', exact: true }).click()
+  const file = await downloadPromise
+  const csv = await readFile(await file.path(), 'utf8')
+  assert.equal(csv.trim().split('\r\n').length, 13)
+  assert.ok(csv.includes('City of Tshwane'))
+  assert.ok(csv.includes('SPI-24 (index)'))
+  await page.locator('.rf-register summary').click()
+  assert.equal(await page.locator('.rf-register tbody tr').count(), 19)
+  await page.locator('.rf-register summary').click()
+  console.log('PASS selected region/year, leap-year daily detail, dekadal cadence and real monthly CSV export')
+
+  await page.getByLabel('Rainfall start month').fill('2026-09')
+  await page.getByLabel('Rainfall end month').fill('2026-09')
+  await page.getByRole('button', { name: 'Apply filters', exact: true }).click()
+  await page.locator('.rf-warning').waitFor()
+  assert.ok((await page.locator('.rf-warning').innerText()).includes('incomplete'))
+  assert.ok((await page.locator('.rf-season-status').innerText()).includes('Unavailable'))
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.screenshot({ path: 'output/rainfall-mobile.png', fullPage: true })
+  if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 2)) console.log('OVERFLOW', await page.evaluate(() => [...document.querySelectorAll('.rainfall-dashboard *')].filter(el => el.getBoundingClientRect().right > innerWidth + 2).slice(0, 15).map(el => ({ tag: el.tagName, class: el.getAttribute('class'), width: el.getBoundingClientRect().width, right: el.getBoundingClientRect().right }))))
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2), 'Mobile horizontal overflow')
+  failData = true
+  await page.getByRole('button', { name: 'Apply filters', exact: true }).click()
+  await page.getByRole('alert').getByText('Rainfall source unavailable for test').waitFor()
+  assert.equal(await page.locator('.rf-kpi').count(), 0)
+  failData = false
+  await page.getByRole('button', { name: 'Retry', exact: true }).click()
+  await page.locator('.rf-kpi').first().waitFor()
+  assert.deepEqual(errors, [])
+  console.log('PASS partial-month warnings, unavailable future season, mobile layout and source-error recovery; no JavaScript errors')
+} finally {
+  await browser.close()
+}

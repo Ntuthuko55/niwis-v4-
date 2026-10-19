@@ -123,11 +123,39 @@ def infer_time_columns(df: pd.DataFrame) -> List[str]:
     return time_columns
 
 
+def construct_year_month_date(df: pd.DataFrame) -> pd.DataFrame:
+    """Add a normalized ``date`` column when a source has year/month fields.
+
+    Many NIWIS files are monthly tables with numeric ``year`` and ``month``
+    columns rather than a timestamp.  Forecasting models require a real
+    datetime index, so construct the first day of each source month without
+    changing the original year/month columns.
+    """
+    normalized = {str(column).strip().casefold().replace('_', ''): column for column in df.columns}
+    if any(key in normalized for key in ('date', 'datetime', 'timestamp', 'period')):
+        return df
+    year_column = next((normalized[key] for key in ('year', 'yyyy') if key in normalized), None)
+    month_column = next((normalized[key] for key in ('month', 'mm') if key in normalized), None)
+    if not year_column or not month_column:
+        return df
+    years = pd.to_numeric(df[year_column], errors='coerce')
+    months = pd.to_numeric(df[month_column], errors='coerce')
+    parsed = pd.to_datetime(
+        pd.DataFrame({'year': years, 'month': months, 'day': 1}), errors='coerce'
+    )
+    if int(parsed.notna().sum()) < max(2, int(len(df) * 0.8)):
+        return df
+    result = df.copy()
+    result['date'] = parsed
+    return result
+
+
 def clean_dataset(df: pd.DataFrame, date_column: Optional[str] = None) -> tuple[pd.DataFrame, List[str], Optional[str]]:
     df = df.copy()
     df = df.dropna(how='all')
     df = df.drop_duplicates()
 
+    df = construct_year_month_date(df)
     inferred_time_columns = infer_time_columns(df)
     if date_column:
         if date_column not in df.columns:

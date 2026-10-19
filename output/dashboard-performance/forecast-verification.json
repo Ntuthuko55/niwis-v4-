@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "registrations": [
+    {
+      "region": "National",
+      "rows": 96
+    },
+    {
+      "region": "City of Tshwane",
+      "rows": 96
+    }
+  ],
+  "jobs": [
+    {
+      "model": "naive",
+      "horizon": 180,
+      "target": "Tavg_C"
+    },
+    {
+      "model": "naive",
+      "horizon": 180,
+      "target": "Tavg_C"
+    }
+  ],
+  "future_observations": 6,
+  "errors": []
+}

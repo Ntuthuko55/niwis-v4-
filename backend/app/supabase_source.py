@@ -18,6 +18,8 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 import pandas as pd
+from app.database import postgres_enabled
+from app.postgres_source import read_province_rows
 
 
 ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
@@ -152,6 +154,11 @@ def _cache_frame(key: str, frame: pd.DataFrame) -> None:
 
 def load_province_dataframe(province_id: str) -> pd.DataFrame:
     """Load the selected province from the project CSV, then fall back to Supabase."""
+    if postgres_enabled():
+        rows = read_province_rows(province_id)
+        if not rows:
+            raise SupabaseSourceError(f"No PostgreSQL records found for province '{province_id}'.")
+        return pd.DataFrame(rows).sort_values("date", kind="stable").reset_index(drop=True)
     local_cache_key = f"local-csv:{province_id}"
     cached = _fresh_cache_entry(_PROVINCE_CACHE, local_cache_key)
     if cached is not None:
@@ -253,6 +260,11 @@ def load_province_dataframe(province_id: str) -> pd.DataFrame:
 
 def load_latest_province_record(province_id: str) -> dict:
     """Read only the newest observation for a province (one indexed row)."""
+    if postgres_enabled():
+        rows = read_province_rows(province_id, latest=True)
+        if not rows:
+            raise SupabaseSourceError(f"No PostgreSQL records found for province '{province_id}'.")
+        return rows[0]
     base_url, key, table = _settings()
     table_url = f"{base_url}/rest/v1/{quote(table, safe='_')}"
     schema = _fresh_cache_entry(_SCHEMA_CACHE, table_url)

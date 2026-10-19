@@ -1,14 +1,14 @@
 """
 Hydrology service for NIWIS Hydrological Drought Monitoring.
-Reads strictly from csv's/hydrology.csv without any hardcoded/dummy values.
-All metrics, time series, flow duration curves, and indicators are computed directly from the CSV.
+Reads strictly from Supabase hydrological_drought_master without any hardcoded/dummy values.
+All metrics, time series, flow duration curves, and indicators are computed directly from the database.
 """
-from pathlib import Path
+from app.drought_source import read_rows, normalise_region
 from typing import Dict, Any, List, Optional
 import pandas as pd
 import numpy as np
 
-CSV_PATH = Path(__file__).resolve().parents[2] / "csv's" / "hydrology.csv"
+TABLE = "hydrological_drought_master"
 
 DISTRICT_PROVINCES = {
     "alfred nzo": "Eastern Cape", "amajuba": "KwaZulu-Natal", "amathole": "Eastern Cape",
@@ -51,21 +51,20 @@ CENTROIDS = {
     "west rand": (27.7, -26.2), "xhariep": (25.1, -30.2), "z f mgcawu": (21.8, -28.4), "zululand": (31.0, -27.0),
 }
 
-_CACHE: Dict[str, Any] = {}
-
 def norm_key(name: str) -> str:
-    return "".join(c for c in str(name).lower() if c.isalnum())
+    return normalise_region(str(name))
+
 
 def load_hydrology_data() -> pd.DataFrame:
-    if "df" not in _CACHE:
-        if not CSV_PATH.exists():
-            raise FileNotFoundError(f"Hydrology CSV not found: {CSV_PATH}")
-        df = pd.read_csv(CSV_PATH)
-        df["date_str"] = df["date"].astype(str)
-        df["date"] = pd.to_datetime(df["date"])
-        df["district_key"] = df["district_name"].apply(norm_key)
-        _CACHE["df"] = df
-    return _CACHE["df"]
+    rows = read_rows(TABLE, {'select': '*', 'order': 'district_name.asc,date.asc,id.asc'})
+    if not rows:
+        return pd.DataFrame(columns=['date', 'date_str', 'district_name', 'district_key'])
+    df = pd.DataFrame(rows)
+    df['date_str'] = df['date'].astype(str)
+    df['date'] = pd.to_datetime(df['date'])
+    df['district_key'] = df['district_name'].apply(norm_key)
+    return df
+
 
 def classify_drought(ssi: float) -> Dict[str, str]:
     if ssi <= -2.0:
@@ -86,11 +85,13 @@ def classify_drought(ssi: float) -> Dict[str, str]:
         return {"status": "Very Wet", "condition": "Very Wet", "tone": "success"}
 
 def get_all_stations(target_date: Optional[str] = None) -> Dict[str, Any]:
-    """Return latest actual CSV values for all 52 districts."""
+    """Return latest actual database values for all 52 districts."""
     df = load_hydrology_data()
+    if df.empty:
+        return {'source': TABLE, 'date': None, 'station_count': 0, 'available_dates': [], 'stations': []}
     if not target_date:
-        # Default to August 2025 or latest date
-        target_date = "2025-08-01" if "2025-08-01" in df["date_str"].values else df["date_str"].max()
+        # Default to the latest observation
+        target_date = df["date_str"].max()
 
     date_df = df[df["date_str"] == target_date]
     if date_df.empty:
@@ -107,7 +108,7 @@ def get_all_stations(target_date: Optional[str] = None) -> Dict[str, Any]:
         prov = DISTRICT_PROVINCES.get(k_lower, "South Africa")
         lon, lat = CENTROIDS.get(k_lower, (25.0, -29.0))
 
-        # Real row values from CSV
+        # Real row values from database
         q = float(row["river_discharge_m3_s"])
         ssi = float(row["ssi_dimensionless"])
         dam_storage = float(row["dam_storage_million_m3"])
@@ -118,7 +119,7 @@ def get_all_stations(target_date: Optional[str] = None) -> Dict[str, Any]:
         baseflow = float(row["baseflow_separation_m3_s"])
         fdc_p = float(row["fdc_percentiles_m3_s"])
 
-        # Historical monthly mean for this district from CSV
+        # Historical monthly mean for this district from database
         sub_dist = df[df["district_key"] == key]
         hist_month = sub_dist[sub_dist["date"].dt.month == target_month]
         hist_q_mean = float(hist_month["river_discharge_m3_s"].mean()) if not hist_month.empty else q
@@ -149,6 +150,7 @@ def get_all_stations(target_date: Optional[str] = None) -> Dict[str, Any]:
     available_dates = sorted(df["date_str"].unique().tolist())
 
     return {
+        "source": TABLE,
         "date": target_date,
         "station_count": len(stations),
         "available_dates": available_dates,
@@ -157,15 +159,22 @@ def get_all_stations(target_date: Optional[str] = None) -> Dict[str, Any]:
 
 def get_district_hydrology_history(district_name: str, target_date: Optional[str] = None) -> Dict[str, Any]:
     """
-    Returns complete time series and indicator analysis computed exclusively from csv's/hydrology.csv.
+    Returns complete time series and indicator analysis computed exclusively from Supabase hydrological_drought_master.
     Zero synthetic or hardcoded values.
     """
     df = load_hydrology_data()
     key = norm_key(district_name)
     sub = df[df["district_key"] == key].sort_values("date")
     if sub.empty:
-        key = norm_key("City of Tshwane")
-        sub = df[df["district_key"] == key].sort_values("date")
+        return {
+            "district": district_name,
+            "province": "South Africa",
+            "date": None,
+            "available_dates": [],
+            "metrics": {},
+            "records": [],
+            "error": f"No records for district: {district_name}",
+        }
 
     formal_name = sub.iloc[0]["district_name"]
     k_lower = formal_name.strip().lower()
@@ -173,10 +182,10 @@ def get_district_hydrology_history(district_name: str, target_date: Optional[str
 
     available_dates = sorted(sub["date_str"].unique().tolist())
     if not target_date or target_date not in available_dates:
-        # Default to August 2025 if present, otherwise latest date in CSV
-        target_date = "2025-08-01" if "2025-08-01" in available_dates else available_dates[-1]
+        # Default to the latest date in the database
+        target_date = available_dates[-1]
 
-    # Current selected row strictly from CSV
+    # Current selected row strictly from database
     curr_df = sub[sub["date_str"] == target_date]
     if curr_df.empty:
         curr_df = sub.iloc[[-1]]
@@ -184,7 +193,7 @@ def get_district_hydrology_history(district_name: str, target_date: Optional[str
     target_dt = r["date"]
     target_month = target_dt.month
 
-    # 1. Exact values from CSV
+    # 1. Exact values from database
     river_discharge = float(r["river_discharge_m3_s"])
     fdc_val = float(r["fdc_percentiles_m3_s"])
     ssi = float(r["ssi_dimensionless"])
@@ -197,7 +206,7 @@ def get_district_hydrology_history(district_name: str, target_date: Optional[str
     surface_runoff = float(r["surface_runoff_m3_s"])
     baseflow = float(r["baseflow_separation_m3_s"])
 
-    # 2. Historical comparison for this calendar month across all CSV records
+    # 2. Historical comparison for this calendar month across all database records
     hist_month_rows = sub[sub["date"].dt.month == target_month]
     hist_q_mean = float(hist_month_rows["river_discharge_m3_s"].mean())
     hist_runoff_mean = float(hist_month_rows["surface_runoff_m3_s"].mean())
@@ -219,14 +228,14 @@ def get_district_hydrology_history(district_name: str, target_date: Optional[str
         borehole_change_pct = 0.0
         sgi_change_pct = 0.0
 
-    # 4. Empirical percentiles from CSV discharge series
+    # 4. Empirical percentiles from database discharge series
     all_q = sub["river_discharge_m3_s"].values
     p10_flow = float(np.percentile(all_q, 10))
     p50_flow = float(np.percentile(all_q, 50))
     p10_change = ((river_discharge - p10_flow) / p10_flow * 100) if p10_flow > 0 else 0.0
     p50_change = ((river_discharge - p50_flow) / p50_flow * 100) if p50_flow > 0 else 0.0
 
-    # 5. Last 12 months chronological discharge series strictly from CSV
+    # 5. Last 12 months chronological discharge series strictly from database
     recent_12 = sub[sub["date"] <= target_dt].tail(12)
     river_discharge_12m = []
     for _, r_row in recent_12.iterrows():
@@ -243,7 +252,7 @@ def get_district_hydrology_history(district_name: str, target_date: Optional[str
             "range_max": float(m_mean + m_std),
         })
 
-    # 6. Flow Duration Curve computed directly from CSV
+    # 6. Flow Duration Curve computed directly from database
     sorted_all_q = np.sort(all_q)[::-1]
     n_all = len(sorted_all_q)
     recent_q_sorted = np.sort(recent_12["river_discharge_m3_s"].values)[::-1]
@@ -260,7 +269,7 @@ def get_district_hydrology_history(district_name: str, target_date: Optional[str
             "current": float(recent_q_sorted[idx_rec]),
         })
 
-    # 7. Last 6 months series strictly from CSV
+    # 7. Last 6 months series strictly from database
     recent_6 = sub[sub["date"] <= target_dt].tail(6)
     groundwater_6m = [
         {"date": row["date"].strftime("%Y-%m-%d"), "month": row["date"].strftime("%b"), "value": float(row["borehole_water_level_m_bgl"])}
@@ -282,7 +291,7 @@ def get_district_hydrology_history(district_name: str, target_date: Optional[str
     # 8. Drought Classification
     dclass = classify_drought(ssi)
 
-    # 9. All 11 Variables Table with raw CSV values
+    # 9. All 11 Variables Table with raw database values
     variables_table = [
         {
             "variable": "River Discharge",
@@ -428,9 +437,28 @@ def get_district_hydrology_history(district_name: str, target_date: Optional[str
         {"text": f"Maintain drought preparedness and water management measures in {formal_name} ({prov})."},
     ]
 
+    records = []
+    for rec in sub.to_dict("records"):
+        records.append({
+            "date": rec["date"].strftime("%Y-%m-%d") if hasattr(rec["date"], "strftime") else str(rec["date"])[:10],
+            "district_name": rec["district_name"],
+            "river_discharge_m3_s": _num(rec.get("river_discharge_m3_s")),
+            "ssi_dimensionless": _num(rec.get("ssi_dimensionless")),
+            "dam_inflow_m3_s": _num(rec.get("dam_inflow_m3_s")),
+            "dam_outflow_m3_s": _num(rec.get("dam_outflow_m3_s")),
+            "surface_runoff_m3_s": _num(rec.get("surface_runoff_m3_s")),
+            "baseflow_separation_m3_s": _num(rec.get("baseflow_separation_m3_s")),
+            "dam_storage_million_m3": _num(rec.get("dam_storage_million_m3")),
+            "dam_level_pct_fsc": _num(rec.get("dam_level_pct_fsc")),
+            "borehole_water_level_m_bgl": _num(rec.get("borehole_water_level_m_bgl")),
+            "sgi_dimensionless": _num(rec.get("sgi_dimensionless")),
+            "fdc_percentiles_m3_s": _num(rec.get("fdc_percentiles_m3_s")),
+        })
+
     return {
         "district": formal_name,
         "province": prov,
+        "source": TABLE,
         "date": target_date,
         "available_dates": available_dates,
         "metrics": {
@@ -471,4 +499,38 @@ def get_district_hydrology_history(district_name: str, target_date: Optional[str
             "trend": "Worsening" if ssi < -0.5 else "Improving" if ssi > 0.5 else "Stable",
             "confidence": "High",
         },
+        "records": records,
     }
+
+
+def _num(value):
+    if value is None or (isinstance(value, float) and np.isnan(value)):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def get_hydrology_dataset() -> Dict[str, Any]:
+    """Return every hydrological_drought_master row for client-side district filtering."""
+    df = load_hydrology_data().sort_values(["district_name", "date"])
+    records = []
+    for rec in df.to_dict("records"):
+        records.append({
+            "date": rec["date"].strftime("%Y-%m-%d") if hasattr(rec["date"], "strftime") else str(rec["date"])[:10],
+            "district_name": rec["district_name"],
+            "river_discharge_m3_s": _num(rec.get("river_discharge_m3_s")),
+            "ssi_dimensionless": _num(rec.get("ssi_dimensionless")),
+            "dam_inflow_m3_s": _num(rec.get("dam_inflow_m3_s")),
+            "dam_outflow_m3_s": _num(rec.get("dam_outflow_m3_s")),
+            "surface_runoff_m3_s": _num(rec.get("surface_runoff_m3_s")),
+            "baseflow_separation_m3_s": _num(rec.get("baseflow_separation_m3_s")),
+            "dam_storage_million_m3": _num(rec.get("dam_storage_million_m3")),
+            "dam_level_pct_fsc": _num(rec.get("dam_level_pct_fsc")),
+            "borehole_water_level_m_bgl": _num(rec.get("borehole_water_level_m_bgl")),
+            "sgi_dimensionless": _num(rec.get("sgi_dimensionless")),
+            "fdc_percentiles_m3_s": _num(rec.get("fdc_percentiles_m3_s")),
+        })
+    districts = sorted({row["district_name"] for row in records})
+    return {"source": TABLE, "record_count": len(records), "districts": districts, "records": records}

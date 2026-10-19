@@ -1,0 +1,526 @@
+{
+  "file_bytes": 144552281,
+  "rows": 522686,
+  "columns": [
+    "district_id",
+    "district_name",
+    "province",
+    "dam_name",
+    "river",
+    "date",
+    "soil_moisture_m3_m3",
+    "rainfall_mm_day",
+    "evaporation_mm_day",
+    "runoff_mm_day",
+    "district_area_km2",
+    "water_area_km2",
+    "mean_ndwi",
+    "storage_volume_m3",
+    "pct_fsc",
+    "fsl_m_amsl",
+    "water_level_m_amsl",
+    "inflow_m3_s",
+    "seepage_m3_day",
+    "outflow_m3_s"
+  ],
+  "date_range": [
+    "2000-01-01 00:00:00",
+    "2026-12-31 00:00:00"
+  ],
+  "invalid_dates": 0,
+  "districts": 53,
+  "dams": 53,
+  "duplicates_district_date": 19724,
+  "nulls": {},
+  "numeric_profile": {
+    "soil_moisture_m3_m3": {
+      "min": 0.031599850604659,
+      "max": 0.3578477982183638,
+      "unique": 507937,
+      "constant_districts": 1
+    },
+    "rainfall_mm_day": {
+      "min": 0.0,
+      "max": 134.095,
+      "unique": 23147,
+      "constant_districts": 0
+    },
+    "evaporation_mm_day": {
+      "min": 4.25,
+      "max": 6.0,
+      "unique": 4,
+      "constant_districts": 0
+    },
+    "runoff_mm_day": {
+      "min": 6.029e-06,
+      "max": 38.058998064300006,
+      "unique": 18988,
+      "constant_districts": 0
+    },
+    "district_area_km2": {
+      "min": 1644.9314116272,
+      "max": 126836.3392145838,
+      "unique": 53,
+      "constant_districts": 0
+    },
+    "water_area_km2": {
+      "min": 52.5,
+      "max": 110.507315,
+      "unique": 114,
+      "constant_districts": 50
+    },
+    "mean_ndwi": {
+      "min": -0.538651305,
+      "max": 0.0001207649999999,
+      "unique": 23842,
+      "constant_districts": 43
+    },
+    "storage_volume_m3": {
+      "min": 251997542.5682762,
+      "max": 688270463.2737964,
+      "unique": 114,
+      "constant_districts": 50
+    },
+    "pct_fsc": {
+      "min": 42.96063450481745,
+      "max": 100.0,
+      "unique": 97,
+      "constant_districts": 50
+    },
+    "fsl_m_amsl": {
+      "min": 1200.0,
+      "max": 1200.0,
+      "unique": 1,
+      "constant_districts": 51
+    },
+    "water_level_m_amsl": {
+      "min": 1197.1480317252408,
+      "max": 1200.0,
+      "unique": 97,
+      "constant_districts": 50
+    },
+    "inflow_m3_s": {
+      "min": 0.0071513090052841,
+      "max": 4953.629475974458,
+      "unique": 19041,
+      "constant_districts": 0
+    },
+    "seepage_m3_day": {
+      "min": 5.5,
+      "max": 5.594761742849471,
+      "unique": 20,
+      "constant_districts": 50
+    },
+    "outflow_m3_s": {
+      "min": 0.01,
+      "max": 4953.626952826309,
+      "unique": 19181,
+      "constant_districts": 0
+    }
+  },
+  "mappings": [
+    {
+      "district_id": "D001",
+      "district_name": "Alfred Nzo",
+      "province": "Eastern Cape",
+      "dam_name": "Alfred Nzo Reservoir (GDW_794) / Alfred Nzo Reservoir (GDW_796)",
+      "river": "Alfred Nzo Catchment Drainage"
+    },
+    {
+      "district_id": "D002",
+      "district_name": "Amajuba",
+      "province": "KwaZulu-Natal",
+      "dam_name": "Amajuba Reservoir (GDW_23) / Amajuba Reservoir (GDW_302)",
+      "river": "Amajuba Catchment Drainage"
+    },
+    {
+      "district_id": "D003",
+      "district_name": "Amathole",
+      "province": "Eastern Cape",
+      "dam_name": "Amathole Reservoir (GDW_137) / Amathole Reservoir (GDW_139)",
+      "river": "Amathole Catchment Drainage"
+    },
+    {
+      "district_id": "D004",
+      "district_name": "Bojanala",
+      "province": "North West",
+      "dam_name": "Bojanala Reservoir (GDW_15) / Bojanala Reservoir (GDW_17)",
+      "river": "Bojanala Catchment Drainage"
+    },
+    {
+      "district_id": "D005",
+      "district_name": "Buffalo City",
+      "province": "Eastern Cape",
+      "dam_name": "Buffalo City Reservoir (GDW_141) / Buffalo City Reservoir (GDW_142)",
+      "river": "Buffalo City Catchment Drainage"
+    },
+    {
+      "district_id": "D006",
+      "district_name": "Cacadu",
+      "province": "Eastern Cape",
+      "dam_name": "Cacadu Reservoir (GDW_40) / Kouga Dam",
+      "river": "Cacadu Catchment Drainage"
+    },
+    {
+      "district_id": "D007",
+      "district_name": "Cape Winelands",
+      "province": "Western Cape",
+      "dam_name": "Cape Winelands Reservoir (GDW_41) / Brandvlei Dam",
+      "river": "Cape Winelands Catchment Drainage"
+    },
+    {
+      "district_id": "D008",
+      "district_name": "Capricorn",
+      "province": "Limpopo",
+      "dam_name": "Capricorn Reservoir (GDW_51) / Capricorn Reservoir (GDW_175)",
+      "river": "Capricorn Catchment Drainage"
+    },
+    {
+      "district_id": "D009",
+      "district_name": "Central Karoo",
+      "province": "Western Cape",
+      "dam_name": "Central Karoo Reservoir (GDW_131) / Central Karoo Reservoir (GDW_140)",
+      "river": "Central Karoo Catchment Drainage"
+    },
+    {
+      "district_id": "D010",
+      "district_name": "Chris Hani",
+      "province": "Eastern Cape",
+      "dam_name": "Chris Hani Reservoir (GDW_37) / Chris Hani Reservoir (GDW_38)",
+      "river": "Chris Hani Catchment Drainage"
+    },
+    {
+      "district_id": "D011",
+      "district_name": "City of Cape Town",
+      "province": "Western Cape",
+      "dam_name": "City of Cape Town Reservoir (GDW_155) / City of Cape Town Reservoir (GDW_156)",
+      "river": "City of Cape Town Catchment Drainage"
+    },
+    {
+      "district_id": "D012",
+      "district_name": "City of Johannesburg",
+      "province": "Gauteng",
+      "dam_name": "City of Johannesburg Reservoir (GDW_492) / City of Johannesburg Reservoir (GDW_494)",
+      "river": "City of Johannesburg Catchment Drainage"
+    },
+    {
+      "district_id": "D013",
+      "district_name": "City of Tshwane",
+      "province": "Gauteng",
+      "dam_name": "City of Tshwane Reservoir (GDW_73) / City of Tshwane Reservoir (GDW_74)",
+      "river": "City of Tshwane Catchment Drainage"
+    },
+    {
+      "district_id": "D014",
+      "district_name": "Dr Kenneth Kaunda",
+      "province": "North West",
+      "dam_name": "Dr Kenneth Kaunda Reservoir (GDW_87) / Dr Kenneth Kaunda Reservoir (GDW_89)",
+      "river": "Dr Kenneth Kaunda Catchment Drainage"
+    },
+    {
+      "district_id": "D015",
+      "district_name": "Dr Ruth Segomotsi Mompati",
+      "province": "North West",
+      "dam_name": "Bloemhof Dam / Dr Ruth Segomotsi Mompati Reservoir (GDW_24)",
+      "river": "Vaal River"
+    },
+    {
+      "district_id": "D016",
+      "district_name": "Eden",
+      "province": "Western Cape",
+      "dam_name": "Eden Reservoir (GDW_149) / Eden Reservoir (GDW_271)",
+      "river": "Eden Catchment Drainage"
+    },
+    {
+      "district_id": "D017",
+      "district_name": "Ehlanzeni",
+      "province": "Mpumalanga",
+      "dam_name": "Ehlanzeni Reservoir (GDW_14) / Ehlanzeni Reservoir (GDW_59)",
+      "river": "Ehlanzeni Catchment Drainage"
+    },
+    {
+      "district_id": "D018",
+      "district_name": "Ekurhuleni",
+      "province": "Gauteng",
+      "dam_name": "Ekurhuleni Reservoir (GDW_482) / Ekurhuleni Reservoir (GDW_501)",
+      "river": "Ekurhuleni Catchment Drainage"
+    },
+    {
+      "district_id": "D019",
+      "district_name": "Fezile Dabi",
+      "province": "Free State",
+      "dam_name": "Vaal Dam / Fezile Dabi Reservoir (GDW_22)",
+      "river": "Vaal River"
+    },
+    {
+      "district_id": "D020",
+      "district_name": "Frances Baard",
+      "province": "Northern Cape",
+      "dam_name": "Frances Baard Reservoir (GDW_647)",
+      "river": "Frances Baard Catchment Drainage"
+    },
+    {
+      "district_id": "D021",
+      "district_name": "Gert Sibande",
+      "province": "Mpumalanga",
+      "dam_name": "Heyshope Dam / Grootdraai Dam",
+      "river": "Assegaai River"
+    },
+    {
+      "district_id": "D022",
+      "district_name": "Joe Gqabi",
+      "province": "Eastern Cape",
+      "dam_name": "Joe Gqabi Reservoir (GDW_250) / Joe Gqabi Reservoir (GDW_251)",
+      "river": "Joe Gqabi Catchment Drainage"
+    },
+    {
+      "district_id": "D_UNMAPPED",
+      "district_name": "John Taolo Gaetsewe",
+      "province": "Northern Cape",
+      "dam_name": "John Taolo Gaetsewe Regional Reservoirs",
+      "river": "Regional Catchment Basin"
+    },
+    {
+      "district_id": "D024",
+      "district_name": "Lejweleputswa",
+      "province": "Free State",
+      "dam_name": "Lejweleputswa Reservoir (GDW_25) / Lejweleputswa Reservoir (GDW_27)",
+      "river": "Lejweleputswa Catchment Drainage"
+    },
+    {
+      "district_id": "D025",
+      "district_name": "Mangaung",
+      "province": "Free State",
+      "dam_name": "Mangaung Reservoir (GDW_114) / Mangaung Reservoir (GDW_118)",
+      "river": "Mangaung Catchment Drainage"
+    },
+    {
+      "district_id": "D026",
+      "district_name": "Mopani",
+      "province": "Limpopo",
+      "dam_name": "Mopani Reservoir (GDW_6) / Mopani Reservoir (GDW_7)",
+      "river": "Mopani Catchment Drainage"
+    },
+    {
+      "district_id": "D027",
+      "district_name": "Namakwa",
+      "province": "Northern Cape",
+      "dam_name": "Namakwa Reservoir (GDW_257) / Namakwa Reservoir (GDW_331)",
+      "river": "Namakwa Catchment Drainage"
+    },
+    {
+      "district_id": "D028",
+      "district_name": "Nelson Mandela Bay",
+      "province": "Eastern Cape",
+      "dam_name": "Nelson Mandela Bay Reservoir (GDW_277) / Nelson Mandela Bay Reservoir (GDW_933)",
+      "river": "Nelson Mandela Bay Catchment Drainage"
+    },
+    {
+      "district_id": "D029",
+      "district_name": "Ngaka Modiri Molema",
+      "province": "North West",
+      "dam_name": "Ngaka Modiri Molema Reservoir (GDW_11) / Ngaka Modiri Molema Reservoir (GDW_68)",
+      "river": "Ngaka Modiri Molema Catchment Drainage"
+    },
+    {
+      "district_id": "D030",
+      "district_name": "Nkangala",
+      "province": "Mpumalanga",
+      "dam_name": "Nkangala Reservoir (GDW_12) / Nkangala Reservoir (GDW_16)",
+      "river": "Nkangala Catchment Drainage"
+    },
+    {
+      "district_id": "D031",
+      "district_name": "O.R.Tambo",
+      "province": "Eastern Cape",
+      "dam_name": "O.R.Tambo Reservoir (GDW_36) / O.R.Tambo Reservoir (GDW_830)",
+      "river": "O.R.Tambo Catchment Drainage"
+    },
+    {
+      "district_id": "D032",
+      "district_name": "Overberg",
+      "province": "Western Cape",
+      "dam_name": "Theewaterskloof Dam / Overberg Reservoir (GDW_150)",
+      "river": "Riviersonderend River"
+    },
+    {
+      "district_id": "D033",
+      "district_name": "Pixley ka Seme",
+      "province": "Northern Cape",
+      "dam_name": "Gariep Dam / Pixley ka Seme Reservoir (GDW_93)",
+      "river": "Orange River"
+    },
+    {
+      "district_id": "D034",
+      "district_name": "Sedibeng",
+      "province": "Gauteng",
+      "dam_name": "Sedibeng Reservoir (GDW_98) / Sedibeng Reservoir (GDW_320)",
+      "river": "Sedibeng Catchment Drainage"
+    },
+    {
+      "district_id": "D035",
+      "district_name": "Sekhukhune",
+      "province": "Limpopo",
+      "dam_name": "Sekhukhune Reservoir (GDW_10) / Sekhukhune Reservoir (GDW_186)",
+      "river": "Sekhukhune Catchment Drainage"
+    },
+    {
+      "district_id": "D036",
+      "district_name": "Sisonke",
+      "province": "KwaZulu-Natal",
+      "dam_name": "Sisonke Reservoir (GDW_742) / Sisonke Reservoir (GDW_743)",
+      "river": "Sisonke Catchment Drainage"
+    },
+    {
+      "district_id": "D_UNMAPPED",
+      "district_name": "Siyanda",
+      "province": "Northern Cape",
+      "dam_name": "Siyanda Regional Reservoirs",
+      "river": "Regional Catchment Basin"
+    },
+    {
+      "district_id": "D037",
+      "district_name": "Thabo Mofutsanyane",
+      "province": "Free State",
+      "dam_name": "Sterkfontein Dam / Thabo Mofutsanyane Reservoir (GDW_109)",
+      "river": "Nuwejaarspruit"
+    },
+    {
+      "district_id": "D_UNMAPPED",
+      "district_name": "Ugu",
+      "province": "KwaZulu-Natal",
+      "dam_name": "Ugu Regional Reservoirs",
+      "river": "Regional Catchment Basin"
+    },
+    {
+      "district_id": "D039",
+      "district_name": "Umgungundlovu",
+      "province": "KwaZulu-Natal",
+      "dam_name": "Umgungundlovu Reservoir (GDW_32) / Umgungundlovu Reservoir (GDW_34)",
+      "river": "Umgungundlovu Catchment Drainage"
+    },
+    {
+      "district_id": "D040",
+      "district_name": "Umkhanyakude",
+      "province": "KwaZulu-Natal",
+      "dam_name": "Umkhanyakude Reservoir (GDW_108) / Umkhanyakude Reservoir (GDW_616)",
+      "river": "Umkhanyakude Catchment Drainage"
+    },
+    {
+      "district_id": "D041",
+      "district_name": "Umzinyathi",
+      "province": "KwaZulu-Natal",
+      "dam_name": "Umzinyathi Reservoir (GDW_228) / Umzinyathi Reservoir (GDW_649)",
+      "river": "Umzinyathi Catchment Drainage"
+    },
+    {
+      "district_id": "D042",
+      "district_name": "Uthukela",
+      "province": "KwaZulu-Natal",
+      "dam_name": "Uthukela Reservoir (GDW_28) / Uthukela Reservoir (GDW_29)",
+      "river": "Uthukela Catchment Drainage"
+    },
+    {
+      "district_id": "D043",
+      "district_name": "Uthungulu",
+      "province": "KwaZulu-Natal",
+      "dam_name": "Uthungulu Reservoir (GDW_30) / Uthungulu Reservoir (GDW_686)",
+      "river": "Uthungulu Catchment Drainage"
+    },
+    {
+      "district_id": "D044",
+      "district_name": "Vhembe",
+      "province": "Limpopo",
+      "dam_name": "Vhembe Reservoir (GDW_5) / Vhembe Reservoir (GDW_47)",
+      "river": "Vhembe Catchment Drainage"
+    },
+    {
+      "district_id": "D045",
+      "district_name": "Waterberg",
+      "province": "Limpopo",
+      "dam_name": "Waterberg Reservoir (GDW_55) / Waterberg Reservoir (GDW_57)",
+      "river": "Waterberg Catchment Drainage"
+    },
+    {
+      "district_id": "D046",
+      "district_name": "West Coast",
+      "province": "Western Cape",
+      "dam_name": "West Coast Reservoir (GDW_132) / West Coast Reservoir (GDW_134)",
+      "river": "West Coast Catchment Drainage"
+    },
+    {
+      "district_id": "D047",
+      "district_name": "West Rand",
+      "province": "Gauteng",
+      "dam_name": "West Rand Reservoir (GDW_94) / West Rand Reservoir (GDW_524)",
+      "river": "West Rand Catchment Drainage"
+    },
+    {
+      "district_id": "D048",
+      "district_name": "Xhariep",
+      "province": "Free State",
+      "dam_name": "Xhariep Reservoir (GDW_122) / Xhariep Reservoir (GDW_242)",
+      "river": "Xhariep Catchment Drainage"
+    },
+    {
+      "district_id": "D049",
+      "district_name": "Z F Mgcawu",
+      "province": "Northern Cape",
+      "dam_name": "Z F Mgcawu Reservoir (GDW_120) / Z F Mgcawu Reservoir (GDW_205)",
+      "river": "Z F Mgcawu Catchment Drainage"
+    },
+    {
+      "district_id": "D050",
+      "district_name": "Zululand",
+      "province": "KwaZulu-Natal",
+      "dam_name": "Pongolapoort Dam (Jozini) / Zululand Reservoir (GDW_103)",
+      "river": "Phongolo River"
+    },
+    {
+      "district_id": "D051",
+      "district_name": "eThekwini",
+      "province": "KwaZulu-Natal",
+      "dam_name": "eThekwini Reservoir (GDW_124) / eThekwini Reservoir (GDW_243)",
+      "river": "eThekwini Catchment Drainage"
+    },
+    {
+      "district_id": "D052",
+      "district_name": "iLembe",
+      "province": "KwaZulu-Natal",
+      "dam_name": "iLembe Reservoir (GDW_1192) / iLembe Reservoir (GDW_1212)",
+      "river": "iLembe Catchment Drainage"
+    }
+  ],
+  "priority_matches": {
+    "Gariep": [
+      "Gariep Dam / Pixley ka Seme Reservoir (GDW_93)"
+    ],
+    "Vanderkloof": [],
+    "Sterkfontein": [
+      "Sterkfontein Dam / Thabo Mofutsanyane Reservoir (GDW_109)"
+    ],
+    "Vaal": [
+      "Vaal Dam / Fezile Dabi Reservoir (GDW_22)"
+    ],
+    "Theewaterskloof": [
+      "Theewaterskloof Dam / Overberg Reservoir (GDW_150)"
+    ],
+    "Katse": [],
+    "Pongolapoort": [
+      "Pongolapoort Dam (Jozini) / Zululand Reservoir (GDW_103)"
+    ],
+    "Bloemhof": [
+      "Bloemhof Dam / Dr Ruth Segomotsi Mompati Reservoir (GDW_24)"
+    ]
+  },
+  "inflow_minus_runoff_volume_rate": {
+    "min": -6.821210263296962e-13,
+    "max": 9.094947017729282e-13,
+    "mean": 1.2021614339545195e-16
+  },
+  "net_release_minus_seepage": {
+    "min": -251.62690194345376,
+    "max": 516.117355848997,
+    "mean": 231.0496974705626
+  }
+}

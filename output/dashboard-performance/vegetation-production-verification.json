@@ -1,0 +1,22 @@
+{
+  "mode": "production",
+  "early_map_milliseconds": 363,
+  "initial_ready_milliseconds": 641,
+  "district_milliseconds": 670,
+  "lag_milliseconds": 447,
+  "status": "passed",
+  "map_districts": 52,
+  "errors": [],
+  "checks": [
+    "early independent national map",
+    "district and lag reuse",
+    "map-month isolation",
+    "truthful period labels",
+    "CSV export and units",
+    "25 indicators",
+    "independent failures and retries",
+    "date filters and ranking selection",
+    "mobile layout",
+    "forecast remains deferred"
+  ]
+}

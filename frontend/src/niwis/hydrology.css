@@ -1,89 +1,150 @@
 /* ==========================================================================
-   NIWIS Hydrological Drought Monitoring Stylesheet
-   Designed to match the high-fidelity operational hydrological dashboard
+   NIWIS Hydrological Drought Monitoring — Premium Stylesheet
    ========================================================================== */
 
+
+/* ── Keyframes ─────────────────────────────────────────── */
+@keyframes hyd-pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(6,182,212,.55); }
+  70%  { box-shadow: 0 0 0 10px rgba(6,182,212,0); }
+  100% { box-shadow: 0 0 0 0 rgba(6,182,212,0); }
+}
+@keyframes hyd-float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+@keyframes hyd-shimmer {
+  0%   { background-position: -300px 0; }
+  100% { background-position: 300px 0; }
+}
+@keyframes hyd-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes hyd-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hyd-blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .4; }
+}
+@keyframes hyd-glow-pulse {
+  0%,100% { filter: drop-shadow(0 0 4px rgba(6,182,212,.6)); }
+  50%      { filter: drop-shadow(0 0 12px rgba(6,182,212,1)); }
+}
+@keyframes hyd-counter {
+  from { opacity: 0; transform: scale(.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Root ───────────────────────────────────────────────── */
 .hydro-container {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: #e2f0f8;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  padding: 4px 6px 32px;
-  background-color: transparent;
+  padding: 6px 8px 36px;
+  background: transparent;
+  animation: hyd-fade-up .4s ease both;
 }
 
-/* ---------------- Top Header Bar ---------------- */
+/* ── Header Bar ─────────────────────────────────────────── */
 .hydro-header-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #091d2c;
-  border: 1px solid #14384e;
-  border-radius: 8px;
-  padding: 10px 18px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(135deg, #071c2e 0%, #0a2540 50%, #0d2b46 100%);
+  border: 1px solid rgba(6,182,212,.25);
+  border-radius: 12px;
+  padding: 14px 22px;
+  box-shadow: 0 4px 32px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.hydro-header-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(6,182,212,.04) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: hyd-shimmer 4s linear infinite;
+  pointer-events: none;
 }
 
 .hydro-title-section {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
 }
 
 .hydro-icon-bubble {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #06b6d4 60%, #22d3ee 100%);
   color: #ffffff;
-  box-shadow: 0 0 14px rgba(6, 182, 212, 0.4);
+  box-shadow: 0 0 0 0 rgba(6,182,212,.55);
+  animation: hyd-pulse-ring 2.5s ease-out infinite, hyd-float 4s ease-in-out infinite;
+  flex-shrink: 0;
 }
 
 .hydro-title-text h2 {
   margin: 0;
-  font-size: 19px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
   color: #ffffff;
-  letter-spacing: -0.2px;
+  letter-spacing: -.4px;
+  line-height: 1.1;
 }
 
 .hydro-title-sub {
-  margin-top: 3px;
-  font-size: 11.5px;
-  color: #79a6be;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #7ab8d4;
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+  font-weight: 500;
+  letter-spacing: .03em;
 }
 
 .hydro-title-sub span {
-  color: #38bdf8;
-  opacity: 0.65;
+  color: rgba(6,182,212,.5);
 }
 
 .hydro-meta-section {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
 }
 
 .hydro-meta-item {
   display: flex;
   align-items: center;
-  gap: 9px;
-  background: #0d2638;
-  border: 1px solid #1a425c;
-  border-radius: 6px;
-  padding: 6px 12px;
+  gap: 10px;
+  background: rgba(6,182,212,.07);
+  border: 1px solid rgba(6,182,212,.18);
+  border-radius: 8px;
+  padding: 8px 14px;
+  backdrop-filter: blur(4px);
+  transition: border-color .2s, background .2s;
 }
 
-.hydro-meta-item .icon {
-  color: #38bdf8;
+.hydro-meta-item:hover {
+  border-color: rgba(6,182,212,.45);
+  background: rgba(6,182,212,.12);
 }
+
+.hydro-meta-item .icon { color: #06b6d4; }
 
 .hydro-meta-item .meta-col {
   display: flex;
@@ -91,117 +152,148 @@
 }
 
 .hydro-meta-item .meta-label {
-  font-size: 9.5px;
-  color: #7aa5bd;
+  font-size: 9px;
+  color: #7ab8d4;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: .7px;
+  font-weight: 600;
 }
 
 .hydro-meta-item .meta-val {
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 700;
   color: #ffffff;
+  margin-top: 1px;
 }
 
-/* ---------------- Location & Top KPI Strip ---------------- */
+/* ── KPI Strip ──────────────────────────────────────────── */
 .hydro-kpi-bar {
   display: grid;
-  grid-template-columns: 220px repeat(7, 1fr);
+  grid-template-columns: 230px repeat(6, 1fr);
   gap: 10px;
   align-items: stretch;
 }
 
+/* District Card */
 .hydro-district-card {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #0d273a;
-  border: 1px solid #1a4663;
-  border-radius: 8px;
-  padding: 10px 14px;
+  gap: 6px;
+  background: linear-gradient(160deg, #0d273a 0%, #0a1f30 100%);
+  border: 1px solid rgba(6,182,212,.28);
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.03);
   position: relative;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.hydro-district-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #0284c7, #06b6d4, #22d3ee);
+  border-radius: 10px 10px 0 0;
 }
 
 .hydro-district-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #38bdf8;
-  margin-bottom: 4px;
+  gap: 7px;
+  color: #06b6d4;
 }
 
 .hydro-district-head span {
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  font-weight: 600;
+  letter-spacing: .7px;
+  font-weight: 700;
 }
 
 .hydro-district-select-wrap select {
   width: 100%;
-  background: #071926;
-  border: 1px solid #235475;
-  border-radius: 5px;
+  background: rgba(2,6,12,.6);
+  border: 1px solid rgba(6,182,212,.3);
+  border-radius: 6px;
   color: #ffffff;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 4px 6px;
+  font-family: inherit;
+  padding: 5px 8px;
   cursor: pointer;
   outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  appearance: auto;
 }
 
 .hydro-district-select-wrap select:focus {
-  border-color: #38bdf8;
-  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+  border-color: #06b6d4;
+  box-shadow: 0 0 0 3px rgba(6,182,212,.2);
 }
 
 .hydro-district-sub {
-  margin-top: 4px;
-  font-size: 10.5px;
-  color: #78a3bc;
+  font-size: 10px;
+  color: #6b9db8;
+  font-weight: 500;
 }
 
+/* KPI Cell */
 .hydro-kpi-cell {
-  background: #092031;
-  border: 1px solid #153c55;
-  border-radius: 8px;
-  padding: 9px 10px;
+  background: linear-gradient(160deg, #0b2337 0%, #091b2b 100%);
+  border: 1px solid rgba(6,182,212,.14);
+  border-radius: 10px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  position: relative;
+  overflow: hidden;
+  animation: hyd-counter .35s ease both;
+}
+
+.hydro-kpi-cell::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(6,182,212,.35), transparent);
 }
 
 .hydro-kpi-cell:hover {
-  border-color: #2b6d96;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  border-color: rgba(6,182,212,.38);
+  box-shadow: 0 6px 20px rgba(6,182,212,.12), 0 2px 8px rgba(0,0,0,.3);
 }
 
 .hydro-kpi-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
 }
 
 .hydro-kpi-title {
-  font-size: 10.5px;
-  color: #8bb2c9;
-  font-weight: 500;
+  font-size: 10px;
+  color: #8bb8cc;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .hydro-kpi-icon {
-  color: #38bdf8;
-  opacity: 0.85;
+  color: #06b6d4;
+  opacity: .8;
+  flex-shrink: 0;
 }
 
 .hydro-kpi-val-row {
-  margin-top: 5px;
+  margin-top: 4px;
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -209,111 +301,143 @@
 }
 
 .hydro-kpi-val {
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: #ffffff;
+  letter-spacing: -.5px;
+  line-height: 1;
+  animation: hyd-counter .3s ease both;
 }
 
 .hydro-kpi-unit {
-  font-size: 10.5px;
-  color: #7da5bc;
-  font-weight: 400;
+  font-size: 10px;
+  color: #6fa0b8;
+  font-weight: 500;
 }
 
 .hydro-kpi-badge {
-  font-size: 10.5px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  padding: 2px 5px;
+  border-radius: 4px;
 }
 
 .hydro-kpi-badge.down-danger {
   color: #f87171;
+  background: rgba(248,113,113,.12);
 }
 
 .hydro-kpi-badge.up-success {
   color: #34d399;
-}
-
-.hydro-kpi-badge.down-warning {
-  color: #fbbf24;
+  background: rgba(52,211,153,.12);
 }
 
 .hydro-kpi-note {
-  margin-top: 3px;
+  margin-top: 4px;
   font-size: 9.5px;
-  color: #6992a8;
+  color: #5b849c;
+  font-weight: 500;
 }
 
-/* ---------------- 3-Row Grid System ---------------- */
+.hydro-nodata-text {
+  color: #4e7a94;
+  font-size: 12px;
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* ── 3-Column Panel Grid ────────────────────────────────── */
 .hydro-grid-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
-/* Generic Panel Container */
+/* Panel */
 .hydro-panel {
-  background: #092031;
-  border: 1px solid #163e58;
-  border-radius: 8px;
-  padding: 12px 14px;
+  background: linear-gradient(160deg, #0c2339 0%, #081c2e 100%);
+  border: 1px solid rgba(6,182,212,.13);
+  border-radius: 10px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
+  gap: 0;
+  box-shadow: 0 4px 18px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.03);
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  transition: border-color .2s;
+}
+
+.hydro-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(6,182,212,.25), transparent);
+}
+
+.hydro-panel:hover {
+  border-color: rgba(6,182,212,.25);
 }
 
 .hydro-panel-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid rgba(22, 62, 88, 0.6);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(6,182,212,.1);
 }
 
 .hydro-panel-title {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
-  color: #ffffff;
+  color: #e0f4fb;
   display: flex;
   align-items: center;
   gap: 6px;
+  letter-spacing: -.1px;
 }
 
 .hydro-panel-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .hydro-badge-toggle {
-  background: #071926;
-  border: 1px solid #235475;
+  background: rgba(6,182,212,.07);
+  border: 1px solid rgba(6,182,212,.2);
   border-radius: 4px;
-  padding: 2px 7px;
-  font-size: 9.5px;
-  color: #8ec5e6;
+  padding: 3px 8px;
+  font-size: 9px;
+  font-family: inherit;
+  font-weight: 700;
+  color: #80c8e0;
   cursor: pointer;
-  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  transition: all .15s ease;
 }
 
 .hydro-badge-toggle:hover,
 .hydro-badge-toggle.active {
-  background: #0284c7;
+  background: linear-gradient(135deg, #0284c7, #06b6d4);
   color: #ffffff;
-  border-color: #38bdf8;
+  border-color: #22d3ee;
+  box-shadow: 0 0 8px rgba(6,182,212,.4);
 }
 
-/* ---------------- Map Panel ---------------- */
+/* ── Map Panel ──────────────────────────────────────────── */
 .hydro-map-wrap {
   position: relative;
-  height: 250px;
-  background: radial-gradient(circle at 50% 50%, #0d2f47 0%, #071724 100%);
-  border: 1px solid #143b54;
-  border-radius: 6px;
+  height: 240px;
+  background: radial-gradient(ellipse at 50% 40%, #0d3350 0%, #050f1a 100%);
+  border: 1px solid rgba(6,182,212,.12);
+  border-radius: 8px;
   overflow: hidden;
   display: flex;
 }
@@ -321,7 +445,6 @@
 .hydro-map-svg-area {
   flex: 1;
   height: 100%;
-  position: relative;
 }
 
 .hydro-map-svg-area svg {
@@ -330,146 +453,65 @@
   display: block;
 }
 
-.hydro-map-legend-aside {
-  width: 130px;
-  background: rgba(7, 24, 37, 0.88);
-  border-left: 1px solid #143b54;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 9px;
-  color: #8fb8ce;
-  overflow-y: auto;
+/* ── Chart Canvas ───────────────────────────────────────── */
+.hydro-chart-canvas {
+  height: 175px;
+  width: 100%;
+  position: relative;
 }
 
-.hydro-legend-group strong {
-  display: block;
-  color: #e0f2fe;
-  font-size: 9.5px;
-  margin-bottom: 4px;
-}
-
-.hydro-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 2px;
-}
-
-.hydro-legend-color {
-  width: 10px;
-  height: 8px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-/* Compass & Scale */
-.hydro-map-decorations {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  pointer-events: none;
-}
-
-.hydro-compass {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #38bdf8;
-  font-size: 9px;
-  font-weight: 700;
-}
-
-.hydro-compass-arrow {
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 12px solid #38bdf8;
-  margin-top: 1px;
-}
-
-.hydro-scalebar {
-  display: flex;
-  flex-direction: column;
-  font-size: 8px;
-  color: #7da5bc;
-}
-
-.hydro-scale-ticks {
-  display: flex;
-  justify-content: space-between;
-  width: 100px;
-}
-
-.hydro-scale-line {
-  height: 3px;
-  width: 100px;
-  background: repeating-linear-gradient(to right, #e0f2fe 0, #e0f2fe 20px, #071926 20px, #071926 40px);
-  border: 1px solid #38bdf8;
-  border-radius: 1px;
-}
-
-/* ---------------- Charts Row 1 ---------------- */
 .hydro-chart-stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 8px;
-  background: #071b29;
-  border: 1px solid #14384e;
+  gap: 6px;
+  margin-top: 10px;
+  background: rgba(5,15,26,.6);
+  border: 1px solid rgba(6,182,212,.1);
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 7px 12px;
 }
 
 .hydro-stat-col small {
   display: block;
-  font-size: 9px;
-  color: #77a2ba;
+  font-size: 8.5px;
+  color: #6090a8;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 
 .hydro-stat-col strong {
   display: flex;
   align-items: baseline;
   gap: 4px;
-  font-size: 13px;
-  color: #ffffff;
-  margin-top: 2px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #e8f4fb;
 }
 
-.hydro-stat-col em {
-  font-size: 10px;
-  font-style: normal;
-}
-
-.hydro-stat-col em.down-danger {
-  color: #f87171;
-}
-
-.hydro-stat-col em.down-warning {
-  color: #fbbf24;
-}
-
-/* ---------------- Row 2: Status & Dual Charts ---------------- */
+/* ── Status Gauge Panel ─────────────────────────────────── */
 .hydro-status-wrap {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  height: 100%;
-  padding: 10px 0;
+  flex: 1;
+  padding: 8px 0 4px;
+  gap: 12px;
 }
 
 .hydro-donut-gauge {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.hydro-donut-gauge svg {
+  filter: drop-shadow(0 0 8px rgba(6,182,212,.3));
 }
 
 .hydro-gauge-text {
@@ -477,126 +519,61 @@
   text-align: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 1px;
 }
 
 .hydro-gauge-text .gauge-tag {
-  font-size: 11px;
-  font-weight: 700;
-  color: #7aa5bd;
+  font-size: 9px;
+  font-weight: 800;
+  color: #7ab8d4;
+  text-transform: uppercase;
+  letter-spacing: .6px;
 }
 
 .hydro-gauge-text .gauge-val {
-  font-size: 26px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 900;
   color: #ffffff;
-  line-height: 1.1;
+  line-height: 1;
+  letter-spacing: -1px;
 }
 
 .hydro-gauge-text .gauge-cond {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 9.5px;
+  font-weight: 700;
   color: #fbbf24;
 }
 
 .hydro-status-info {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  flex: 1;
 }
 
 .hydro-info-row small {
   display: block;
-  font-size: 9.5px;
-  color: #7ca4bc;
+  font-size: 9px;
+  color: #6090a8;
   text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 600;
 }
 
 .hydro-info-row strong {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 13.5px;
-  margin-top: 2px;
-}
-
-.hydro-info-row strong .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.hydro-info-row strong .dot.gold {
-  background: #fbbf24;
-  box-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
-}
-
-.hydro-info-row strong.worsening {
-  color: #f87171;
-}
-
-/* Dual Sub-Card Layout (Groundwater & Runoff) */
-.hydro-dual-subgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  height: 100%;
-}
-
-.hydro-sub-box {
-  background: #071b29;
-  border: 1px solid #14394f;
-  border-radius: 6px;
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.hydro-sub-box-head {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 4px;
-}
-
-.hydro-sub-box-head .sub-label {
-  font-size: 10.5px;
-  color: #8fb6cc;
-  font-weight: 500;
-}
-
-.hydro-sub-box-head .sub-val-row {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.hydro-sub-box-head .sub-val {
-  font-size: 14.5px;
+  font-size: 13px;
   font-weight: 700;
-  color: #ffffff;
+  margin-top: 2px;
+  color: #e0f2fe;
 }
 
-.hydro-sub-box-head .sub-delta {
-  font-size: 10px;
-  font-weight: 600;
-}
+.hydro-info-row strong.worsening { color: #f87171; }
 
-.hydro-sub-box-head .sub-delta.green {
-  color: #34d399;
-}
-
-.hydro-sub-box-head .sub-delta.red {
-  color: #f87171;
-}
-
-.hydro-spark-chart {
-  height: 90px;
-  width: 100%;
-}
-
-/* ---------------- Row 3: Table, Insights, Recommendations ---------------- */
+/* ── Bottom Row: Table ──────────────────────────────────── */
 .hydro-table-shell {
   width: 100%;
   overflow-x: auto;
@@ -605,114 +582,132 @@
 .hydro-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
+  font-size: 10.5px;
 }
 
 .hydro-table th {
   text-align: left;
-  padding: 6px 8px;
-  color: #79a5be;
-  font-weight: 600;
-  border-bottom: 1px solid #18425d;
-  font-size: 10px;
+  padding: 7px 10px;
+  color: #6090a8;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(6,182,212,.15);
+  font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: .5px;
 }
 
 .hydro-table td {
-  padding: 6px 8px;
-  border-bottom: 1px solid #102d41;
-  color: #ffffff;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(6,182,212,.07);
+  color: #e0f4fb;
+  font-weight: 500;
 }
 
 .hydro-table tr:hover td {
-  background: rgba(14, 43, 64, 0.4);
+  background: rgba(6,182,212,.05);
 }
 
 .hydro-tag-pill {
   display: inline-block;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: 99px;
-  font-size: 9.5px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .2px;
 }
 
 .hydro-tag-pill.warning {
-  background: rgba(251, 191, 36, 0.18);
+  background: rgba(251,191,36,.14);
   color: #fbbf24;
-  border: 1px solid rgba(251, 191, 36, 0.35);
+  border: 1px solid rgba(251,191,36,.3);
 }
 
 .hydro-tag-pill.danger {
-  background: rgba(248, 113, 113, 0.18);
+  background: rgba(248,113,113,.14);
   color: #f87171;
-  border: 1px solid rgba(248, 113, 113, 0.35);
+  border: 1px solid rgba(248,113,113,.3);
 }
 
 .hydro-tag-pill.success {
-  background: rgba(52, 211, 153, 0.18);
+  background: rgba(52,211,153,.14);
   color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.35);
+  border: 1px solid rgba(52,211,153,.3);
 }
 
 .hydro-tag-pill.info {
-  background: rgba(56, 189, 248, 0.18);
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(6,182,212,.14);
+  color: #22d3ee;
+  border: 1px solid rgba(6,182,212,.3);
 }
 
-/* Insights List */
+/* ── Insights & Alerts ──────────────────────────────────── */
 .hydro-insights-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 280px;
 }
 
 .hydro-insight-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-size: 11.5px;
-  line-height: 1.4;
+  padding: 9px 11px;
+  border-radius: 7px;
+  font-size: 11px;
+  line-height: 1.5;
+  font-weight: 500;
+  transition: transform .12s;
 }
 
+.hydro-insight-item:hover { transform: translateX(2px); }
+
 .hydro-insight-item.danger {
-  background: rgba(239, 68, 68, 0.12);
+  background: rgba(239,68,68,.1);
   border-left: 3px solid #ef4444;
   color: #fecaca;
 }
 
 .hydro-insight-item.warning {
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(245,158,11,.1);
   border-left: 3px solid #f59e0b;
   color: #fef3c7;
 }
 
 .hydro-insight-item.info {
-  background: rgba(234, 179, 8, 0.12);
-  border-left: 3px solid #eab308;
-  color: #fef08a;
+  background: rgba(6,182,212,.08);
+  border-left: 3px solid #06b6d4;
+  color: #cffafe;
 }
 
-/* Recommendations List */
+/* ── Recommendations ────────────────────────────────────── */
 .hydro-recom-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
+  flex: 1;
 }
 
 .hydro-recom-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 7px 10px;
-  border-radius: 6px;
-  background: #071c2a;
-  border: 1px solid #143b54;
-  font-size: 11.5px;
-  color: #e0f2fe;
+  padding: 8px 11px;
+  border-radius: 7px;
+  background: rgba(6,182,212,.05);
+  border: 1px solid rgba(6,182,212,.12);
+  font-size: 11px;
+  color: #cce7f4;
+  font-weight: 500;
+  line-height: 1.45;
+  transition: border-color .15s, background .15s;
+}
+
+.hydro-recom-item:hover {
+  border-color: rgba(6,182,212,.3);
+  background: rgba(6,182,212,.1);
 }
 
 .hydro-recom-item .check-icon {
@@ -721,83 +716,118 @@
   flex-shrink: 0;
 }
 
+/* Export Button */
 .hydro-btn-report {
-  margin-top: auto;
+  margin-top: 12px;
   align-self: flex-end;
-  background: #0284c7;
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
   color: #ffffff;
-  border: 1px solid #38bdf8;
-  border-radius: 6px;
-  padding: 7px 16px;
-  font-size: 11.5px;
-  font-weight: 600;
+  border: 1px solid rgba(56,189,248,.4);
+  border-radius: 7px;
+  padding: 8px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.15s ease;
+  transition: all .18s ease;
+  letter-spacing: .2px;
 }
 
 .hydro-btn-report:hover {
-  background: #0369a1;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+  box-shadow: 0 0 16px rgba(6,182,212,.45);
+  transform: translateY(-1px);
 }
 
-/* ---------------- Footer Status Bar ---------------- */
+.hydro-btn-report:active { transform: translateY(0); }
+
+/* ── Footer Strip ───────────────────────────────────────── */
 .hydro-footer-strip {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #081a27;
-  border: 1px solid #12344a;
-  border-radius: 6px;
-  padding: 8px 14px;
-  font-size: 11px;
-  color: #6d96ae;
+  background: rgba(5,12,22,.8);
+  border: 1px solid rgba(6,182,212,.1);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 10.5px;
+  color: #4e7a94;
+  font-weight: 500;
 }
 
 .hydro-footer-links {
   display: flex;
-  gap: 12px;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.hydro-footer-links strong {
+  color: #e0f4fb;
+  font-weight: 800;
+  font-size: 11px;
 }
 
 .hydro-footer-links span {
-  color: #2a5a78;
+  color: #2d5a76;
 }
 
 .hydro-system-online {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   color: #34d399;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
 }
 
-.hydro-system-online .online-dot {
+.online-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 8px #10b981;
+  box-shadow: 0 0 0 0 rgba(16,185,129,.6);
+  animation: hyd-pulse-ring 2s ease-out infinite;
+  display: inline-block;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1280px) {
+/* ── Loading & No-Data States ───────────────────────────── */
+.hydro-nodata {
+  color: #4e7a94;
+  font-size: 12px;
+  padding: 28px 16px;
+  text-align: center;
+  font-style: italic;
+}
+
+.nw-spin {
+  animation: hyd-spin 1s linear infinite;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 1400px) {
   .hydro-kpi-bar {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 200px repeat(3, 1fr);
+    grid-template-rows: auto auto;
   }
-  .hydro-grid-row {
-    grid-template-columns: 1fr;
+  .hydro-district-card { grid-row: 1 / 3; }
+}
+
+@media (max-width: 1200px) {
+  .hydro-kpi-bar {
+    grid-template-columns: 1fr 1fr 1fr;
   }
+  .hydro-district-card { grid-column: 1 / 4; grid-row: auto; }
+  .hydro-grid-row { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  .hydro-kpi-bar {
-    grid-template-columns: 1fr;
-  }
-  .hydro-header-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
+  .hydro-kpi-bar { grid-template-columns: 1fr; }
+  .hydro-header-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .hydro-meta-section { flex-wrap: wrap; }
 }

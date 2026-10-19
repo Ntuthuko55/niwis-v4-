@@ -1,0 +1,13 @@
+{
+  "national_seconds": 0.229,
+  "map_seconds": 0.019,
+  "district_seconds": 0.207,
+  "lag_seconds": 0.199,
+  "month_seconds": 0.012,
+  "forecast_seconds": 0.041,
+  "partial_seconds": 0.088,
+  "legacy_contract_seconds": 0.164,
+  "value_parity": "All 25 indicators and every returned chart, comparison, correlation, coverage, warning, national map and ranking match the captured legacy national/Tshwane API responses exactly. Forecast series matches chart values. Partial-month exclusions and default legacy map contract verified.",
+  "latest_daily_date": "2026-09-06",
+  "timing_context": "Final compact-cache reuse checks after the development browser run; these are warm local API timings."
+}

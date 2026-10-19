@@ -210,45 +210,37 @@ export const ROLES = [
 ]
 
 export const NAV = [
-  ['Situation', [
-    ['overview', 'Mateological drought', '1', true],
-    ['drought', 'Drought status', '2', true],
-    ['alerts', 'Alerts and early warning', '3', true],
-    ['studio', 'Analysis studio', '—', true],
-    ['satellite', '🛰️ Satellite & Remote Sensing Drought', '—', true],
-    ['hydrology', '💧 Hydrological Drought', '—', true],
-  ]],
   ['Monitoring', [
-    ['rainfall', 'Rainfall', '4', true],
-    ['vegetation', 'Vegetation condition', '5', false],
-    ['runoff', 'Runoff', '6', false],
-    ['dams', 'Dams and reservoirs', '7', false],
-    ['surface', 'Surface water network', '8', false],
-    ['groundwater', 'Groundwater', '9', false],
-    ['climate', 'Climate change', '10', true],
-  ]],
-  ['Compliance', [
-    ['quality', 'Water quality', '11', false],
-    ['bluedrop', 'Drinking water — Blue Drop', '12', false],
-    ['greendrop', 'Wastewater — Green Drop', '13', false],
-    ['rwqo', 'Resource quality objectives', '14', false],
-  ]],
-  ['Resources and people', [
-    ['balance', 'Water balance and transfers', '15', false],
-    ['services', 'Water services', '16', false],
-    ['tariffs', 'Raw water tariffs', '17', false],
-    ['settlements', 'Affected settlements', '18', false],
-  ]],
-  ['Intelligence', [
-    ['ai', 'Prediction engine', '19', true],
-    ['indices', 'Index workbench', '20', true],
+    ['monitoring', 'Drought', '1', false, [
+      ['monitoring', 'Drought Monitoring', '', false],
+      ['overview', 'Meteorological', '', false],
+      ['hydrology', 'Hydrological Drought', '', false],
+      ['satellite', 'Satellite & Remote Sensing', '', false],
+    ]],
+    ['climate', 'Climate', '2', false, [
+      ['climate', 'Climate Dashboard', '', false],
+      ['climate-temperature', 'Temperature Change Variables', '', false],
+      ['climate-spells', 'Wet and Dry Spell Variables', '', false],
+      ['climate-rainfall', 'Mean Annual Precipitation (MAP)', '', false],
+      ['climate-evaporation', 'Potential Evaporation Variables', '', false],
+      ['climate-irrigation', 'Irrigation Demand Variables', '', false],
+      ['climate-streamflow', 'Streamflow and Climate Linkage', '', false],
+    ]],
+    ['vegetation', 'Vegetation Condition Monitoring', '3', false],
+    ['rainfall', 'Rainfall Status Monitoring', '4', false],
+    ['runoff', 'Runoff Status Monitoring', '5', false],
+    ['surface', 'Surface Water Monitoring Network', '6', false],
+    ['groundwater', 'Groundwater Level Monitoring Network', '7', false],
+    ['groundwater-reserve', 'Groundwater Reserve Assessment', '8', false],
+    ['water-quality', 'Water Quality Monitoring Network', '9', false],
+    ['dams', 'Dam and Reservoir Status', '10', false],
   ]],
   ['Platform', [
-    ['pipeline', 'Data integration', '21', true],
-    ['governance', 'Data governance', '22', false],
-    ['api', 'Open data API', '23', false],
-    ['roadmap', 'Implementation roadmap', '24', true],
-    ['admin', 'Administration', '25', true],
+    ['admin', 'Administration', '', true],
+  ]],
+  ['Intelligence', [
+    ['studio', 'Analysis Studio', '', true],
+    ['ai', 'Prediction Engine', '', true],
   ]],
 ]
 

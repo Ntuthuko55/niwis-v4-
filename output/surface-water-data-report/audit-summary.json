@@ -1,0 +1,1185 @@
+{
+  "section_9_1_complete_unified_master_2000_2026.csv": {
+    "rows": 507728,
+    "districts": 52,
+    "duplicate_keys": 0,
+    "duplicate_rows": 0,
+    "missing_cells": 0,
+    "sha256": "794235a0ff614fbd5133b8c7b4c40ebf1c6415577be8a5c819de1a900d6ee9a0",
+    "start": "2000-01-01",
+    "end": "2026-09-24",
+    "dates": 9764
+  },
+  "section_9_2_catchment_characteristics_master.csv": {
+    "rows": 52,
+    "districts": 52,
+    "duplicate_keys": 0,
+    "duplicate_rows": 0,
+    "missing_cells": 0,
+    "sha256": "72b2743eced8bdea45de0d483ed9e10aad5536b0695c974e11fe4ffe98cebe29"
+  },
+  "section_9_3_sansa_earth_observation_master_2000_2026.csv": {
+    "rows": 16692,
+    "districts": 52,
+    "duplicate_keys": 0,
+    "duplicate_rows": 0,
+    "missing_cells": 0,
+    "sha256": "f87571d526974dfd6d943fa39ea4581cdf6456e3e1235d883b3f5e627b94ce2d",
+    "start": "2000-01-01",
+    "end": "2026-09-01",
+    "dates": 321
+  },
+  "hydro_cadence": {
+    "daily_mean_flow": {
+      "district_months": 16692,
+      "constant_within_month": 0,
+      "constant_within_district_entire_record": 0
+    },
+    "daily_sediment_load_t_day": {
+      "district_months": 16692,
+      "constant_within_month": 0,
+      "constant_within_district_entire_record": 0
+    },
+    "river_discharge_q": {
+      "district_months": 16692,
+      "constant_within_month": 16224,
+      "constant_within_district_entire_record": 0
+    },
+    "flow_velocity": {
+      "district_months": 16692,
+      "constant_within_month": 16692,
+      "constant_within_district_entire_record": 0
+    },
+    "stage_height": {
+      "district_months": 16692,
+      "constant_within_month": 16692,
+      "constant_within_district_entire_record": 0
+    },
+    "monthly_mean_flow": {
+      "district_months": 16692,
+      "constant_within_month": 16640,
+      "constant_within_district_entire_record": 0
+    },
+    "suspended_sediment_concentration": {
+      "district_months": 16692,
+      "constant_within_month": 16692,
+      "constant_within_district_entire_record": 0
+    },
+    "monthly_sediment_load_t_day": {
+      "district_months": 16692,
+      "constant_within_month": 16224,
+      "constant_within_district_entire_record": 0
+    },
+    "peak_instantaneous_flow": {
+      "district_months": 16692,
+      "constant_within_month": 16692,
+      "constant_within_district_entire_record": 0
+    },
+    "a_coeff": {
+      "district_months": 16692,
+      "constant_within_month": 16692,
+      "constant_within_district_entire_record": 52
+    },
+    "b_exponent": {
+      "district_months": 16692,
+      "constant_within_month": 16692,
+      "constant_within_district_entire_record": 52
+    },
+    "r_squared": {
+      "district_months": 16692,
+      "constant_within_month": 16692,
+      "constant_within_district_entire_record": 52
+    }
+  },
+  "identical_district_series": [
+    {
+      "dataset": "hydro_daily",
+      "variable": "r_squared",
+      "districts": [
+        "Alfred Nzo",
+        "Amajuba",
+        "Amathole",
+        "Bojanala",
+        "Buffalo City",
+        "Cacadu",
+        "Cape Winelands",
+        "Capricorn",
+        "Central Karoo",
+        "City of Cape Town",
+        "City of Johannesburg",
+        "City of Tshwane",
+        "Dr Kenneth Kaunda",
+        "Dr Ruth Segomotsi Mompati",
+        "Eden",
+        "Ekurhuleni",
+        "Fezile Dabi",
+        "Frances Baard",
+        "Greater Sekhukhune",
+        "John Taolo Gaetsewe",
+        "Lejweleputswa",
+        "Mangaung",
+        "Mopani",
+        "Namakwa",
+        "Ngaka Modiri Molema",
+        "Nkangala",
+        "O.R.Tambo",
+        "Overberg",
+        "Pixley Ka Seme",
+        "Sedibeng",
+        "Siyanda",
+        "Ugu",
+        "Umzinyathi",
+        "Uthungulu",
+        "Vhembe",
+        "Waterberg",
+        "West Coast",
+        "West Rand",
+        "Xhariep",
+        "Zululand",
+        "eThekwini",
+        "iLembe"
+      ],
+      "count": 42
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Alfred Nzo",
+        "Fezile Dabi",
+        "Lejweleputswa"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Bojanala",
+        "Capricorn",
+        "Eden"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Buffalo City",
+        "Ehlanzeni",
+        "Mopani",
+        "iLembe"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Cacadu",
+        "City of Cape Town"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Cape Winelands",
+        "Sedibeng"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Central Karoo",
+        "Umzinyathi"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "City of Tshwane",
+        "Dr Ruth Segomotsi Mompati",
+        "Overberg"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Dr Kenneth Kaunda",
+        "Greater Sekhukhune"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Mangaung",
+        "Ugu",
+        "eThekwini"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Nelson Mandela Bay",
+        "Waterberg"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Nkangala",
+        "Sisonke",
+        "Uthungulu"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Pixley Ka Seme",
+        "Siyanda"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "surface_water_extent_km2",
+      "districts": [
+        "Vhembe",
+        "West Coast"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Alfred Nzo",
+        "Eden"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Amathole",
+        "Xhariep"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Cacadu",
+        "Nelson Mandela Bay"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Cape Winelands",
+        "City of Tshwane",
+        "John Taolo Gaetsewe",
+        "West Coast"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Capricorn",
+        "Chris Hani",
+        "Dr Kenneth Kaunda",
+        "Frances Baard",
+        "Umzinyathi"
+      ],
+      "count": 5
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "City of Cape Town",
+        "Umkhanyakude",
+        "iLembe"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "City of Johannesburg",
+        "Dr Ruth Segomotsi Mompati",
+        "Sisonke"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Ehlanzeni",
+        "Lejweleputswa",
+        "Waterberg"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Ekurhuleni",
+        "West Rand"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Fezile Dabi",
+        "Overberg"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Greater Sekhukhune",
+        "Mangaung"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Joe Gqabi",
+        "O.R.Tambo",
+        "Siyanda",
+        "Vhembe"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Mopani",
+        "Nkangala",
+        "Uthukela"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Ngaka Modiri Molema",
+        "UMgungundlovu"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Pixley Ka Seme",
+        "Sedibeng"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "ndwi_mean",
+      "districts": [
+        "Ugu",
+        "eThekwini"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Alfred Nzo",
+        "Ekurhuleni"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Amathole",
+        "Ugu"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Bojanala",
+        "West Rand"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Buffalo City",
+        "Greater Sekhukhune"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Cacadu",
+        "Ehlanzeni"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Cape Winelands",
+        "Umzinyathi",
+        "Vhembe"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Capricorn",
+        "Pixley Ka Seme"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "City of Cape Town",
+        "Sisonke"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "City of Johannesburg",
+        "Frances Baard",
+        "Umkhanyakude"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Dr Ruth Segomotsi Mompati",
+        "West Coast"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Eden",
+        "UMgungundlovu"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Fezile Dabi",
+        "Gert Sibande"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Mopani",
+        "Siyanda"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Namakwa",
+        "Sedibeng"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Nelson Mandela Bay",
+        "Thabo Mofutsanyane"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "O.R.Tambo",
+        "Zululand"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "turbidity_proxy_ratio",
+      "districts": [
+        "Overberg",
+        "eThekwini"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Alfred Nzo",
+        "Frances Baard"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Amajuba",
+        "Ehlanzeni"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Amathole",
+        "Dr Kenneth Kaunda",
+        "iLembe"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Buffalo City",
+        "City of Johannesburg",
+        "Eden",
+        "Mopani"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Chris Hani",
+        "Umzinyathi"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "City of Cape Town",
+        "Fezile Dabi",
+        "John Taolo Gaetsewe",
+        "Namakwa",
+        "Ngaka Modiri Molema",
+        "O.R.Tambo"
+      ],
+      "count": 6
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "City of Tshwane",
+        "Uthungulu"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Dr Ruth Segomotsi Mompati",
+        "Greater Sekhukhune",
+        "UMgungundlovu",
+        "Zululand"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Ekurhuleni",
+        "Mangaung",
+        "Sedibeng",
+        "eThekwini"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Gert Sibande",
+        "Thabo Mofutsanyane"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Joe Gqabi",
+        "Lejweleputswa"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Nelson Mandela Bay",
+        "Uthukela",
+        "Waterberg"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "chlorophyll_a_mg_m3",
+      "districts": [
+        "Sisonke",
+        "Ugu"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Alfred Nzo",
+        "Capricorn",
+        "City of Tshwane",
+        "Dr Ruth Segomotsi Mompati"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Amajuba",
+        "Bojanala",
+        "Central Karoo",
+        "Thabo Mofutsanyane",
+        "Waterberg"
+      ],
+      "count": 5
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Amathole",
+        "Ehlanzeni",
+        "Greater Sekhukhune",
+        "West Rand"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Buffalo City",
+        "Dr Kenneth Kaunda",
+        "Uthungulu",
+        "Xhariep"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Cacadu",
+        "Joe Gqabi",
+        "Mangaung"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Cape Winelands",
+        "Siyanda"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Chris Hani",
+        "City of Cape Town",
+        "Sisonke"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "City of Johannesburg",
+        "John Taolo Gaetsewe",
+        "Lejweleputswa"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Eden",
+        "Frances Baard",
+        "Sedibeng",
+        "Umkhanyakude"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Fezile Dabi",
+        "Uthukela",
+        "Vhembe"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Gert Sibande",
+        "Nelson Mandela Bay"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Mopani",
+        "Nkangala",
+        "Pixley Ka Seme",
+        "UMgungundlovu"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "O.R.Tambo",
+        "Overberg",
+        "Ugu"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "sediment_plume_pct",
+      "districts": [
+        "Umzinyathi",
+        "Zululand"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Alfred Nzo",
+        "Cacadu",
+        "Fezile Dabi",
+        "John Taolo Gaetsewe",
+        "Ngaka Modiri Molema",
+        "Siyanda",
+        "Umzinyathi",
+        "Vhembe",
+        "West Coast"
+      ],
+      "count": 9
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Amajuba",
+        "Ehlanzeni",
+        "Pixley Ka Seme"
+      ],
+      "count": 3
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Amathole",
+        "Thabo Mofutsanyane"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Bojanala",
+        "Capricorn",
+        "Dr Kenneth Kaunda",
+        "Dr Ruth Segomotsi Mompati",
+        "West Rand",
+        "Zululand"
+      ],
+      "count": 6
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Buffalo City",
+        "Chris Hani",
+        "City of Johannesburg",
+        "City of Tshwane",
+        "Ekurhuleni",
+        "Joe Gqabi",
+        "Overberg"
+      ],
+      "count": 7
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Cape Winelands",
+        "Greater Sekhukhune",
+        "Mopani",
+        "Nelson Mandela Bay",
+        "Uthungulu"
+      ],
+      "count": 5
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Central Karoo",
+        "Sedibeng",
+        "Ugu",
+        "Umkhanyakude"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Frances Baard",
+        "Mangaung",
+        "Namakwa",
+        "Waterberg"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Gert Sibande",
+        "Nkangala",
+        "eThekwini",
+        "iLembe"
+      ],
+      "count": 4
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Lejweleputswa",
+        "UMgungundlovu"
+      ],
+      "count": 2
+    },
+    {
+      "dataset": "eo_monthly",
+      "variable": "flood_inundation_extent_km2",
+      "districts": [
+        "Uthukela",
+        "Xhariep"
+      ],
+      "count": 2
+    }
+  ],
+  "eo_year_repetition": {
+    "surface_water_extent_km2": {
+      "district_calendar_month_groups": 624,
+      "identical_across_years": 624
+    },
+    "ndwi_mean": {
+      "district_calendar_month_groups": 624,
+      "identical_across_years": 624
+    },
+    "turbidity_proxy_ratio": {
+      "district_calendar_month_groups": 624,
+      "identical_across_years": 624
+    },
+    "chlorophyll_a_mg_m3": {
+      "district_calendar_month_groups": 624,
+      "identical_across_years": 624
+    },
+    "sediment_plume_pct": {
+      "district_calendar_month_groups": 624,
+      "identical_across_years": 624
+    },
+    "flood_inundation_extent_km2": {
+      "district_calendar_month_groups": 624,
+      "identical_across_years": 416
+    }
+  },
+  "catchment": {
+    "constant_columns": {
+      "mean_slope_degrees": 4.5,
+      "mean_twi": 7.85,
+      "vegetation_cover_pct": 65.4
+    },
+    "grass_equals_crop": 52,
+    "land_total_min": 100.16999999999999,
+    "land_total_max": 135.81,
+    "land_total_mean": 113.9378846153846,
+    "invalid_land_totals": 52,
+    "soil_percentage_vectors": [
+      {
+        "hsg_a_pct": 65.0,
+        "hsg_b_pct": 20.0,
+        "hsg_c_pct": 10.0,
+        "hsg_d_pct": 5.0
+      },
+      {
+        "hsg_a_pct": 10.0,
+        "hsg_b_pct": 25.0,
+        "hsg_c_pct": 45.0,
+        "hsg_d_pct": 20.0
+      },
+      {
+        "hsg_a_pct": 20.0,
+        "hsg_b_pct": 55.0,
+        "hsg_c_pct": 20.0,
+        "hsg_d_pct": 5.0
+      }
+    ]
+  },
+  "consistency": {
+    "q_vs_daily_volume_div86400": {
+      "paired_rows": 507728,
+      "matching_rows": 15153,
+      "match_pct": 2.9844720007563104,
+      "max_abs_difference": 17359.82628564815
+    },
+    "daily_sediment_vs_volume_times_concentration_div1e6": {
+      "paired_rows": 507728,
+      "matching_rows": 507728,
+      "match_pct": 100.0,
+      "max_abs_difference": 5.000000001587068e-05
+    },
+    "monthly_sediment_rate_vs_Q_times_concentration_times0.0864": {
+      "paired_rows": 507728,
+      "matching_rows": 507728,
+      "match_pct": 100.0,
+      "max_abs_difference": 4.999999999988347e-05
+    },
+    "reported_monthly_volume_vs_q_times_days_times86400": {
+      "paired_rows": 507728,
+      "matching_rows": 455785,
+      "match_pct": 89.76952226388933,
+      "max_abs_difference": 84850618358.94
+    }
+  },
+  "monthly_volume_consistency": {
+    "paired_rows": 16640,
+    "matching_rows": 0,
+    "match_pct": 0.0,
+    "max_abs_difference": 6147788246.62
+  },
+  "monthly_volume_ratio": {
+    "count": 16640.0,
+    "mean": 0.01637705336429253,
+    "std": 0.00251928719421476,
+    "min": 0.005219464784786313,
+    "1%": 0.009838564932644745,
+    "50%": 0.016610045492874502,
+    "99%": 0.023196552180540224,
+    "max": 0.029616827173878875
+  },
+  "incomplete_months": {
+    "2026-09": {
+      "districts": 52,
+      "days": 24
+    }
+  },
+  "conflicting_months": {
+    "2026-09": {
+      "districts": 52,
+      "distinct_values": 24
+    }
+  },
+  "rating": {
+    "a_coeff": {
+      "count": 52.0,
+      "mean": 1.6296830834544322e+20,
+      "std": 1.1751811840293871e+21,
+      "min": 56.2431,
+      "25%": 560.7034000000001,
+      "50%": 3349.6863000000003,
+      "75%": 171223.8103,
+      "max": 8.474352033956996e+21
+    },
+    "b_exponent": {
+      "count": 52.0,
+      "mean": 4.459501923076925,
+      "std": 2.6720168959700032,
+      "min": 1.8021,
+      "25%": 3.127075,
+      "50%": 3.8442,
+      "75%": 5.089449999999999,
+      "max": 18.7883
+    },
+    "r_squared": {
+      "count": 52.0,
+      "mean": 0.13190961538461538,
+      "std": 0.2985321799316636,
+      "min": 0.0,
+      "25%": 0.0,
+      "50%": 0.0,
+      "75%": 0.0,
+      "max": 0.9866
+    },
+    "zero_r2_districts": 42
+  },
+  "peak_constant_district_years": 1404,
+  "district_years": 1404,
+  "eo_distinct_values_per_district": {
+    "surface_water_extent_km2": {
+      "min": 2,
+      "max": 2
+    },
+    "ndwi_mean": {
+      "min": 2,
+      "max": 2
+    },
+    "turbidity_proxy_ratio": {
+      "min": 2,
+      "max": 2
+    },
+    "chlorophyll_a_mg_m3": {
+      "min": 2,
+      "max": 2
+    },
+    "sediment_plume_pct": {
+      "min": 2,
+      "max": 2
+    },
+    "flood_inundation_extent_km2": {
+      "min": 2,
+      "max": 2
+    }
+  },
+  "q_volume_by_era": {
+    "2000-2025": {
+      "paired_rows": 493844,
+      "matching_rows": 1269,
+      "match_pct": 0.25696373753655,
+      "max_abs_difference": 17359.82628564815
+    },
+    "2026": {
+      "paired_rows": 13884,
+      "matching_rows": 13884,
+      "match_pct": 100.0,
+      "max_abs_difference": 4.999999999999449e-05
+    }
+  },
+  "eo_within_district_correlation": {
+    "surface_water_extent_km2 vs ndwi_mean": {
+      "min": 0.9999999999999971,
+      "max": 1.0,
+      "districts": 52
+    },
+    "surface_water_extent_km2 vs turbidity_proxy_ratio": {
+      "min": 0.9999999999999973,
+      "max": 1.0,
+      "districts": 52
+    },
+    "chlorophyll_a_mg_m3 vs sediment_plume_pct": {
+      "min": 0.9999999999999997,
+      "max": 1.0,
+      "districts": 52
+    }
+  },
+  "calendar_field_errors": {
+    "section_9_1_complete_unified_master_2000_2026.csv": 0,
+    "section_9_3_sansa_earth_observation_master_2000_2026.csv": 0
+  }
+}

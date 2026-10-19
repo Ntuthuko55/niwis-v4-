@@ -1,0 +1,119 @@
+{
+  "results": [
+    {
+      "path": "/reservoirs",
+      "status": "passed",
+      "milliseconds": 5934,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate",
+      "status": "passed",
+      "milliseconds": 723,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/temperature",
+      "status": "passed",
+      "milliseconds": 471,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/spells",
+      "status": "passed",
+      "milliseconds": 463,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/rainfall",
+      "status": "passed",
+      "milliseconds": 437,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/evaporation",
+      "status": "passed",
+      "milliseconds": 449,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/irrigation",
+      "status": "passed",
+      "milliseconds": 418,
+      "map_paths": 52
+    },
+    {
+      "path": "/climate/streamflow",
+      "status": "passed",
+      "milliseconds": 451,
+      "map_paths": 52
+    },
+    {
+      "path": "/vegetation",
+      "status": "passed",
+      "milliseconds": 18712,
+      "map_paths": 52
+    },
+    {
+      "path": "/rainfall",
+      "status": "passed",
+      "milliseconds": 28291,
+      "map_paths": 52
+    },
+    {
+      "path": "/runoff",
+      "status": "passed",
+      "milliseconds": 8860,
+      "map_paths": 52
+    },
+    {
+      "path": "/surface-water",
+      "status": "passed",
+      "milliseconds": 16589,
+      "map_paths": 52
+    },
+    {
+      "path": "/groundwater",
+      "status": "passed",
+      "milliseconds": 5808,
+      "map_paths": 52
+    },
+    {
+      "path": "/groundwater-reserve",
+      "status": "passed",
+      "milliseconds": 9882,
+      "map_paths": 52
+    },
+    {
+      "path": "/water-quality",
+      "status": "passed",
+      "milliseconds": 19646,
+      "map_paths": 52
+    },
+    {
+      "path": "/hydrological-drought",
+      "status": "passed",
+      "milliseconds": 1477,
+      "map_paths": 52
+    },
+    {
+      "path": "/satellite-drought",
+      "status": "passed",
+      "milliseconds": 1215,
+      "map_paths": 52
+    },
+    {
+      "path": "/meteorological",
+      "status": "passed",
+      "milliseconds": 3304,
+      "map_paths": 52
+    },
+    {
+      "path": "/drought",
+      "status": "passed",
+      "milliseconds": 10416,
+      "map_paths": 52
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "path": "/hydrology/observations?region=City%20of%20Tshwane",
+    "status": "passed",
+    "seconds": 6.119,
+    "source": "hydrological_drought_master",
+    "mode": "database",
+    "rows": 300
+  },
+  {
+    "path": "/hydrology/forecast-source",
+    "status": "passed",
+    "seconds": 9.317,
+    "source": "hydrological_drought_master",
+    "mode": "database",
+    "rows": 37
+  },
+  {
+    "path": "/satellite/forecast-source",
+    "status": "passed",
+    "seconds": 4.104,
+    "source": "satellite_remote_sensing",
+    "mode": "database",
+    "rows": 37
+  }
+]

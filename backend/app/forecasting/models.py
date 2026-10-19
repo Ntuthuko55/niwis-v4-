@@ -280,7 +280,7 @@ def prophet_forecast(
 
     # Create a future dataframe that includes history, then select the last
     # `horizon` rows as the forecast horizon (matches notebook workflow).
-    freq = "M" if monthly else "D"
+    freq = "ME" if monthly else "D"
     future = m.make_future_dataframe(periods=horizon, freq=freq)
     fc = m.predict(future)
 

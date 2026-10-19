@@ -1,0 +1,15 @@
+.nw .groundwater-reserve-shell>.nw-main{background:linear-gradient(135deg,#f7faf7,#eef6f3)}
+.nw .groundwater-reserve-shell .nw-navitem.sel{background:#2e756f;border-color:#55a49a}
+.groundwater-reserve-dashboard .reserve-icon{background:#e2f2e8;color:#2d826c;border-color:#cce7da}
+.groundwater-reserve-dashboard .rf-heading h1{font-size:27px;color:#315f5d}
+.gr-source-strip{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:12px 15px;background:#fff;border:1px solid #dfe9e3;border-radius:7px;color:#8ba39a;margin:13px 0;font-size:9px}
+.gr-source-strip>span{display:flex;align-items:center;gap:7px}.gr-source-strip strong{color:#56887a;font-size:10px;font-weight:600}.gr-source-strip svg{color:#4fa18b}.gr-source-strip small{margin-left:auto;color:#99ada5;font-size:8px}
+.gr-definition{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:12px 15px;background:#eaf6f0;border:1px solid #cfe8da;border-radius:7px;color:#64877b;margin:10px 0;font-size:9px;line-height:1.6}.gr-definition strong{color:#2f7766;font-size:10px}.gr-definition b{color:#3e816f;white-space:nowrap;font-size:10px}
+.gr-warning{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;border:1px solid #e5e8d9;background:#fbfcf4;color:#8d9671;border-radius:6px;margin:8px 0;font-size:9px;line-height:1.7}.gr-warning svg{flex:none;margin-top:2px}
+.groundwater-reserve-dashboard .rf-map-panel select{margin-bottom:5px}.groundwater-reserve-dashboard .rf-map-panel .map-color-legend{color:#65867d!important}.groundwater-reserve-dashboard .rf-map-panel .map-color-legend strong,.groundwater-reserve-dashboard .rf-map-panel .map-color-legend b{color:#477267!important}
+.gr-chart-select{display:flex;justify-content:flex-end;margin-bottom:6px}.gr-chart-select label{display:grid;gap:4px;color:#86a098;font-size:9px}.gr-chart-select select{font-size:10px;padding:6px 8px;color:#52786f;background:#fff;border:1px solid #d4e1db;border-radius:5px;min-height:31px}
+.gr-fact-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px 12px;margin:18px 0}.gr-fact-grid span{font-size:9px;color:#91a7a0}.gr-fact-grid strong{display:block;color:#58877c;font-size:15px;font-weight:500;margin-top:4px}.gr-fact-grid small{font-size:9px;color:#8da59d;font-weight:400}
+.gr-monthly-status{display:flex;align-items:baseline;gap:7px;min-height:25px;color:#8aa198;font-size:9px}.gr-monthly-status strong{font-size:18px;color:#4f8877;font-weight:500}.gr-monthly-status span[role=alert]{color:#b36d61}
+.groundwater-reserve-dashboard .rf-methods{margin-top:12px}
+@media(max-width:1100px){.gr-source-strip{gap:12px}.gr-source-strip small{flex-basis:100%;margin:0}}
+@media(max-width:760px){.groundwater-reserve-dashboard .rf-heading h1{font-size:22px}.gr-source-strip{padding:12px;gap:9px}.gr-source-strip>span{flex-basis:100%}.gr-definition{grid-template-columns:1fr;gap:4px}.gr-definition b{white-space:normal}.gr-fact-grid{gap:12px 8px}.gr-fact-grid strong{font-size:12px}.gr-chart-select{justify-content:stretch}.gr-chart-select label{width:100%}.gr-chart-select select{width:100%}}

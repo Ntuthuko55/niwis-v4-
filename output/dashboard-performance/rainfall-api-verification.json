@@ -1,0 +1,13 @@
+{
+  "timing_context": "Local API timings; the running backend and upstream database may already be warm. No cache flush or backend restart was forced.",
+  "national_seconds": 0.006,
+  "map_seconds": 0.019,
+  "district_seconds": 0.015,
+  "forecast_seconds": 0.03,
+  "daily_seconds": 0.414,
+  "partial_seconds": 1.781,
+  "legacy_contract_seconds": 0.453,
+  "map_month_seconds": 0.014,
+  "value_parity": "All 19 indicators, monthly totals and year comparisons, daily/dekadal detail, annual and seasonal as-of-date values, coverage, satellite agreement, warnings, maps and legacy runoff context exactly match captured national/Tshwane/daily/partial-month API responses. Forecast-source matches chart data.",
+  "latest_date": "2026-09-06"
+}

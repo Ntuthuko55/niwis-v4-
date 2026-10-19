@@ -1,0 +1,13 @@
+.nw .water-quality-shell>.nw-main{background:linear-gradient(135deg,#f5fafb,#eef7f5)}
+.nw .water-quality-shell .nw-navitem.sel{background:#286f7b;border-color:#50a4ad}
+.water-quality-dashboard .quality-icon{background:#e2f1f2;color:#277c86;border-color:#cbe4e6}
+.water-quality-dashboard .rf-heading h1{font-size:27px;color:#315c67}
+.wq-source-strip{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:12px 15px;background:#fff;border:1px solid #dce9eb;border-radius:7px;color:#8aa1a7;margin:13px 0;font-size:9px}.wq-source-strip>span{display:flex;align-items:center;gap:7px}.wq-source-strip strong{color:#4d7d87;font-size:10px;font-weight:600}.wq-source-strip svg{color:#4d9da8}.wq-source-strip small{margin-left:auto;color:#99adb1;font-size:8px}
+.wq-definition{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:12px 15px;background:#eaf6f8;border:1px solid #cee5e8;border-radius:7px;color:#64858c;margin:10px 0;font-size:9px;line-height:1.6}.wq-definition strong{color:#2f7580;font-size:10px}
+.wq-warning{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;border:1px solid #e5e4d8;background:#fbfbf4;color:#8c927a;border-radius:6px;margin:8px 0;font-size:9px;line-height:1.7}.wq-warning svg{flex:none;margin-top:2px}
+.water-quality-dashboard .rf-map-panel select{margin-bottom:5px}.water-quality-dashboard .rf-map-panel .map-color-legend{color:#65858c!important}.water-quality-dashboard .rf-map-panel .map-color-legend strong,.water-quality-dashboard .rf-map-panel .map-color-legend b{color:#47737e!important}
+.wq-chart-select{display:flex;justify-content:flex-end;margin-bottom:6px}.wq-chart-select label{display:grid;gap:4px;color:#86a0a6;font-size:9px}.wq-chart-select select{font-size:10px;padding:6px 8px;color:#52737d;background:#fff;border:1px solid #d4e2e5;border-radius:5px;min-height:31px}
+.wq-quality{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:8px 12px;margin:18px 0;color:#91a6aa;font-size:9px;line-height:1.5}.wq-quality strong{font-size:21px;color:#5c9199;font-weight:500}.wq-monthly-status{display:flex;align-items:baseline;gap:7px;min-height:25px;color:#8aa1a6;font-size:9px}.wq-monthly-status strong{font-size:18px;color:#4f8993;font-weight:500}.wq-monthly-status span[role=alert]{color:#b36d61}
+.water-quality-dashboard .rf-methods{margin-top:12px}
+@media(max-width:1100px){.wq-source-strip{gap:12px}.wq-source-strip small{flex-basis:100%;margin:0}}
+@media(max-width:760px){.water-quality-dashboard .rf-heading h1{font-size:22px}.wq-source-strip{padding:12px;gap:9px}.wq-source-strip>span{flex-basis:100%}.wq-definition{grid-template-columns:1fr;gap:4px}.wq-chart-select{justify-content:stretch}.wq-chart-select label,.wq-chart-select select{width:100%}}

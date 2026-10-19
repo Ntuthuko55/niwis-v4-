@@ -1,0 +1,19 @@
+{
+  "timing_context": "Local API measurements; upstream and application caches may already be warm. The running backend was not restarted to force a cold benchmark.",
+  "national_seconds": 0.278,
+  "national_compact_seconds": 0.02,
+  "district_seconds": 0.378,
+  "district_compact_seconds": 0.02,
+  "daily_seconds": 0.003,
+  "december_daily_seconds": 0.027,
+  "forecast_seconds": 0.013,
+  "long_range_map_seconds": 0.3,
+  "december_map_seconds": 0.219,
+  "sparse_dashboard_seconds": 0.015,
+  "value_parity": "All fields exactly match captured national and Tshwane dashboard responses, including all 19 indicators, monthly means, latest values, map values/periods, warnings, source coverage and raw-row quality counts. Daily October/December and forecast responses also match exactly; forecast values match chart series.",
+  "sparse_map_bounds": "2000-2026 map returns 52 hydraulic-head values dated October 2026. December-only map retains 52 districts with null hydraulic-head values and no borrowed October readings. December-only dashboard now succeeds with unavailable indicators as null.",
+  "source_tables": [
+    "10_1_borehole_and_aquifer_master",
+    "10_2_recharge_supporting _master"
+  ]
+}

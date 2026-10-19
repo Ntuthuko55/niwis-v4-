@@ -241,6 +241,7 @@ body.nw-body{margin:0;background:#0C1A22}
 .sat-kpi-strip{display:grid;grid-template-columns:repeat(10,minmax(118px,1fr));gap:7px;padding:8px;margin-bottom:14px;overflow-x:auto;border:1px solid var(--rule);border-radius:8px;background:#071824}
 .sat-kpi{min-width:118px;display:flex;gap:8px;padding:8px;border:1px solid #16415a;border-radius:7px;background:linear-gradient(145deg,#09253a,#0d1f31)}.sat-kpi>span{font-size:20px;line-height:1.2}.sat-kpi div{display:grid;line-height:1.15}.sat-kpi small,.sat-detail small,.sat-chart-stats small{font-size:9px;color:var(--text-dim)}.sat-kpi strong{font-size:15px;color:#73dd61;margin-top:2px}.sat-kpi em{font-size:8px;color:var(--text-faint);font-style:normal;margin-top:2px}
 .sat-top-grid{display:grid;grid-template-columns:1.12fr 1fr 1.28fr;gap:10px}.sat-top-grid .nw-panel{padding:10px}.sat-caption,.sat-note{font-size:10px;color:var(--text-dim);margin:0 0 7px;line-height:1.35}.sat-map-wrap{display:grid;grid-template-columns:1fr 86px;align-items:center;gap:6px}.sat-map-wrap .nw-map{background:#082035;border-radius:4px;padding:4px}.sat-scale{display:grid;gap:4px;font-size:9px;color:var(--text-dim)}.sat-scale i{width:14px;height:122px;border-radius:3px;background:linear-gradient(#159947,#bce447,#ffd34e,#ff8d32,#eb3449)}.sat-scale small{font-size:8px;line-height:2.05}
+.sat-top-grid>.nw-panel:first-child .sat-map-wrap .sat-district-map{height:315px}
 .sat-district-map{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;gap:7px;background:#082035;border-radius:4px;padding:6px}.sat-district-map svg{display:block;width:100%;height:100%;max-height:350px;min-width:0}.sat-district-map path{cursor:pointer;transition:opacity .15s}.sat-district-map path:hover{opacity:.72;stroke:#fff;stroke-width:1.6}
 .map-color-legend{display:grid;align-content:center;gap:5px;min-width:94px;color:var(--text-dim);font-size:8px;line-height:1.2}.map-color-legend>strong{color:#d8edf4;font-size:9px;line-height:1.2}.map-color-legend-body{display:grid;grid-template-columns:8px 1fr;gap:5px;align-items:stretch}.map-color-legend-body>i{display:block;width:8px;min-height:88px;border-radius:3px;border:1px solid rgba(255,255,255,.18)}.map-color-legend ul{display:grid;align-content:space-between;gap:3px;margin:0;padding:0;list-style:none}.map-color-legend li{display:grid;gap:1px}.map-color-legend li b{color:#eef8fb;font-size:8px}.map-color-legend li span{font-size:7px}
 .ndvi-legend,.sat-scale{display:none}.sat-map-wrap:has(.nw-map) .sat-scale{display:grid}
@@ -309,3 +310,16 @@ body.nw-body{margin:0;background:#0C1A22}
 .nw-forecast-empty{margin-top:16px;min-height:260px;display:grid;place-items:center;text-align:center;padding:30px;border:1px dashed var(--rule);border-radius:8px;color:var(--text-dim);background:#0D2029}
 @media(max-width:1040px){.nw-forecast-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.nw-run-forecast{width:max-content}}
 @media(max-width:600px){.nw-forecast-controls{grid-template-columns:1fr}.nw-run-forecast{width:100%}}
+
+.nw-nav-label{flex:1;min-width:0;text-align:left}
+.nw-nav-chevron{flex:none;transition:transform .18s ease}
+.nw-nav-chevron.expanded{transform:rotate(180deg)}
+.nw-nav-subgroups{margin:4px 0 8px 18px;padding-left:8px;border-left:1px solid var(--text-faint)}
+.nw-nav-child{font-size:12px;padding:8px 10px}
+
+.nw-logo{width:160px;height:90px;object-fit:contain;border-radius:9px;background:#fff;flex:none}.nw-brand{gap:10px;flex:none}
+/* Department of Water and Sanitation wordmark: keep it large enough to read in the header. */
+.nw-logo-topbar{width:144px;height:82px;border-radius:6px;padding:2px}
+.nw-topbar{height:96px}
+.nw-nav{max-height:calc(100vh - 96px);top:96px}
+@media(max-width:760px){.nw-logo-topbar{width:108px;height:62px}.nw-topbar{height:78px;gap:10px;padding:0 12px}.nw-nav{max-height:calc(100vh - 78px);top:78px}}

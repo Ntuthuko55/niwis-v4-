@@ -1,0 +1,218 @@
+[
+  {
+    "module": "rainfall",
+    "source": "Supabase",
+    "metadata": {
+      "path": "/rainfall/metadata",
+      "seconds": 0.042,
+      "bytes": 11323,
+      "cache": "MISS"
+    },
+    "first": {
+      "path": "/rainfall/dashboard?region=City+of+Tshwane&start=2024-09&end=2026-08",
+      "seconds": 0.573,
+      "bytes": 39401,
+      "cache": "MISS"
+    },
+    "repeat": {
+      "path": "/rainfall/dashboard?region=City+of+Tshwane&start=2024-09&end=2026-08",
+      "seconds": 0.032,
+      "bytes": 39401,
+      "cache": "HIT"
+    },
+    "map_rows": 52,
+    "series_rows": 24
+  },
+  {
+    "module": "runoff",
+    "source": "Existing configured source",
+    "metadata": {
+      "path": "/runoff/metadata",
+      "seconds": 0.07,
+      "bytes": 7408,
+      "cache": "MISS"
+    },
+    "first": {
+      "path": "/runoff/dashboard?region=City+of+Tshwane&start=2024-09&end=2026-08",
+      "seconds": 0.194,
+      "bytes": 53092,
+      "cache": "MISS"
+    },
+    "repeat": {
+      "path": "/runoff/dashboard?region=City+of+Tshwane&start=2024-09&end=2026-08",
+      "seconds": 0.002,
+      "bytes": 53092,
+      "cache": "HIT"
+    },
+    "map_rows": 52,
+    "series_rows": 24
+  },
+  {
+    "module": "surface-water",
+    "source": "Supabase",
+    "metadata": {
+      "path": "/surface-water/metadata",
+      "seconds": 0.003,
+      "bytes": 11268,
+      "cache": "MISS"
+    },
+    "first": {
+      "path": "/surface-water/dashboard?region=City+of+Tshwane&start=2024-09&end=2026-08",
+      "seconds": 2.086,
+      "bytes": 49736,
+      "cache": "MISS"
+    },
+    "repeat": {
+      "path": "/surface-water/dashboard?region=City+of+Tshwane&start=2024-09&end=2026-08",
+      "seconds": 0.003,
+      "bytes": 49736,
+      "cache": "HIT"
+    },
+    "map_rows": 52,
+    "series_rows": 24
+  },
+  {
+    "module": "groundwater",
+    "source": "Supabase",
+    "metadata": {
+      "path": "/groundwater/metadata",
+      "seconds": 6.911,
+      "bytes": 9877,
+      "cache": "MISS"
+    },
+    "first": {
+      "path": "/groundwater/dashboard?region=City+of+Tshwane&start=2025-01&end=2026-12",
+      "seconds": 1.586,
+      "bytes": 56767,
+      "cache": "MISS"
+    },
+    "repeat": {
+      "path": "/groundwater/dashboard?region=City+of+Tshwane&start=2025-01&end=2026-12",
+      "seconds": 0.003,
+      "bytes": 56767,
+      "cache": "HIT"
+    },
+    "map_rows": 52,
+    "series_rows": 24
+  },
+  {
+    "module": "water-quality",
+    "source": "Supabase",
+    "metadata": {
+      "path": "/water-quality/metadata",
+      "seconds": 10.24,
+      "bytes": 14385,
+      "cache": "MISS"
+    },
+    "first": {
+      "path": "/water-quality/dashboard?region=City+of+Tshwane&start=2026&end=2026",
+      "seconds": 1.069,
+      "bytes": 51137,
+      "cache": "MISS"
+    },
+    "repeat": {
+      "path": "/water-quality/dashboard?region=City+of+Tshwane&start=2026&end=2026",
+      "seconds": 0.013,
+      "bytes": 51137,
+      "cache": "HIT"
+    },
+    "map_rows": 52,
+    "series_rows": 1
+  },
+  {
+    "module": "groundwater-reserve",
+    "source": "Supabase",
+    "metadata": {
+      "path": "/groundwater-reserve/metadata",
+      "seconds": 11.08,
+      "bytes": 13273,
+      "cache": "MISS"
+    },
+    "first": {
+      "path": "/groundwater-reserve/dashboard?region=City+of+Tshwane&start=2026&end=2026",
+      "seconds": 1.18,
+      "bytes": 54708,
+      "cache": "MISS"
+    },
+    "repeat": {
+      "path": "/groundwater-reserve/dashboard?region=City+of+Tshwane&start=2026&end=2026",
+      "seconds": 0.015,
+      "bytes": 54708,
+      "cache": "HIT"
+    },
+    "map_rows": 52,
+    "series_rows": 1
+  },
+  {
+    "module": "climate",
+    "source": "Supabase",
+    "metadata": {
+      "path": "/climate/metadata",
+      "seconds": 20.193,
+      "bytes": 13798,
+      "cache": "MISS"
+    },
+    "first": {
+      "path": "/climate/dashboard?region=City+of+Tshwane&start=2025&end=2025&season=Annual",
+      "seconds": 7.78,
+      "bytes": 61215,
+      "cache": "MISS"
+    },
+    "repeat": {
+      "path": "/climate/dashboard?region=City+of+Tshwane&start=2025&end=2025&season=Annual",
+      "seconds": 0.006,
+      "bytes": 61215,
+      "cache": "HIT"
+    },
+    "map_rows": 52,
+    "series_rows": 1
+  },
+  {
+    "module": "reservoirs",
+    "source": "Supabase",
+    "metadata": {
+      "path": "/reservoirs/metadata",
+      "seconds": 6.431,
+      "bytes": 13818,
+      "cache": "MISS"
+    },
+    "first": {
+      "path": "/reservoirs/dashboard?region=City+of+Tshwane&start=2025-10-19&end=2026-10-18",
+      "seconds": 0.721,
+      "bytes": 107941,
+      "cache": "MISS"
+    },
+    "repeat": {
+      "path": "/reservoirs/dashboard?region=City+of+Tshwane&start=2025-10-19&end=2026-10-18",
+      "seconds": 0.007,
+      "bytes": 107941,
+      "cache": "HIT"
+    },
+    "map_rows": 53,
+    "series_rows": 365
+  },
+  {
+    "module": "vegetation",
+    "source": "Supabase",
+    "metadata": {
+      "path": "/vegetation/metadata",
+      "seconds": 0.013,
+      "bytes": 10543,
+      "cache": "MISS"
+    },
+    "first": {
+      "path": "/vegetation/dashboard?region=City+of+Tshwane&start=2024-09&end=2026-08",
+      "seconds": 0.003,
+      "bytes": 66095,
+      "cache": "HIT"
+    },
+    "repeat": {
+      "path": "/vegetation/dashboard?region=City+of+Tshwane&start=2024-09&end=2026-08",
+      "seconds": 0.004,
+      "bytes": 66095,
+      "cache": "HIT"
+    },
+    "map_rows": 52,
+    "series_rows": 24
+  }
+]

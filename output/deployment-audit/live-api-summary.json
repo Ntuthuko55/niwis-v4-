@@ -1,0 +1,240 @@
+{
+  "checked_at_utc": "2026-10-19T11:20:39.290931+00:00",
+  "base_url": "http://127.0.0.1:8000",
+  "scope": "Read-only health, OpenAPI and dashboard metadata checks; no dataset creation or training.",
+  "checks": [
+    {
+      "path": "/health",
+      "elapsed_seconds": 0.006,
+      "http_status": 200,
+      "service_status": "healthy",
+      "health_rechecked_at_utc": "2026-10-19T11:22:00.808840+00:00"
+    },
+    {
+      "path": "/api/openapi.json",
+      "path_count": 75,
+      "paths": [
+        "/analysis",
+        "/analysis/comprehensive",
+        "/climate/dashboard",
+        "/climate/map",
+        "/climate/metadata",
+        "/climate/monthly",
+        "/dashboard/dataset",
+        "/dashboard/forecast",
+        "/dashboard/overview",
+        "/dataset/date-column",
+        "/drought-monitoring/region",
+        "/drought-monitoring/regions",
+        "/export/analysis",
+        "/export/features/{dataset_id}",
+        "/feature-engineering/generate",
+        "/forecast",
+        "/groundwater-reserve/dashboard",
+        "/groundwater-reserve/metadata",
+        "/groundwater-reserve/monthly",
+        "/groundwater/daily",
+        "/groundwater/dashboard",
+        "/groundwater/forecast-source",
+        "/groundwater/map",
+        "/groundwater/metadata",
+        "/health",
+        "/hydrology/dataset",
+        "/hydrology/forecast-source",
+        "/hydrology/history",
+        "/hydrology/metadata",
+        "/hydrology/observations",
+        "/hydrology/stations",
+        "/kzn/forecast",
+        "/meteorological/history",
+        "/meteorological/load",
+        "/meteorological/regions",
+        "/models/jobs/{job_id}",
+        "/models/train",
+        "/preview",
+        "/provinces",
+        "/provinces/series/{dataset_id}",
+        "/provinces/{province_id}/load",
+        "/rainfall/daily",
+        "/rainfall/dashboard",
+        "/rainfall/forecast-source",
+        "/rainfall/map",
+        "/rainfall/metadata",
+        "/report/pdf",
+        "/reservoirs/audit",
+        "/reservoirs/dashboard",
+        "/reservoirs/metadata",
+        "/runoff/daily",
+        "/runoff/dashboard",
+        "/runoff/forecast-source",
+        "/runoff/metadata",
+        "/satellite/forecast-source",
+        "/satellite/history",
+        "/satellite/stations",
+        "/surface-water/daily",
+        "/surface-water/dashboard",
+        "/surface-water/forecast-source",
+        "/surface-water/metadata",
+        "/trend/analyze",
+        "/trend/compare",
+        "/trend/provinces",
+        "/trend/variables",
+        "/upload",
+        "/vegetation/dashboard",
+        "/vegetation/forecast-source",
+        "/vegetation/map",
+        "/vegetation/metadata",
+        "/vegetation/time-series",
+        "/vegetation/timeseries",
+        "/water-quality/dashboard",
+        "/water-quality/metadata",
+        "/water-quality/monthly"
+      ],
+      "elapsed_seconds": 0.009,
+      "http_status": 200
+    },
+    {
+      "path": "/spatial-api/api/health",
+      "elapsed_seconds": 0.009,
+      "http_status": 200,
+      "service_status": "ok",
+      "health_rechecked_at_utc": "2026-10-19T11:22:00.833928+00:00"
+    },
+    {
+      "path": "/multivariate-api/api/health",
+      "service": "Multivariate Analytics Studio",
+      "elapsed_seconds": 0.047,
+      "http_status": 200,
+      "service_status": "ok",
+      "health_rechecked_at_utc": "2026-10-19T11:22:00.854969+00:00"
+    },
+    {
+      "path": "/niwis-api/api/health",
+      "app": "NIWIS Flask",
+      "elapsed_seconds": 0.043,
+      "http_status": 200,
+      "service_status": "ok",
+      "health_rechecked_at_utc": "2026-10-19T11:22:00.881886+00:00"
+    },
+    {
+      "path": "/climate/metadata",
+      "source": "Supabase",
+      "region_count": 52,
+      "elapsed_seconds": 10.327,
+      "http_status": 200
+    },
+    {
+      "path": "/vegetation/metadata",
+      "source": "Supabase",
+      "source_tables": [
+        "5.1_primary_satellite_vegetation_variables_sansa_master",
+        "5.2_meteorological_drivers_saws_master"
+      ],
+      "region_count": 52,
+      "elapsed_seconds": 19.942,
+      "http_status": 200
+    },
+    {
+      "path": "/rainfall/metadata",
+      "source": "Supabase",
+      "source_tables": [
+        "6.1_core_rainfall_variables_master",
+        "6.2_rainfall_derived_drought_indices_master",
+        "runoff_variables_master"
+      ],
+      "files": [
+        "6.1_core_rainfall_variables_master",
+        "6.2_rainfall_derived_drought_indices_master"
+      ],
+      "region_count": 52,
+      "elapsed_seconds": 35.004,
+      "http_status": 200
+    },
+    {
+      "path": "/reservoirs/metadata",
+      "source": "Supabase",
+      "groups": 53,
+      "region_count": 53,
+      "elapsed_seconds": 8.578,
+      "http_status": 200
+    },
+    {
+      "path": "/groundwater/metadata",
+      "source": "Supabase",
+      "source_tables": [
+        "10_1_borehole_and_aquifer_master",
+        "10_2_recharge_supporting _master"
+      ],
+      "files": [
+        "10_1_borehole_and_aquifer_master",
+        "10_2_recharge_supporting _master"
+      ],
+      "region_count": 52,
+      "elapsed_seconds": 9.655,
+      "http_status": 200
+    },
+    {
+      "path": "/runoff/metadata",
+      "files": [
+        "7.1_runoff_variables_master.csv",
+        "7.2_derived_runoff_indicators_master.csv"
+      ],
+      "region_count": 52,
+      "elapsed_seconds": 8.046,
+      "http_status": 200
+    },
+    {
+      "path": "/surface-water/metadata",
+      "source": "Supabase",
+      "source_tables": [
+        "9_1_hydrological_station_master",
+        "9_2_catchment_master",
+        "9_3_sansa_earth_observation_master"
+      ],
+      "files": [
+        "9_1_hydrological_station_master",
+        "9_2_catchment_master",
+        "9_3_sansa_earth_observation_master"
+      ],
+      "region_count": 52,
+      "elapsed_seconds": 5.583,
+      "http_status": 200
+    },
+    {
+      "path": "/groundwater-reserve/metadata",
+      "source": "Supabase",
+      "source_tables": [
+        "11_1_hydrogeological",
+        "11.2_recharge_and_discharge",
+        "11.3_aquifer_sustainability"
+      ],
+      "files": [
+        "11_1_hydrogeological",
+        "11.2_recharge_and_discharge",
+        "11.3_aquifer_sustainability"
+      ],
+      "region_count": 52,
+      "elapsed_seconds": 7.392,
+      "http_status": 200
+    },
+    {
+      "path": "/water-quality/metadata",
+      "source": "Supabase",
+      "source_tables": [
+        "12.1_physical_water_quality_master",
+        "12.2_chemical_water_quality_master",
+        "12.3_biological_water_quality_master",
+        "12.4_sansa_water_quality_master"
+      ],
+      "files": [
+        "12.1_physical_water_quality_master",
+        "12.2_chemical_water_quality_master",
+        "12.3_biological_water_quality_master",
+        "12.4_sansa_water_quality_master"
+      ],
+      "region_count": 52,
+      "elapsed_seconds": 7.356,
+      "http_status": 200
+    }
+  ]
+}

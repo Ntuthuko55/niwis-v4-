@@ -1,0 +1,29 @@
+.nw .runoff-shell>.nw-main{background:linear-gradient(135deg,#f4faf9,#eff6f9)}
+.nw .runoff-shell .nw-navitem.sel{background:#247e85;border-color:#4b9da4}
+.nw .runoff-dashboard .rf-heading-icon{background:#e1f2f0;color:#47989b;border-color:#d5e9e6}
+.nw .runoff-dashboard .rf-heading h1{color:#285963}
+.nw .runoff-dashboard .rf-apply,.nw .runoff-dashboard .rf-export,.nw .runoff-dashboard .rf-tabs button[aria-pressed=true]{background:#347f8a;border-color:#347f8a}
+.nw .runoff-dashboard .rf-kpi strong small{display:block;margin:0;font-size:9px}
+.nw .runoff-dashboard .rf-kpi strong{font-size:24px}
+.ro-water-path{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:20px 23px 13px;border:1px solid #dbe9e6;border-radius:8px;background:linear-gradient(100deg,#fff,#f1f8f6);margin:15px 0}
+.ro-water-path>div{display:flex;gap:13px;align-items:center;flex:1}
+.ro-water-path svg{color:#83b7b5;flex:none}
+.ro-water-path span{font-size:10px;color:#8ca9ab;white-space:nowrap}
+.ro-water-path strong{display:block;font-size:23px;color:#50868d;font-weight:500;margin-top:4px}
+.ro-water-path small{font-size:10px;font-weight:400}
+.ro-water-path>i{font-style:normal;color:#b3cbc8;font-size:22px}
+.nw .ro-water-path>p{flex-basis:100%;border-top:1px solid #e4eeeb;padding-top:11px;margin:3px 0 0;font-size:9px;line-height:1.7;color:#9cb3b1}
+.ro-source-stat{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid #eaf0f3;padding-top:11px;margin-top:9px;font-size:9px;color:#92acb2}
+.ro-source-stat strong{font-size:13px;font-weight:500;color:#7b9ba6}
+.nw .ro-daily-export{display:flex;align-items:center;gap:5px;background:#f7fbfa;border:1px solid #dbe9e4;border-radius:5px;color:#7c9e9c;padding:6px 10px;font-size:9px;white-space:nowrap}
+.ro-year-status{display:flex;justify-content:space-around;gap:12px;flex-wrap:wrap;border-top:1px solid #e6eff0;padding-top:12px;font-size:10px;color:#84a3ad}
+.ro-year-status b{display:block;font-size:8px;font-weight:400;color:#a4b9c0;margin-top:4px}
+.nw .ro-axis-label{font-size:9px;color:#94acb7;text-align:center;margin:7px 0 0}
+.ro-profile>div:not(.rf-panel-heading){display:flex;gap:12px;border-bottom:1px solid #edf2f2;padding:13px 0;font-size:9px;color:#93adb2;align-items:flex-start}
+.ro-profile svg{flex:none;color:#8ab5b3;margin-top:2px}
+.ro-profile strong{display:block;font-size:13px;font-weight:500;color:#7498a1;margin-top:4px;line-height:1.6}
+.ro-coverage{display:flex;gap:18px;align-items:center;margin:13px 0}
+.ro-coverage strong{font-size:31px;font-weight:500;color:#64a5a1}
+.ro-coverage>span{font-size:10px;color:#99b3b4;line-height:1.8}
+@media(max-width:1100px){.ro-water-path{gap:15px;padding:18px}.ro-water-path>div{min-width:150px}.ro-water-path>i{display:none}}
+@media(max-width:760px){.ro-water-path{padding:14px;gap:14px}.ro-water-path>div{flex-basis:100%}.ro-water-path strong{font-size:22px}.ro-water-path span{white-space:normal}.ro-water-path>p{font-size:8px!important}.nw .runoff-dashboard .rf-kpi strong{font-size:22px}.ro-coverage{gap:12px}.ro-coverage strong{font-size:27px}.ro-profile strong{font-size:12px}}

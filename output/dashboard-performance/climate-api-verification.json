@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "legacy_value_parity": true,
+  "map_districts": 52,
+  "requests": [
+    {
+      "path": "/climate/monthly?region=National&start=2025-01&end=2025-12&month=2025-12",
+      "seconds": 11.82,
+      "bytes": 62807,
+      "cache": "MISS"
+    },
+    {
+      "path": "/climate/monthly?region=National&start=2025-01&end=2025-12&section=temperature&include_map=false",
+      "seconds": 5.615,
+      "bytes": 6758,
+      "cache": "MISS"
+    },
+    {
+      "path": "/climate/map?month=2025-12&section=temperature",
+      "seconds": 2.852,
+      "bytes": 8286,
+      "cache": "MISS"
+    },
+    {
+      "path": "/climate/monthly?region=National&start=2025-01&end=2025-12&section=evaporation&include_map=false",
+      "seconds": 4.242,
+      "bytes": 6245,
+      "cache": "MISS"
+    },
+    {
+      "path": "/climate/map?month=2025-12&section=evaporation",
+      "seconds": 2.344,
+      "bytes": 8716,
+      "cache": "MISS"
+    },
+    {
+      "path": "/climate/monthly?region=National&start=2025-01&end=2025-12&section=irrigation&include_map=false",
+      "seconds": 4.729,
+      "bytes": 7120,
+      "cache": "MISS"
+    },
+    {
+      "path": "/climate/map?month=2025-12&section=irrigation",
+      "seconds": 1.661,
+      "bytes": 11297,
+      "cache": "MISS"
+    }
+  ]
+}

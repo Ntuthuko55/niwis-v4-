@@ -161,6 +161,25 @@ class ForecastingRequest(BaseModel):
     confidence_level: float = 0.95
 
 
+class DashboardForecastRequest(BaseModel):
+    """Forecast a series already prepared by a connected dashboard."""
+    rows: List[Dict[str, Any]]
+    date_column: str = 'date'
+    target: str
+    model_type: str = 'auto'
+    forecast_periods: int = 12
+    frequency: str = 'monthly'
+    features: List[str] = []
+
+
+class DashboardDatasetRequest(BaseModel):
+    """Register a dashboard's already-authorized source rows for the shared model engine."""
+    dashboard: str
+    region: Optional[str] = None
+    rows: List[Dict[str, Any]]
+    date_column: str = 'date'
+
+
 class ForecastingResponse(BaseModel):
     dataset_id: str
     target_column: str

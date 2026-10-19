@@ -1,0 +1,665 @@
+{
+  "checked_at_utc": "2026-10-12T13:58:40.550306+00:00",
+  "daily_start": 2025,
+  "daily_end": 2025,
+  "scope": "All annual rows; all districts for the specified daily years.",
+  "absolute_tolerance": 1e-08,
+  "relative_tolerance": 1e-12,
+  "comparisons": [
+    {
+      "section": "temperature",
+      "database_rows": 18928,
+      "csv_rows": 18928,
+      "paired_rows": 18928,
+      "database_only": 0,
+      "csv_only": 0,
+      "metrics": [
+        {
+          "key": "Tmin_C",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Tmax_C",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Tavg_C",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 3.552713678800501e-15
+        },
+        {
+          "key": "Temperature_Anomaly_C",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 4.884981308350689e-15
+        },
+        {
+          "key": "Heatwave_Frequency_Days",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Heatwave_Duration_Max_Consecutive_Days",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Frost_Day_Flag",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "LST_Day_C",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 4.618527782440651e-14
+        },
+        {
+          "key": "LST_Night_C",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 4.618527782440651e-14
+        }
+      ],
+      "different_cells": 0,
+      "examples": [],
+      "table": "4_1_temperature_change_master",
+      "file": "section_4_1_temperature_change_master.csv",
+      "missing_database_columns": []
+    },
+    {
+      "section": "spells",
+      "database_rows": 1404,
+      "csv_rows": 1404,
+      "paired_rows": 1404,
+      "database_only": 0,
+      "csv_only": 0,
+      "metrics": [
+        {
+          "key": "CWD_Days",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "CDD_Days",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Rx1day_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Rx5day_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "PRCPTOT_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "R10mm_Days",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "R20mm_Days",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "SDII_mm_per_wet_day",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        }
+      ],
+      "different_cells": 0,
+      "examples": [],
+      "table": "4_2_wet_dry_spells_master",
+      "file": "section_4_2_wet_dry_spells_master.csv",
+      "missing_database_columns": []
+    },
+    {
+      "section": "rainfall",
+      "database_rows": 1404,
+      "csv_rows": 1404,
+      "paired_rows": 1404,
+      "database_only": 0,
+      "csv_only": 0,
+      "metrics": [
+        {
+          "key": "MAP_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 1.1368683772161603e-13
+        },
+        {
+          "key": "Precip_DJF_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 1.1368683772161603e-13
+        },
+        {
+          "key": "Precip_JJA_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 5.684341886080802e-14
+        },
+        {
+          "key": "Precip_MAM_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 5.684341886080802e-14
+        },
+        {
+          "key": "Precip_SON_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 5.684341886080802e-14
+        },
+        {
+          "key": "Nino34_Annual_Mean",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 3.1086244689504383e-15
+        },
+        {
+          "key": "Precip_CV_Percent",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "MK_Sens_Slope_mm_yr",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "MK_p_value",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "MK_Trend",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": null
+        },
+        {
+          "key": "ENSO_Nino34_Correlation",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        }
+      ],
+      "different_cells": 0,
+      "examples": [],
+      "table": "4_3_mean_annual_precipitation_master",
+      "file": "section_4_3_Mean Annual Precipitation (MAP)_master.csv",
+      "missing_database_columns": []
+    },
+    {
+      "section": "evaporation",
+      "database_rows": 18928,
+      "csv_rows": 18928,
+      "paired_rows": 18928,
+      "database_only": 0,
+      "csv_only": 0,
+      "metrics": [
+        {
+          "key": "Daily_ET0_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Daily_PET_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Daily_AET_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Daily_Pan_Evap_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Daily_VPD_kPa",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "SPEI_Daily",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        }
+      ],
+      "different_cells": 0,
+      "examples": [],
+      "table": "4_4_potential_evaporation_daily_master",
+      "file": "section_4_4_evaporation_daily_master.csv",
+      "missing_database_columns": []
+    },
+    {
+      "section": "irrigation",
+      "database_rows": 18928,
+      "csv_rows": 18928,
+      "paired_rows": 18928,
+      "database_only": 0,
+      "csv_only": 0,
+      "metrics": [
+        {
+          "key": "CWR_mm_day",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Irrigation_Water_Demand_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Rainfall_Deficit_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Soil_Moisture_Deficit_m3m3",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Growing_Season_Temp_C",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Irrigation_Return_Flow_mm",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        }
+      ],
+      "different_cells": 0,
+      "examples": [],
+      "table": "4_5_irrigation_demand_daily_master",
+      "file": "section_4_5_irrigation_daily_master.csv",
+      "missing_database_columns": []
+    },
+    {
+      "section": "streamflow",
+      "database_rows": 1404,
+      "csv_rows": 1404,
+      "paired_rows": 1404,
+      "database_only": 0,
+      "csv_only": 0,
+      "metrics": [
+        {
+          "key": "MAR_m3_year",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Streamflow_Anomaly_percent",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Q90_LowFlow_m3_year",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Q10_FloodFlow_m3_year",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Rainfall_Runoff_Ratio",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        },
+        {
+          "key": "Climate_Streamflow_Elasticity",
+          "different_cells": 0,
+          "null_mismatches": 0,
+          "max_absolute_delta": 0.0
+        }
+      ],
+      "different_cells": 0,
+      "examples": [],
+      "table": "4_6_streamflow_and_climate_linkage_annual _master",
+      "file": "section_4_6_streamflow_annual_master.csv",
+      "missing_database_columns": []
+    }
+  ],
+  "summary": [
+    {
+      "metric": "Tmin_C",
+      "unit": "\u00b0C",
+      "database": 12.1653159341,
+      "csv": 12.1653159341,
+      "delta": 0.0
+    },
+    {
+      "metric": "Tmax_C",
+      "unit": "\u00b0C",
+      "database": 23.5822395393,
+      "csv": 23.5822395393,
+      "delta": 0.0
+    },
+    {
+      "metric": "Tavg_C",
+      "unit": "\u00b0C",
+      "database": 17.8737777367,
+      "csv": 17.8737777367,
+      "delta": 0.0
+    },
+    {
+      "metric": "Temperature_Anomaly_C",
+      "unit": "\u00b0C",
+      "database": 0.0109295822,
+      "csv": 0.0109295822,
+      "delta": 0.0
+    },
+    {
+      "metric": "Heat_Days",
+      "unit": "days",
+      "database": 4.8461538462,
+      "csv": 4.8461538462,
+      "delta": 0.0
+    },
+    {
+      "metric": "Heat_Duration",
+      "unit": "days",
+      "database": 1.5961538462,
+      "csv": 1.5961538462,
+      "delta": 0.0
+    },
+    {
+      "metric": "Frost_Days",
+      "unit": "days",
+      "database": 4.0384615385,
+      "csv": 4.0384615385,
+      "delta": 0.0
+    },
+    {
+      "metric": "LST_Day_C",
+      "unit": "\u00b0C",
+      "database": 21.7436564877,
+      "csv": 21.7436564877,
+      "delta": 0.0
+    },
+    {
+      "metric": "LST_Night_C",
+      "unit": "\u00b0C",
+      "database": 12.8676920435,
+      "csv": 12.8676920435,
+      "delta": 0.0
+    },
+    {
+      "metric": "CWD_Days",
+      "unit": "days",
+      "database": 10.3461538462,
+      "csv": 10.3461538462,
+      "delta": 0.0
+    },
+    {
+      "metric": "CDD_Days",
+      "unit": "days",
+      "database": 38.8653846154,
+      "csv": 38.8653846154,
+      "delta": 0.0
+    },
+    {
+      "metric": "Rx1day_mm",
+      "unit": "mm",
+      "database": 45.3713461538,
+      "csv": 45.3713461538,
+      "delta": 0.0
+    },
+    {
+      "metric": "Rx5day_mm",
+      "unit": "mm",
+      "database": 96.5923076923,
+      "csv": 96.5923076923,
+      "delta": 0.0
+    },
+    {
+      "metric": "PRCPTOT_mm",
+      "unit": "mm",
+      "database": 831.7857692308,
+      "csv": 831.7857692308,
+      "delta": 0.0
+    },
+    {
+      "metric": "R10mm_Days",
+      "unit": "days",
+      "database": 24.9423076923,
+      "csv": 24.9423076923,
+      "delta": 0.0
+    },
+    {
+      "metric": "R20mm_Days",
+      "unit": "days",
+      "database": 7.5,
+      "csv": 7.5,
+      "delta": 0.0
+    },
+    {
+      "metric": "SDII_mm_per_wet_day",
+      "unit": "mm/wet day",
+      "database": 6.5675,
+      "csv": 6.5675,
+      "delta": 0.0
+    },
+    {
+      "metric": "MAP_mm",
+      "unit": "mm/year",
+      "database": 869.0863461538,
+      "csv": 869.0863461538,
+      "delta": 0.0
+    },
+    {
+      "metric": "Precip_MAM_mm",
+      "unit": "mm",
+      "database": 227.7521153846,
+      "csv": 227.7521153846,
+      "delta": 0.0
+    },
+    {
+      "metric": "Precip_JJA_mm",
+      "unit": "mm",
+      "database": 57.9584615385,
+      "csv": 57.9584615385,
+      "delta": 0.0
+    },
+    {
+      "metric": "Precip_SON_mm",
+      "unit": "mm",
+      "database": 201.2801923077,
+      "csv": 201.2801923077,
+      "delta": 0.0
+    },
+    {
+      "metric": "Precip_DJF_mm",
+      "unit": "mm",
+      "database": 382.0955769231,
+      "csv": 382.0955769231,
+      "delta": 0.0
+    },
+    {
+      "metric": "Nino34_Annual_Mean",
+      "unit": "\u00b0C",
+      "database": -0.2808333333,
+      "csv": -0.2808333333,
+      "delta": 0.0
+    },
+    {
+      "metric": "Daily_ET0_mm",
+      "unit": "mm/day",
+      "database": 0.1165451183,
+      "csv": 0.1165451183,
+      "delta": 0.0
+    },
+    {
+      "metric": "Daily_PET_mm",
+      "unit": "mm/day",
+      "database": 0.1109949281,
+      "csv": 0.1109949281,
+      "delta": 0.0
+    },
+    {
+      "metric": "Daily_AET_mm",
+      "unit": "mm/day",
+      "database": 0.0421674768,
+      "csv": 0.0421674768,
+      "delta": 0.0
+    },
+    {
+      "metric": "Daily_Pan_Evap_mm",
+      "unit": "mm/day",
+      "database": 0.1442935334,
+      "csv": 0.1442935334,
+      "delta": 0.0
+    },
+    {
+      "metric": "Daily_VPD_kPa",
+      "unit": "kPa",
+      "database": 0.7727271238,
+      "csv": 0.7727271238,
+      "delta": 0.0
+    },
+    {
+      "metric": "SPEI_Daily",
+      "unit": "index",
+      "database": 0.1988286137,
+      "csv": 0.1988286137,
+      "delta": 0.0
+    },
+    {
+      "metric": "CWR_mm_day",
+      "unit": "mm/day",
+      "database": 0.0990660926,
+      "csv": 0.0990660926,
+      "delta": 0.0
+    },
+    {
+      "metric": "Irrigation_Water_Demand_mm",
+      "unit": "mm",
+      "database": 15.45025,
+      "csv": 15.45025,
+      "delta": 0.0
+    },
+    {
+      "metric": "Rainfall_Deficit_mm",
+      "unit": "mm",
+      "database": 15.3362115385,
+      "csv": 15.3362115385,
+      "delta": 0.0
+    },
+    {
+      "metric": "Soil_Moisture_Deficit_m3m3",
+      "unit": "m\u00b3/m\u00b3",
+      "database": 0.1226324651,
+      "csv": 0.1226324651,
+      "delta": 0.0
+    },
+    {
+      "metric": "Growing_Season_Temp_C",
+      "unit": "\u00b0C",
+      "database": 17.8738625317,
+      "csv": 17.8738625317,
+      "delta": 0.0
+    },
+    {
+      "metric": "Irrigation_Return_Flow_mm",
+      "unit": "mm",
+      "database": 2.3177307692,
+      "csv": 2.3177307692,
+      "delta": 0.0
+    },
+    {
+      "metric": "MAR_m3_year",
+      "unit": "m\u00b3/year",
+      "database": 8300619051.74,
+      "csv": 8300619051.74,
+      "delta": 0.0
+    },
+    {
+      "metric": "Streamflow_Anomaly_percent",
+      "unit": "%",
+      "database": 26.3830769231,
+      "csv": 26.3830769231,
+      "delta": 0.0
+    },
+    {
+      "metric": "Q90_LowFlow_m3_year",
+      "unit": "m\u00b3/year",
+      "database": 4745976328.698846,
+      "csv": 4745976328.698846,
+      "delta": 0.0
+    },
+    {
+      "metric": "Q10_FloodFlow_m3_year",
+      "unit": "m\u00b3/year",
+      "database": 8235070741.864231,
+      "csv": 8235070741.864231,
+      "delta": 0.0
+    },
+    {
+      "metric": "Rainfall_Runoff_Ratio",
+      "unit": "ratio",
+      "database": 0.9379076923,
+      "csv": 0.9379076923,
+      "delta": 0.0
+    },
+    {
+      "metric": "Climate_Streamflow_Elasticity",
+      "unit": "ratio",
+      "database": 1.0968846154,
+      "csv": 1.0968846154,
+      "delta": 0.0
+    }
+  ]
+}

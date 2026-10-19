@@ -1,0 +1,22 @@
+{
+  "mode": "development",
+  "early_map_milliseconds": 8255,
+  "initial_ready_milliseconds": 9356,
+  "district_milliseconds": 1218,
+  "status": "passed",
+  "map_districts": 52,
+  "errors": [],
+  "checks": [
+    "early independent map",
+    "district preserves national colors",
+    "latest-observation map dates and selected-period bounds",
+    "map/daily month isolation",
+    "independent errors and retries",
+    "boundary failure isolation",
+    "19 indicators",
+    "monthly/daily CSV exports and units",
+    "sparse December selection",
+    "mobile layout",
+    "forecast remains deferred"
+  ]
+}

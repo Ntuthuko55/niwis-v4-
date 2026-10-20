@@ -12,14 +12,14 @@ def normalise_row(row):
 
 def stations(date=None):
     rows = rows_at_date(TABLE, date) if date else latest_rows(TABLE)
-    return {'source': TABLE, 'date': rows[0]['date'] if rows else None,
+    return {'source': TABLE, 'source_mode': 'database', 'source_tables': [TABLE], 'date': rows[0]['date'] if rows else None,
             'station_count': len(rows),
             'stations': [{**normalise_row(r), 'name': r['district_name']} for r in rows]}
 
 
 def history(district):
     rows = region_history(TABLE, district)
-    return {'source': TABLE, 'district': rows[0]['district_name'] if rows else district,
+    return {'source': TABLE, 'source_mode': 'database', 'source_tables': [TABLE], 'district': rows[0]['district_name'] if rows else district,
             'history': [normalise_row(r) for r in rows]}
 
 
@@ -44,5 +44,5 @@ def forecast_source(region='National'):
     keys = [key for key in frame.select_dtypes(include='number').columns if key not in {'id', 'year', 'month'}]
     monthly = frame.groupby(['district_name', 'date'], as_index=False)[keys].mean()
     series = monthly.groupby('date', as_index=False)[keys].mean()
-    return {'source': TABLE, 'source_mode': 'local_csv_fallback' if any(row.get('_niwis_source') == 'local_csv_fallback' for row in rows) else 'database',
+    return {'source': TABLE, 'source_mode': 'database', 'source_tables': [TABLE],
             'region': region, 'series': json.loads(series.to_json(orient='records'))}

@@ -19,7 +19,7 @@ def metadata():
         rows = latest_rows(TABLE)
         names = sorted({row['district_name'] for row in rows})
         end = max((str(row['date'])[:10] for row in rows), default=None)
-        return {'source': TABLE, 'districts': names, 'default_end': end,
+        return {'source': TABLE, 'source_mode': 'database', 'source_tables': [TABLE], 'districts': names, 'default_end': end,
                 'default_start': str((pd.Timestamp(end) - pd.DateOffset(months=36)).date()) if end else None,
                 'default_region': next((name for name in names if normalise_region(name) == 'tshwane'), names[0] if names else None)}
     except SupabaseSourceError as exc:
@@ -40,7 +40,7 @@ def observations(region: str, start: str | None = None, end: str | None = None):
                 raise HTTPException(404, 'Hydrological district not found.')
             rows = bounded_rows(TABLE, start, end, canonical)
         records = [{key: row.get(key) for key in ('district_name', 'date', *FIELDS, '_niwis_source')} for row in rows]
-        return {'source': TABLE, 'source_mode': 'local_csv_fallback' if any(row.get('_niwis_source') == 'local_csv_fallback' for row in rows) else 'database',
+        return {'source': TABLE, 'source_mode': 'database', 'source_tables': [TABLE],
                 'region': region, 'records': records, 'record_count': len(records)}
     except SupabaseSourceError as exc:
         raise HTTPException(503, str(exc)) from exc
@@ -68,7 +68,7 @@ def forecast_source(region: str = 'National', start: str | None = None, end: str
             frame[key] = pd.to_numeric(frame[key], errors='coerce')
         monthly = frame.groupby(['district_name', 'date'], as_index=False)[available].mean()
         series = monthly.groupby('date', as_index=False)[available].mean()
-        return {'source': TABLE, 'source_mode': 'local_csv_fallback' if any(row.get('_niwis_source') == 'local_csv_fallback' for row in rows) else 'database',
+        return {'source': TABLE, 'source_mode': 'database', 'source_tables': [TABLE],
                 'region': region, 'series': __import__('json').loads(series.to_json(orient='records'))}
     except SupabaseSourceError as exc:
         raise HTTPException(503, str(exc)) from exc

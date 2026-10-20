@@ -46,7 +46,7 @@ def source_analysis(kind, rows):
             expected = calendar.monthrange(int(month[:4]), int(month[5:]))[1]
             point['observed_days'] = None if monthly_source else len(group)
             point['complete'] = True if monthly_source else len(group) == expected
-            # Monthly fallback rows already contain a monthly total. Never
+            # Monthly observation rows already contain a monthly total. Never
             # sum that value once per row as if it were a daily observation.
             if monthly_source and 'monthly_rainfall_mm_month' in group:
                 point['rainfall_mm'] = safe(pd.to_numeric(group['monthly_rainfall_mm_month'], errors='coerce').mean())
@@ -71,7 +71,7 @@ def source_analysis(kind, rows):
                            'observed_days': int(group['month_key'].nunique()) if monthly_source else len(group), 'expected_days': expected,
                            'complete': bool(group['month_key'].nunique() == expected) if monthly_source else bool(high.notna().sum() == expected and low.notna().sum() == expected)})
     return {'status': 'ok', 'latest': latest, 'monthly': monthly, 'annual': annual, 'records': len(frame),
-            'source': 'local_csv_fallback' if any(row.get('_niwis_source') == 'local_csv_fallback' for row in rows) else 'database',
+            'source': 'database',
             'start': str(frame.iloc[0]['date']), 'end': str(frame.iloc[-1]['date'])}
 
 
@@ -119,7 +119,6 @@ def seasonal_comparison(points, field):
 @router.get('/regions')
 def regions(date: str | None = None):
     result, errors = {}, {}
-    source_modes = set()
     def read(kind):
         try:
             return (rows_at_date(TABLES[kind], date) if date else latest_rows(TABLES[kind])), None
@@ -130,12 +129,11 @@ def regions(date: str | None = None):
             if error:
                 errors[kind] = error
             for row in rows:
-                source_modes.add(row.get('_niwis_source', 'database'))
                 key = normalise_region(row['district_name'])
                 item = result.setdefault(key, {'key': key, 'name': row['district_name'].title(), 'sources': {}})
                 item['sources'][kind] = {key: value for key, value in row.items() if not key.startswith('_')}
-    source = 'local_csv_fallback' if 'local_csv_fallback' in source_modes else 'database'
-    return {'regions': sorted(result.values(), key=lambda item: item['name']), 'errors': errors, 'source': source}
+    return {'regions': sorted(result.values(), key=lambda item: item['name']), 'errors': errors,
+            'source': 'database', 'source_mode': 'database', 'source_tables': list(TABLES.values())}
 
 
 @router.get('/region')
@@ -144,4 +142,5 @@ def overview(region: str = Query(..., min_length=1)):
         sources = dict(zip(TABLES, pool.map(lambda kind: load_source(kind, region), TABLES)))
     comparisons = {kind: seasonal_comparison(sources[kind]['monthly'], field) for kind, field in
                    [('meteorological', 'rainfall_mm'), ('hydrological', 'river_discharge_m3_s'), ('satellite', 'ndvi')]}
-    return {'region': region, 'sources': sources, 'alignment': aligned_analysis(sources), 'comparisons': comparisons}
+    return {'region': region, 'sources': sources, 'alignment': aligned_analysis(sources), 'comparisons': comparisons,
+            'source': 'database', 'source_mode': 'database', 'source_tables': list(TABLES.values())}

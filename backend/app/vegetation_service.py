@@ -13,7 +13,6 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
-from pathlib import Path
 from threading import BoundedSemaphore, Lock
 from time import monotonic
 from urllib.error import HTTPError, URLError
@@ -29,14 +28,6 @@ from app.dashboard_loader import cached_call, cached_result
 
 
 router = APIRouter(prefix="/vegetation", tags=["Vegetation condition"])
-
-# Retained for existing local tests and source documentation. The runtime API
-# reads Supabase; these files are never used as a fallback.
-ROOT = Path(__file__).resolve().parents[2] / "vegetation"
-FILES = [
-    "5.1_primary_satellite_vegetation_variables_sansa_master.csv",
-    "5.2_meteorological_drivers_saws_master.csv",
-]
 
 DEFAULT_TABLES = (
     "5.1_primary_satellite_vegetation_variables_sansa_master",

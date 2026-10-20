@@ -25,9 +25,8 @@ body.nw-body { background: #061a2c; }
 .nw.nw-unified-theme .nw-app > .nw-topbar { background: #0b1821; border-color: var(--rule); }
 .nw.nw-unified-theme .nw-app > .nw-nav { background: #0a1720; border-right: 1px solid var(--rule); }
 .nw.nw-unified-theme .nw-navitem.sel { background: linear-gradient(90deg, #0284c7, #0369a1); color: #fff; border-color: #259bd8; }
-.nw.nw-unified-theme .nw-studio-light { background: transparent; }
 
-.nw.nw-unified-theme :is(.climate-dashboard, .vegetation-dashboard, .rainfall-dashboard, .fc-workspace, .hydro-container) {
+.nw.nw-unified-theme :is(.climate-dashboard, .vegetation-dashboard, .rainfall-dashboard, .hydro-container) {
   color: var(--dashboard-text);
 }
 .nw.nw-unified-theme .nw-main :is(h1, h2, h3) { color: var(--dashboard-text); }
@@ -37,11 +36,7 @@ body.nw-body { background: #061a2c; }
   .vg-panel, .vg-filters, .vg-kpi, .vg-register, .vg-methods,
   .rf-panel, .rf-filters, .rf-kpi, .rf-index-strip, .rf-register, .rf-methods,
   .ro-water-path, .sw-source-strip, .nw-panel, .nw-kpi,
-  .hydro-header, .hydro-card, .hydro-kpi, .hydro-map-container,
-  .fc-map-card, .province-dashboard, .province-controls, .province-chart,
-  .upload-section, .preview-section, .analysis-section, .dataset-overview,
-  .time-axis-section, .model-guide, .model-training, .dashboard-panel,
-  .quick-start, .quick-step, .ts-card, .ts-panel, .ts-summary-card
+  .hydro-header, .hydro-card, .hydro-kpi, .hydro-map-container
 ) {
   background: var(--dashboard-surface);
   border-color: var(--dashboard-border);
@@ -192,10 +187,6 @@ body.nw-body { background: #061a2c; }
 @media(max-width:600px){.dashboard-forecast-studio{padding:13px}.dashboard-forecast-controls{grid-template-columns:1fr}.dashboard-forecast-result{flex-direction:column;gap:4px}}
 .nw.nw-unified-theme .js-plotly-plot :is(.xtick, .ytick, .g-xtitle, .g-ytitle, .g-gtitle) text { fill: #b4d1e5 !important; }
 
-.nw.nw-unified-theme :is(.fc-header, .ts-header, .app-header) { background: var(--dashboard-surface); }
-.nw.nw-unified-theme :is(.fc-workspace, .model-training, .app-shell) { color: var(--dashboard-text); }
-.nw.nw-unified-theme :is(.fc-map-card, .province-controls, .model-training, .app-shell) :is(label, p) { color: var(--dashboard-muted); }
-.nw.nw-unified-theme :is(.sa-map, .sa-map-wrap, .province-buttons, .fc-prov-btn) { background: var(--dashboard-control); border-color: var(--dashboard-border); color: var(--dashboard-text); }
 
 .municipality-map { width: 100%; min-width: 0; }
 .nw .municipality-map-caption { min-height: 38px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 8px 0; font-size: 11px; line-height: 1.5; color: #85a9c2; }

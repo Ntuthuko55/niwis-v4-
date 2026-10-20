@@ -1,0 +1,51 @@
+{
+  "checks": [
+    "Retired standalone API routes return 404",
+    "Desktop navigation excludes both pages; Runoff database charts and 52 districts remain",
+    "Retained dashboard forecast: real Runoff source, registration, Naive worker, polling and six plotted future observations",
+    "Mobile menu retains monitoring navigation and fits the viewport",
+    "Removed page bookmarks fall back to Drought Monitoring"
+  ],
+  "errors": [],
+  "csv_requests": [],
+  "api_responses": [
+    {
+      "path": "/api/runoff/metadata",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ]
+    },
+    {
+      "path": "/api/runoff/dashboard",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ],
+      "map_rows": 52
+    },
+    {
+      "path": "/api/runoff/forecast-source",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ]
+    },
+    {
+      "path": "/api/runoff/daily",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ]
+    }
+  ],
+  "status": "passed"
+}

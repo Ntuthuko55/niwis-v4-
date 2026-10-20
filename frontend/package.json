@@ -9,10 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@highcharts/map-collection": "^2.3.3",
     "axios": "^1.6.5",
-    "highcharts": "^13.0.2",
-    "highcharts-react-official": "^3.2.3",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.468.0",
     "plotly.js": "^4.0.0",

@@ -71,9 +71,16 @@ async def check(models, live):
     failed = await main.start_training(ModelTrainingRequest(
         dataset_id=loaded.dataset_id, model_type='lstm', date_column=loaded.index_column,
         target='spi_3', features=[], forecast_steps=365))
+    deadline = time.monotonic() + 90
+    while True:
+        status = await main.training_status(failed.job_id)
+        if status['status'] in {'completed', 'failed'} or time.monotonic() >= deadline:
+            break
+        await asyncio.sleep(.2)
+    assert status['status'] == 'failed' and 'input feature' in status['message'], status
     await asyncio.sleep(3)
     status = await main.training_status(failed.job_id)
-    assert status['status'] == 'failed' and 'input feature' in status['message']
+    assert status['status'] == 'failed' and 'input feature' in status['message'], status
     assert status['progress'] == 100
     print('PASS failure reporting and progress cleanup', flush=True)
     assert not failures, '\n'.join(failures)

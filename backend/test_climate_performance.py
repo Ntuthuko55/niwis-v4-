@@ -7,7 +7,7 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 
-from app import climate_service as service, climate_source as source, climate_csv_source as csv
+from app import climate_service as service, climate_source as source
 from app.dashboard_loader import clear_dashboard_cache
 
 
@@ -163,8 +163,7 @@ class ClimateAdapterScopeTests(unittest.TestCase):
         def read(url, key):
             requests.append(parse_qs(urlparse(url).query))
             return [{'District_Name': 'Vhembe', 'Date': '2024-02-29', 'Tavg_C': 24.5}]
-        with patch.object(source, 'local_csv_enabled', return_value=False), \
-                patch.object(source, 'postgres_enabled', return_value=False), \
+        with patch.object(source, 'postgres_enabled', return_value=False), \
                 patch.object(source, 'settings', return_value=('https://test.invalid', 'test', dict(zip(source.SECTIONS, source.DEFAULT_TABLES)))), \
                 patch.object(source, 'read_daily_window', side_effect=read), \
                 patch.object(source, 'read_all', side_effect=AssertionError('Unrequested table read')):
@@ -176,13 +175,12 @@ class ClimateAdapterScopeTests(unittest.TestCase):
         self.assertEqual(requests[0]['District_Name'], ['eq.Vhembe'])
         self.assertEqual(requests[0]['select'], ['District_Name,Date,Tavg_C'])
 
-    def test_explicit_csv_source_honours_same_section_and_date_bounds(self):
-        frame = pd.DataFrame({'District_Name': ['Vhembe'] * 3, 'Date': pd.to_datetime(['2024-02-28', '2024-02-29', '2024-03-01']),
-                              'Year': [2024] * 3, 'Tavg_C': [20, 21, 22]})
-        with patch.object(csv, '_check_files'), patch.object(csv, '_load', return_value=frame) as load:
-            result = csv.read_frames({'temperature': ['Tavg_C']}, 2024, 2024, 'Vhembe', '2024-02-29', '2024-03-01')
-        self.assertEqual(load.call_count, 1)
-        self.assertEqual(result['temperature'].Tavg_C.tolist(), [21])
+    def test_old_csv_setting_cannot_enable_file_reads(self):
+        with patch.dict('os.environ', {'NIWIS_CLIMATE_SOURCE': 'csv'}), \
+                patch('pandas.read_csv', side_effect=AssertionError('CSV reads forbidden')), \
+                patch.object(source, 'settings', return_value=('https://test.invalid', 'test', dict(zip(source.SECTIONS, source.DEFAULT_TABLES)))):
+            self.assertEqual(source.source_label(), 'Supabase')
+            self.assertNotEqual(source.signature()[0], 'csv')
 
 
 if __name__ == '__main__':

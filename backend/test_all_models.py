@@ -1,15 +1,17 @@
-import sys
-import os
 import pandas as pd
 import numpy as np
 
 from app.model_training import train_model
 
 def test_all_models():
-    # Load KZN data
-    csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'South_Africa_Provinces', 'KwaZulu_Natal.csv')
-    df = pd.read_csv(csv_path)
-    print(f"Loaded dataset: shape={df.shape}, columns={list(df.columns[:5])}")
+    # Reproducible daily signals cover seasonal and multivariate models without
+    # depending on a local province export or machine-specific data directory.
+    dates = pd.date_range('2015-01-01', periods=365 * 6, freq='D')
+    steps = np.arange(len(dates), dtype=float)
+    df = pd.DataFrame({'date': dates,
+                       'daily_rainfall': 3. + np.sin(steps * 2 * np.pi / 365.25) + .2 * np.cos(steps / 7),
+                       'temperature': 20. + 4 * np.sin(steps * 2 * np.pi / 365.25 + .3),
+                       'soil_moisture': .4 + .1 * np.cos(steps * 2 * np.pi / 365.25)})
 
     models = [
         'auto', 'naive', 'historicaverage', 'windowaverage', 'seasonalnaive',
@@ -34,6 +36,8 @@ def test_all_models():
         }
         try:
             res = train_model(df, config)
+            assert res.get('forecast_values'), f'{m} produced no forecast values'
+            assert np.isfinite(res['forecast_values']).all(), f'{m} produced nonfinite forecasts'
             print(f"SUCCESS: {m} -> model_type={res.get('model_type')}, forecast_len={len(res.get('forecast_values', []))}, metrics={res.get('metrics')}")
             results[m] = "OK"
         except Exception as e:
@@ -45,6 +49,8 @@ def test_all_models():
     print("\n================ SUMMARY ================")
     for m, status in results.items():
         print(f"{m:20s}: {status}")
+    failures = {model: status for model, status in results.items() if status != 'OK'}
+    assert not failures, f'Model failures: {failures}'
 
 if __name__ == '__main__':
     test_all_models()

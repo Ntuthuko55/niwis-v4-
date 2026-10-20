@@ -12,7 +12,6 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
-from pathlib import Path
 from threading import Lock
 from time import monotonic
 from urllib.parse import quote, urlencode
@@ -25,11 +24,7 @@ from app.supabase_source import SupabaseSourceError, _request_page, _settings
 
 router = APIRouter(prefix="/surface-water", tags=["Surface water network"])
 TABLE_ENV = "NIWIS_SUPABASE_TABLES_MODULE_7"
-DEFAULT_TABLES = ("9_1_hydrological_station_master", "9_2_catchment_master", "9_3_sansa_earth_observation_master")
-FILES = ["section_9_1_complete_unified_master_2000_2026.csv", "section_9_2_catchment_characteristics_master.csv", "section_9_3_sansa_earth_observation_master_2000_2026.csv"]
-# Kept as a compatibility constant for existing service-level tests and
-# reports; runtime reads never use the packaged CSVs.
-ROOT = Path(__file__).resolve().parents[2] / "Surface Water Monitoring Network"
+DEFAULT_TABLES = ("9_1_hydrological_station_master", "9_2_catchment_characteristics_master", "9_3_sansa_earth_observation_master")
 PAGE_SIZE = 1000
 SCHEMA_TTL_SECONDS = 900
 READ_CACHE_TTL_SECONDS = 300
@@ -159,7 +154,7 @@ def _snapshot_cached(base: str, key: str, configured: tuple[str, str, str], epoc
         kind = kinds[index]; descriptor = {"table": table, "configured_table": configured[index], "columns": _column_descriptors(table_properties, sample)}
         descriptors.append(descriptor); columns[kind] = [item["name"] for item in descriptor["columns"]]; properties[kind] = table_properties; samples[kind] = sample
     district = {kind: _find_column(columns[kind], "district_name", "district", "region") for kind in kinds}
-    date = {kind: _find_column(columns[kind], "date", "observation_date", "record_date") for kind in ("hydro", "eo")}
+    date = {kind: _find_column(columns[kind], "date", "observation_date", "record_date") for kind in kinds}
     if any(not district[kind] for kind in kinds) or any(not date[kind] for kind in ("hydro", "eo")):
         raise SupabaseSourceError("Module 7 tables must expose district_name and date columns where applicable.")
     missing = [name for name in HYDRO if _find_column(columns["hydro"], name) is None] + [name for name in EO if _find_column(columns["eo"], name) is None] + [name for name, _ in LAND if _find_column(columns["catchments"], name) is None]
@@ -177,7 +172,7 @@ def _date_windows(start: str, end: str) -> list[tuple[pd.Timestamp, pd.Timestamp
     return windows
 
 def _read_daily(snapshot: dict, kind: str, start: str, end: str, region: str | None) -> pd.DataFrame:
-    cache_key = (kind, snapshot["tables"][kind], start, end, region or "National"); cached = _cached_frame(cache_key)
+    cache_key = (kind, snapshot['base'], hash(snapshot['key']), snapshot["tables"][kind], start, end, region or "National"); cached = _cached_frame(cache_key)
     if cached is not None: return cached
     table, district, date = snapshot["tables"][kind], snapshot["district"][kind], snapshot["date"][kind]; actual_map = snapshot["hydro_actual"] if kind == "hydro" else snapshot["eo_actual"]; actual = list(actual_map.values()); columns = [district, date, *actual]; windows = _date_windows(start, end)
     def read(window):
@@ -193,22 +188,39 @@ def _read_daily(snapshot: dict, kind: str, start: str, end: str, region: str | N
             if column in frame: frame[column] = pd.to_numeric(frame[column], errors="coerce")
     _store_frame(cache_key, frame); return frame
 
-def _read_catchments(snapshot: dict) -> pd.DataFrame:
-    cache_key = ("catchments", snapshot["tables"]["catchments"]); cached = _cached_frame(cache_key)
+def _read_catchments(snapshot: dict, month: str | None = None) -> pd.DataFrame:
+    date = snapshot['date'].get('catchments')
+    if date and month is None:
+        raise SupabaseSourceError('Choose a month for dated catchment characteristics.')
+    cache_key = ("catchments", snapshot['base'], hash(snapshot['key']), snapshot["tables"]["catchments"], month if date else None); cached = _cached_frame(cache_key)
     if cached is not None: return cached
     district = snapshot["district"]["catchments"]; actual = list(snapshot["catchment_actual"].values()); available = snapshot["columns"]["catchments"]
-    wanted = [district, *actual, "dominant_hsg", "hsg_a_pct", "hsg_b_pct", "hsg_c_pct", "hsg_d_pct", "catchment_area_km2", "mean_slope_degrees", "mean_twi", "vegetation_cover_pct"]; columns = list(dict.fromkeys(column for column in wanted if column in available))
-    rows = _read_pages(snapshot["base"], snapshot["key"], snapshot["tables"]["catchments"], {"select": ",".join(columns), "order": f"{district}.asc"})
-    frame = pd.DataFrame(rows, columns=columns).rename(columns={district: "district_name", **{actual: source for source, actual in snapshot["catchment_actual"].items()}})
+    wanted = [district, date, *actual, "dominant_hsg", "hsg_a_pct", "hsg_b_pct", "hsg_c_pct", "hsg_d_pct", "catchment_area_km2", "mean_slope_degrees", "mean_twi", "vegetation_cover_pct"]; columns = list(dict.fromkeys(column for column in wanted if column in available))
+    params = {"select": ",".join(columns), "order": f"{district}.asc"}
+    if date:
+        period = pd.Period(month, freq='M')
+        params.update({date: f'gte.{period.start_time:%Y-%m-%d}', 'and': f'({date}.lt.{(period + 1).start_time:%Y-%m-%d})', 'order': f'{district}.asc,{date}.asc'})
+    rows = _read_pages(snapshot["base"], snapshot["key"], snapshot["tables"]["catchments"], params)
+    rename = {district: "district_name", **{actual: source for source, actual in snapshot["catchment_actual"].items()}}
+    if date:
+        rename[date] = 'date'
+    frame = pd.DataFrame(rows, columns=columns).rename(columns=rename)
+    if date:
+        frame['date'] = pd.to_datetime(frame['date'], errors='coerce')
+        frame = frame.dropna(subset=['district_name', 'date'])
+        attributes = [column for column in frame if column not in ('district_name', 'date')]
+        if not frame.empty and frame.groupby(['district_name', 'date'])[attributes].nunique(dropna=False).gt(1).any().any():
+            raise SupabaseSourceError('Conflicting catchment characteristics were found for the same district and date.')
+        frame = frame.sort_values(['district_name', 'date'], kind='stable')
     for column in frame.columns:
-        if column not in ("district_name", "dominant_hsg"): frame[column] = pd.to_numeric(frame[column], errors="coerce")
+        if column not in ("district_name", "dominant_hsg", "date"): frame[column] = pd.to_numeric(frame[column], errors="coerce")
     frame = frame.drop_duplicates("district_name", keep="last"); _store_frame(cache_key, frame); return frame
 
 def _descriptor_rows(snapshot: dict) -> list[dict]:
     result = []
     for index, descriptor in enumerate(snapshot["descriptors"]):
         kind = ("hydro", "catchments", "eo")[index]; table = descriptor["table"]; district = snapshot["district"][kind]
-        if kind == "catchments": select, first_order, last_order = district, f"{district}.asc", f"{district}.desc"
+        if kind == "catchments" and not snapshot['date'].get(kind): select, first_order, last_order = district, f"{district}.asc", f"{district}.desc"
         else:
             date = snapshot["date"][kind]; select, first_order, last_order = f"{district},{date}", f"{date}.asc", f"{date}.desc"
         first, content_range = _request_page(_table_url(snapshot["base"], table, {"select": select, "order": first_order, "limit": "1"}), snapshot["key"], 0, 0, count_exact=False); last, _ = _request_page(_table_url(snapshot["base"], table, {"select": select, "order": last_order, "limit": "1"}), snapshot["key"], 0, 0)
@@ -220,7 +232,10 @@ def _descriptor_rows(snapshot: dict) -> list[dict]:
 def _metadata_snapshot(snapshot: dict) -> dict:
     descriptors = _descriptor_rows(snapshot); hydro_date, eo_date = snapshot["date"]["hydro"], snapshot["date"]["eo"]; hydro_first, hydro_last = descriptors[0]["first"] or {}, descriptors[0]["last"] or {}; eo_last = descriptors[2]["last"] or {}
     first_date, last_date = str(hydro_first.get(hydro_date, ""))[:10], str(hydro_last.get(hydro_date, ""))[:10]; months = [str(period) for period in pd.period_range(pd.Period(first_date[:7], freq="M"), pd.Period(last_date[:7], freq="M"), freq="M")]
-    catchments = _read_catchments(snapshot); region_count = catchments.district_name.nunique(); default_end = months[-1]
+    catchment_date = snapshot['date'].get('catchments')
+    catchment_first = (descriptors[1]['first'] or {}).get(catchment_date) if catchment_date else None
+    catchment_last = (descriptors[1]['last'] or {}).get(catchment_date) if catchment_date else None
+    catchments = _read_catchments(snapshot, str(catchment_last)[:7] if catchment_last else None); region_count = catchments.district_name.nunique(); default_end = months[-1]
     # The newest daily month can be partial. Walk back only as far as needed
     # to find the newest month with every district and every calendar day.
     for candidate in reversed(months[-12:]):
@@ -230,9 +245,9 @@ def _metadata_snapshot(snapshot: dict) -> dict:
         if len(counts) == region_count and bool(counts.eq(pd.Period(candidate, freq="M").days_in_month).all()):
             default_end = candidate
             break
-    kinds = ("hydro", "catchments", "eo"); cadence = {"hydro": "Daily hydrological rows", "catchments": "Static district characteristics", "eo": "Monthly earth-observation composites"}; source_rows = [{"file": descriptor["table"], "table": descriptor["table"], "rows": descriptor["rows"], "cadence": cadence[kinds[index]], "attribution": "Hydrological observations" if kinds[index] == "hydro" else "Catchment characteristics" if kinds[index] == "catchments" else "SANSA earth observation"} for index, descriptor in enumerate(descriptors)]
+    kinds = ("hydro", "catchments", "eo"); cadence = {"hydro": "Daily hydrological rows", "catchments": "Dated catchment snapshots" if catchment_date else "Undated district characteristics", "eo": "Monthly earth-observation composites"}; source_rows = [{"file": descriptor["table"], "table": descriptor["table"], "rows": descriptor["rows"], "cadence": cadence[kinds[index]], "attribution": "Hydrological observations" if kinds[index] == "hydro" else "Catchment characteristics" if kinds[index] == "catchments" else "SANSA earth observation"} for index, descriptor in enumerate(descriptors)]
     regions = sorted(str(value) for value in catchments.district_name.dropna().unique())
-    return {"source": "Supabase", "source_tables": [descriptor["table"] for descriptor in descriptors], "schema": descriptors, "regions": regions, "months": months, "default_start": max(months[0], str(pd.Period(default_end, freq="M") - 23)), "default_end": default_end, "latest_daily_date": str(hydro_last.get(hydro_date))[:10] if hydro_last else None, "latest_eo_month": str(eo_last.get(eo_date))[:7] if eo_last else None, "first_date": first_date, "rows": [descriptor["rows"] for descriptor in descriptors], "metrics": [{"key": key, "label": label, "unit": unit, "category": category, "method": method} for key, label, unit, category, method in METRICS], "files": [descriptor["table"] for descriptor in descriptors], "sources": source_rows}
+    return {"source": "Supabase", "source_tables": [descriptor["table"] for descriptor in descriptors], "schema": descriptors, "regions": regions, "months": months, "default_start": max(months[0], str(pd.Period(default_end, freq="M") - 23)), "default_end": default_end, "latest_daily_date": str(hydro_last.get(hydro_date))[:10] if hydro_last else None, "latest_eo_month": str(eo_last.get(eo_date))[:7] if eo_last else None, "first_date": first_date, "rows": [descriptor["rows"] for descriptor in descriptors], "metrics": [{"key": key, "label": label, "unit": unit, "category": category, "method": method} for key, label, unit, category, method in METRICS], "files": [descriptor["table"] for descriptor in descriptors], "sources": source_rows, 'catchments_dated': bool(catchment_date), 'first_catchment_date': catchment_first, 'latest_catchment_date': catchment_last}
 
 def _metadata() -> dict:
     with _METADATA_LOCK:
@@ -278,25 +293,43 @@ def _rainfall_context(region, start, end):
     except (HTTPException, SupabaseSourceError, OSError, ValueError, KeyError):
         return {"status": "unavailable", "source": "Rainfall Status module", "series": []}
 
+
+def _catchment_profile(catchments, region, month, regions):
+    rows = catchments if region == 'National' else catchments[catchments.district_name.eq(region)]
+    profile = rows.mean(numeric_only=True).to_dict()
+    profile['soil_groups'] = sorted(rows.dominant_hsg.dropna().unique().tolist()) if 'dominant_hsg' in rows else []
+    profile['land_cover_sum'] = rows[[key for key, _ in LAND]].sum(axis=1, min_count=len(LAND)).mean()
+    profile['land_cover_valid_partition'] = bool(pd.notna(profile['land_cover_sum']) and abs(profile['land_cover_sum'] - 100) <= .1)
+    expected = set(regions) if region == 'National' else {region}
+    present = set(rows.district_name)
+    dated = 'date' in rows
+    dates = rows.date.dropna() if dated else pd.Series(dtype='datetime64[ns]')
+    coverage = {'month': month if dated else None, 'districts': len(present), 'expected_districts': len(expected),
+                'missing_districts': sorted(expected - present),
+                'first_date': dates.min().strftime('%Y-%m-%d') if not dates.empty else None,
+                'last_date': dates.max().strftime('%Y-%m-%d') if not dates.empty else None}
+    return profile, coverage
+
 def _dashboard(region="National", start=None, end=None):
-    snapshot, meta = _snapshot(), _metadata(); start, end = start or meta["default_start"], end or meta["default_end"]; _validate(meta, region, start, end); history_start = max(meta["months"][0], str(pd.Period(start, freq="M") - 12)); requested = None if region == "National" else region; hydro, eo = _load_period(snapshot, history_start, end, requested); catchments = _read_catchments(snapshot); _, monthly, _ = prepare(hydro, catchments, eo); scoped = monthly if region == "National" else monthly[monthly.district_name.eq(region)]; full = scoped.groupby("period").mean(numeric_only=True); full["complete"] = scoped.groupby("period").complete.all(); full["volume_conflict"] = scoped.groupby("period").volume_conflict.any(); full.loc[full.volume_conflict, "reported_monthly_volume"] = np.nan; selected = full.loc[start:end].copy()
+    snapshot, meta = _snapshot(), _metadata(); start, end = start or meta["default_start"], end or meta["default_end"]; _validate(meta, region, start, end); history_start = max(meta["months"][0], str(pd.Period(start, freq="M") - 12)); requested = None if region == "National" else region; hydro, eo = _load_period(snapshot, history_start, end, requested); catchments = _read_catchments(snapshot, end); _, monthly, _ = prepare(hydro, catchments, eo); scoped = monthly if region == "National" else monthly[monthly.district_name.eq(region)]; full = scoped.groupby("period").mean(numeric_only=True); full["complete"] = scoped.groupby("period").complete.all(); full["volume_conflict"] = scoped.groupby("period").volume_conflict.any(); full.loc[full.volume_conflict, "reported_monthly_volume"] = np.nan; selected = full.loc[start:end].copy()
     if selected.empty: raise HTTPException(404, "No surface-water observations are available for this selection.")
     for month, row in selected.iterrows():
         prior = str(pd.Period(month, freq="M") - 12); selected.loc[month, "previous_discharge"] = full.loc[prior, "discharge"] if row.complete and prior in full.index and full.loc[prior, "complete"] else np.nan
     map_monthly = monthly
     if region != "National":
         map_hydro, map_eo = _load_period(snapshot, end, end, None); _, map_monthly, _ = prepare(map_hydro, catchments, map_eo)
-    maps = map_monthly[map_monthly.period.eq(end)]; profile_rows = catchments if region == "National" else catchments[catchments.district_name.eq(region)]; profile = profile_rows.mean(numeric_only=True).to_dict(); profile["soil_groups"] = sorted(profile_rows.dominant_hsg.dropna().unique().tolist()) if "dominant_hsg" in profile_rows else []; profile["land_cover_sum"] = profile_rows[[key for key, _ in LAND if key in profile_rows]].sum(axis=1).mean(); profile["land_cover_valid_partition"] = bool(abs(profile["land_cover_sum"] - 100) <= .1); coverage = scoped[scoped.period.between(start, end)]; latest = selected.iloc[-1].to_dict(); rating = None if region == "National" else {key: latest.get(key) for key in ["rating_a", "rating_b", "rating_r2"]}
+    maps = map_monthly[map_monthly.period.eq(end)]; profile, catchment_coverage = _catchment_profile(catchments, region, end, meta['regions']); coverage = scoped[scoped.period.between(start, end)]; latest = selected.iloc[-1].to_dict(); rating = None if region == "National" else {key: latest.get(key) for key in ["rating_a", "rating_b", "rating_r2"]}
     weather = _rainfall_context(region, start, end); weather_by_month = {row["month"]: row for row in weather["series"]}; selected["rainfall"] = [weather_by_month.get(month, {}).get("rainfall", np.nan) for month in selected.index]; selected["rainfall_complete"] = [weather_by_month.get(month, {}).get("complete", False) for month in selected.index]; matched = selected[selected.complete & selected.rainfall_complete][["discharge", "rainfall"]].dropna(); correlation = matched.discharge.corr(matched.rainfall) if len(matched) >= 12 and matched.discharge.std() > 1e-12 and matched.rainfall.std() > 1e-12 else None
     warnings = ["This dataset covers 52 districts with daily rows. It does not identify individual gauges, provide station coordinates or contain 15-minute telemetry. BFI is not supplied."]
     if coverage.volume_conflict.any(): warnings.append("Reported monthly flow has conflicting values within selected months. Those monthly source volumes are unavailable; daily-derived volumes remain separate and visible.")
     if coverage.flow_mismatch_days.sum() > 0: warnings.append("Reported discharge and daily volume / 86,400 disagree in this selection. They are displayed separately and must not be treated as interchangeable measurements.")
-    if not profile["land_cover_valid_partition"]: warnings.append("The eight supplied land-cover percentages do not sum to 100%. They are shown as independent reported values, without renormalising or drawing a composition pie.")
+    if catchment_coverage['missing_districts']: warnings.append(f"Catchment characteristics are unavailable for {len(catchment_coverage['missing_districts'])} selected district(s) in {end}. No attributes are filled from a different month.")
+    if pd.notna(profile['land_cover_sum']) and not profile["land_cover_valid_partition"]: warnings.append("The eight supplied land-cover percentages do not sum to 100%. They are shown as independent reported values, without renormalising or drawing a composition pie.")
     if not selected.complete.all(): warnings.append("Partial daily coverage is present. Observed totals are not extrapolated to a full month; same-month comparisons and rainfall correlations require complete months.")
-    return clean({"source": "Supabase", "source_tables": meta["source_tables"], "region": region, "start": start, "end": end, "latest_daily_date": meta["latest_daily_date"], "latest_eo_month": meta["latest_eo_month"], "series": selected.reset_index().rename(columns={"period": "month"}).to_dict("records"), "latest": latest, "summary": {"volume": selected.volume.sum(min_count=1), "sediment_total": selected.sediment_total.sum(min_count=1)}, "map": maps.to_dict("records"), "profile": profile, "rating": rating, "land_cover": [{"label": label, "percent": profile.get(key)} for key, label in LAND], "soil": [{"label": group, "percent": profile.get(f"hsg_{group.lower()}_pct")} for group in "ABCD"], "coverage": {"observed_days": coverage.observed_days.sum(), "expected_days": coverage.expected_days.sum(), "complete_months": int(selected.complete.sum()), "months": len(selected), "conflicting_district_months": int(coverage.volume_conflict.sum()), "flow_mismatch_days": int(coverage.flow_mismatch_days.sum())}, "weather": {**weather, "correlation": correlation, "paired_months": len(matched)}, "warnings": warnings})
+    return clean({"source": "Supabase", "source_tables": meta["source_tables"], "region": region, "start": start, "end": end, "latest_daily_date": meta["latest_daily_date"], "latest_eo_month": meta["latest_eo_month"], "series": selected.reset_index().rename(columns={"period": "month"}).to_dict("records"), "latest": latest, "summary": {"volume": selected.volume.sum(min_count=1), "sediment_total": selected.sediment_total.sum(min_count=1)}, "map": maps.to_dict("records"), "profile": profile, "catchment_coverage": catchment_coverage, "rating": rating, "land_cover": [{"label": label, "percent": profile.get(key)} for key, label in LAND], "soil": [{"label": group, "percent": profile.get(f"hsg_{group.lower()}_pct")} for group in "ABCD"], "coverage": {"observed_days": coverage.observed_days.sum(), "expected_days": coverage.expected_days.sum(), "complete_months": int(selected.complete.sum()), "months": len(selected), "conflicting_district_months": int(coverage.volume_conflict.sum()), "flow_mismatch_days": int(coverage.flow_mismatch_days.sum())}, "weather": {**weather, "correlation": correlation, "paired_months": len(matched)}, "warnings": warnings})
 
 def _forecast_source(region="National", start=None, end=None):
-    meta = _metadata(); end = end or meta["default_end"]; start = start or max(meta["months"][0], str(pd.Period(end, freq="M") - 35)); _validate(meta, region, start, end); snapshot = _snapshot(); catchments = _read_catchments(snapshot); hydro, eo = _load_period(snapshot, start, end, None if region == "National" else region); _, monthly, _ = prepare(hydro, catchments, eo); scoped = monthly if region == "National" else monthly[monthly.district_name.eq(region)]; series = scoped.groupby("period").mean(numeric_only=True); series["complete"] = scoped.groupby("period").complete.all()
+    meta = _metadata(); end = end or meta["default_end"]; start = start or max(meta["months"][0], str(pd.Period(end, freq="M") - 35)); _validate(meta, region, start, end); snapshot = _snapshot(); catchments = _read_catchments(snapshot, end); hydro, eo = _load_period(snapshot, start, end, None if region == "National" else region); _, monthly, _ = prepare(hydro, catchments, eo); scoped = monthly if region == "National" else monthly[monthly.district_name.eq(region)]; series = scoped.groupby("period").mean(numeric_only=True); series["complete"] = scoped.groupby("period").complete.all()
     if series.empty: raise HTTPException(404, "No surface-water observations are available for this forecast selection.")
     return clean({"source": "Supabase", "source_tables": meta["source_tables"], "region": region, "start": start, "end": end, "series": series.reset_index().rename(columns={"period": "month"}).to_dict("records"), "metrics": [{"key": key, "label": label, "unit": unit, "category": category, "method": method} for key, label, unit, category, method in METRICS]})
 

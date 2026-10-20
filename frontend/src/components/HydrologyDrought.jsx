@@ -1026,7 +1026,7 @@ export default function HydrologyDrought() {
           <span>|</span>
           <span>{districts.length} Districts &amp; Municipalities</span>
           <span>|</span>
-          <span>{parsedData.some(row => row._niwis_source === 'local_csv_fallback') ? 'Source: Packaged observations (database unavailable)' : 'Source: Database hydrological_drought_master'}</span>
+          <span>Source: Database hydrological_drought_master</span>
           <span>|</span>
           <span>Data-driven Decisions for a Water Secure South Africa</span>
         </div>

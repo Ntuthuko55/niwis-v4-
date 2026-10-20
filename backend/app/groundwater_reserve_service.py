@@ -13,7 +13,6 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 import pandas as pd
-from pathlib import Path
 from fastapi import APIRouter, HTTPException
 
 from app.dashboard_loader import dashboard_cache
@@ -25,11 +24,6 @@ RESERVE_TABLE_ENV = "NIWIS_SUPABASE_TABLES_MODULE_11"
 DEFAULT_TABLES = ("11_1_hydrogeological", "11.2_recharge_and_discharge", "11.3_aquifer_sustainability")
 PAGE_SIZE = 1000
 SCHEMA_TTL_SECONDS = 900
-
-# Kept for compatibility with existing reports/tests. Runtime reads are
-# database-first and do not use these files.
-ROOT = Path(__file__).resolve().parents[2] / "Groundwater Reserve Assessment"
-FILES = ["11.1_hydrogeological_unified_timeseries.csv", "11.2_recharge_discharge_unified_timeseries.csv", "11.3_aquifer_sustainability_unified_timeseries.csv"]
 
 METRICS = {
     "water_table_depth_m_bgl": ("Depth to water table", "m bgl", "Hydrogeology", "Supplied monthly water-table depth"),

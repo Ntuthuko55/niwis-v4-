@@ -43,7 +43,7 @@ Open the local Vite URL displayed in the terminal. The frontend proxies API requ
 ## Project layout
 
 - `frontend/` - React and Vite dashboard
-- `backend/` - FastAPI services and analysis pipelines
+- `backend/` - FastAPI monitoring services and shared forecast models
 - `csv's/` - local climate, hydrology, and satellite input data
 - `South_Africa_Provinces/` - provincial source datasets
 
@@ -54,6 +54,31 @@ and the location of the recovery archive.
 
 The large reservoir reference CSV is stored using Git LFS. Install Git LFS and
 run `git lfs pull` after cloning if the dataset has not downloaded automatically.
+
+Runoff Status reads `runoff_variables_master` and
+`7.2_derived_runoff_indicators_master` from Supabase. Set the server-only
+`NIWIS_SUPABASE_TABLES_RUNOFF` in that order to override their names. Reads are
+bounded by month, paginated, and cached; the original runoff CSVs remain comparison
+and test inputs. Database errors are reported without switching to local files.
+
+Surface Water Monitoring uses the dated `9_2_catchment_characteristics_master`
+relation for the selected end month's catchment profile. Its hydrology and
+earth-observation tables retain their own date coverage. See the
+[section 9 database date check](output/surface-water-data-report/Database-Date-Update.md).
+
+Analysis Studio and Prediction Engine have been removed, including their
+exclusive frontend/backend files and standalone APIs. Forecast panels inside
+monitoring dashboards remain available. See the
+[removal report](output/deployment-audit/Dashboard-Removal.md).
+
+Drought Monitoring, Hydrological Drought and Satellite & Remote Sensing Drought
+now read `meteorological_drought_master`, `hydrological_drought_master` and
+`satellite_remote_sensing` directly from the database. CSV fallback has been
+removed. Source failures appear explicitly; maps retain all 52 districts.
+Meteorological charts and forecasts share the same paginated source cache.
+See the [drought database verification](output/drought-database/Drought-Database-Migration.md)
+for schema, coverage and API/browser checks. In the current database configuration,
+no dashboard requires a runtime CSV file. Original datasets remain reference inputs.
 
 ## Notes
 
@@ -76,8 +101,8 @@ pagination checks.
 The dashboard shows available years and flags selections shorter than 30 years
 and records that do not span the 1981–2010 temperature baseline.
 
-The Groundwater Reserve Assessment module reads the three section 11 files in
-`Groundwater Reserve Assessment/`. It keeps dynamic and static reserve as
+The Groundwater Reserve Assessment module reads the three section 11 database
+relations. Files in `Groundwater Reserve Assessment/` remain comparison inputs. It keeps dynamic and static reserve as
 supplied indicators and derives a signed storage change and reserve balance
 from water-table depth, aquifer area, the supplied storage coefficient and
 abstraction. The ecological reserve is reported as unavailable because it is
@@ -89,8 +114,8 @@ Section 11 and section 12 service tests can be run with:
 .\.venv\Scripts\python.exe -m unittest test_groundwater_reserve_service.py test_water_quality_service.py
 ```
 
-The Water Quality Monitoring Network module reads the four section 12 files in
-`water Quality Monitor/`. Physical, chemical, biological and SANSA proxy
+The Water Quality Monitoring Network module reads the four section 12 database
+relations. Files in `water Quality Monitor/` remain comparison inputs. Physical, chemical, biological and SANSA proxy
 observations remain separate, with supplied units and coverage shown directly;
 no regulatory quality classification is inferred without threshold metadata.
 

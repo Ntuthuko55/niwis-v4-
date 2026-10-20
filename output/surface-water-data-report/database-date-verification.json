@@ -1,0 +1,371 @@
+{
+  "source_tables": [
+    "9_1_hydrological_station_master",
+    "9_2_catchment_characteristics_master",
+    "9_3_sansa_earth_observation_master"
+  ],
+  "schema": [
+    {
+      "table": "9_1_hydrological_station_master",
+      "configured_table": "9_1_hydrological_station_master",
+      "columns": [
+        {
+          "name": "date",
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "name": "year",
+          "type": "integer",
+          "format": "integer"
+        },
+        {
+          "name": "month",
+          "type": "integer",
+          "format": "integer"
+        },
+        {
+          "name": "district_name",
+          "type": "string",
+          "format": "text"
+        },
+        {
+          "name": "daily_mean_flow",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "daily_sediment_load_t_day",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "river_discharge_q",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "flow_velocity",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "stage_height",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "monthly_mean_flow",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "suspended_sediment_concentration",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "monthly_sediment_load_t_day",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "peak_instantaneous_flow",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "a_coeff",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "b_exponent",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "r_squared",
+          "type": "number",
+          "format": "double precision"
+        }
+      ],
+      "rows": null,
+      "first": {
+        "district_name": "Alfred Nzo",
+        "date": "2000-01-01"
+      },
+      "last": {
+        "district_name": "Zululand",
+        "date": "2026-09-24"
+      }
+    },
+    {
+      "table": "9_2_catchment_characteristics_master",
+      "configured_table": "9_2_catchment_characteristics_master",
+      "columns": [
+        {
+          "name": "date",
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "name": "district_name",
+          "type": "string",
+          "format": "text"
+        },
+        {
+          "name": "year",
+          "type": "integer",
+          "format": "integer"
+        },
+        {
+          "name": "month",
+          "type": "string",
+          "format": "text"
+        },
+        {
+          "name": "catchment_area_km2",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "water_bodies_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "tree_cover_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "shrubland_fynbos_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "grassland_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "cropland_agri_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "wetland_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "builtup_urban_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "bare_soil_mining_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "dominant_hsg",
+          "type": "string",
+          "format": "text"
+        },
+        {
+          "name": "hsg_a_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "hsg_b_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "hsg_c_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "hsg_d_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "mean_slope_degrees",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "mean_twi",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "vegetation_cover_pct",
+          "type": "number",
+          "format": "double precision"
+        }
+      ],
+      "rows": null,
+      "first": {
+        "district_name": "City of Cape Town",
+        "date": "2000-01-01"
+      },
+      "last": {
+        "district_name": "Mangaung",
+        "date": "2026-10-01"
+      }
+    },
+    {
+      "table": "9_3_sansa_earth_observation_master",
+      "configured_table": "9_3_sansa_earth_observation_master",
+      "columns": [
+        {
+          "name": "date",
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "name": "year",
+          "type": "integer",
+          "format": "integer"
+        },
+        {
+          "name": "month",
+          "type": "integer",
+          "format": "integer"
+        },
+        {
+          "name": "district_name",
+          "type": "string",
+          "format": "text"
+        },
+        {
+          "name": "surface_water_extent_km2",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "ndwi_mean",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "turbidity_proxy_ratio",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "chlorophyll_a_mg_m3",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "sediment_plume_pct",
+          "type": "number",
+          "format": "double precision"
+        },
+        {
+          "name": "flood_inundation_extent_km2",
+          "type": "number",
+          "format": "double precision"
+        }
+      ],
+      "rows": null,
+      "first": {
+        "district_name": "Alfred Nzo",
+        "date": "2000-01-01"
+      },
+      "last": {
+        "district_name": "Zululand",
+        "date": "2026-09-01"
+      }
+    }
+  ],
+  "hydrology_last_date": "2026-09-24",
+  "earth_observation_latest_month": "2026-09",
+  "catchments": {
+    "first_date": "2000-01-01",
+    "last_date": "2026-10-01",
+    "rows": 16744,
+    "periods": 322,
+    "districts": 52,
+    "duplicate_district_dates": 0,
+    "null_dates": 0,
+    "month_type": "text: YYYY-MM",
+    "sample_district": "City of Cape Town",
+    "sample_history_rows": 322,
+    "sample_distinct_values": {
+      "catchment_area_km2": 1,
+      "water_bodies_pct": 1,
+      "tree_cover_pct": 1,
+      "shrubland_fynbos_pct": 1,
+      "grassland_pct": 1,
+      "cropland_agri_pct": 1,
+      "wetland_pct": 1,
+      "builtup_urban_pct": 1,
+      "bare_soil_mining_pct": 1,
+      "dominant_hsg": 1,
+      "hsg_a_pct": 1,
+      "hsg_b_pct": 1,
+      "hsg_c_pct": 1,
+      "hsg_d_pct": 1,
+      "mean_slope_degrees": 1,
+      "mean_twi": 1,
+      "vegetation_cover_pct": 1
+    }
+  },
+  "checks": [
+    {
+      "path": "/surface-water/metadata",
+      "status": 200,
+      "seconds": 20.949
+    },
+    {
+      "path": "/surface-water/dashboard?start=2026-08&end=2026-08",
+      "status": 200,
+      "seconds": 4.088
+    },
+    {
+      "path": "/surface-water/dashboard?region=City+of+Cape+Town&start=2024-02&end=2024-02",
+      "status": 200,
+      "seconds": 3.042
+    },
+    {
+      "path": "/surface-water/daily?region=City+of+Cape+Town&month=2024-02",
+      "status": 200,
+      "seconds": 0.296
+    },
+    {
+      "path": "/surface-water/forecast-source?region=City+of+Cape+Town&start=2024-02&end=2024-02",
+      "status": 200,
+      "seconds": 0.31
+    },
+    {
+      "path": "/surface-water/dashboard?region=City+of+Tshwane&start=2026-09&end=2026-09",
+      "status": 200,
+      "seconds": 1.282
+    }
+  ],
+  "selected_national_catchment_coverage": {
+    "month": "2026-08",
+    "districts": 52,
+    "expected_districts": 52,
+    "missing_districts": [],
+    "first_date": "2026-08-01",
+    "last_date": "2026-08-01"
+  },
+  "selected_district_catchment_coverage": {
+    "month": "2024-02",
+    "districts": 1,
+    "expected_districts": 1,
+    "missing_districts": [],
+    "first_date": "2024-02-01",
+    "last_date": "2024-02-01"
+  },
+  "runtime_csv_reads": 0
+}

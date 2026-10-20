@@ -10,14 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'output' / 'deployment-audit'
 JS_EXTENSIONS = ('.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.css')
-RUNTIME_DATA = {
-    "csv's/mateological.csv": 'Provincial forecasting history is file-first in supabase_source.py; the latest provincial summary uses a separate database query.',
-    "csv's/hydrology.csv": 'Packaged hydrological drought fallback.',
-    "csv's/satelite.csv": 'Packaged satellite drought fallback.',
-    'vegetation/5.2_meteorological_drivers_saws_master.csv': 'Packaged meteorological drought fallback.',
-    'Runoff Status Monitoring/7.1_runoff_variables_master.csv': 'Active runoff dashboard daily source.',
-    'Runoff Status Monitoring/7.2_derived_runoff_indicators_master.csv': 'Active runoff dashboard derived source.',
-}
+RUNTIME_DATA = {}  # Default database configuration has no required runtime CSVs.
 
 
 def relative(path):

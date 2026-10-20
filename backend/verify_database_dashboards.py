@@ -6,6 +6,7 @@ from app import drought_source
 from app.hydrology_service import get_hydrology_dataset, get_all_stations, get_district_hydrology_history
 from app.satellite_service import stations, history
 from app.supabase_source import SupabaseSourceError
+from app.dashboard_loader import clear_dashboard_cache
 
 
 with patch('pandas.read_csv', side_effect=AssertionError('CSV reads are forbidden')):
@@ -36,7 +37,7 @@ with patch('pandas.read_csv', side_effect=AssertionError('CSV reads are forbidde
     json.dumps(satellite_history, allow_nan=False)
     print(f"PASS satellite: {satellite['station_count']} districts, {len(satellite_history['history'])} history rows, latest {satellite['date']}", flush=True)
 
-    drought_source._CACHE.clear()
+    clear_dashboard_cache()
     with patch.object(drought_source, '_request_page', side_effect=SupabaseSourceError('Database unavailable')):
         for call in [get_hydrology_dataset, stations, lambda: history('Alfred Nzo')]:
             try:

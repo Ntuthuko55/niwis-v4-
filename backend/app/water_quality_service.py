@@ -6,7 +6,6 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
-from pathlib import Path
 from threading import Lock
 from time import monotonic
 from urllib.error import HTTPError, URLError
@@ -25,14 +24,6 @@ QUALITY_TABLE_ENV = "NIWIS_SUPABASE_TABLES_MODULE_12"
 DEFAULT_TABLES = ("12.1_physical_water_quality_master", "12.2_chemical_water_quality_master", "12.3_biological_water_quality_master", "12.4_sansa_water_quality_master")
 PAGE_SIZE = 1000
 SCHEMA_TTL_SECONDS = 900
-ROOT = Path(__file__).resolve().parents[2] / "water Quality Monitor"
-FILES = {
-    "physical": "12.1_physical_water_quality_monthly_2000_2026.csv",
-    "chemical": "12.2_chemical_water_quality_monthly_2000_2026.csv",
-    "biological": "12.3_biological_water_quality_monthly_2000_2026.csv",
-    "sansa": "12.4_sansa_water_quality_monthly_2000_2026.csv",
-}
-
 METRICS = {
     "temperature_c": ("Temperature", "°C", "Physical", "DWS / in situ sensor value"),
     "turbidity_ntu": ("Turbidity", "NTU", "Physical", "DWS / SANSA proxy value"),

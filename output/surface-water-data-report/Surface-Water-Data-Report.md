@@ -3,6 +3,11 @@
 **Prepared:** 6 October 2026  
 **Scope:** All rows in the three supplied section 9 CSV files, plus the surface-water dashboard's field mappings and aggregation code. This report does not audit the other NIWIS modules or verify the files against external DWS/SANSA records.
 
+**Database update, 20 October 2026:** The new `9_2_catchment_characteristics_master`
+table now contains dated monthly snapshots. See the [database date update](Database-Date-Update.md)
+for its live schema, coverage and the dashboard's month-aware connection. The
+original CSV findings below remain specific to those inspected files.
+
 ## Main conclusion
 
 **The similar graphs are substantially explained by repeated and mathematically related values in the source files.** The satellite file is especially repetitive: each of its six indicators has only **two distinct values per district across 321 months**. Five indicators repeat the same calendar-month values every year. Some indicator pairs have exactly the same shape after rescaling, both nationally and within every district.

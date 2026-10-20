@@ -6,10 +6,61 @@ import numpy as np
 import pandas as pd
 from fastapi import HTTPException
 
-from app.surface_water_service import HYDRO, EO, ROOT, FILES, prepare, metadata, dashboard, daily
+from app import surface_water_service as surface
+from app.surface_water_service import HYDRO, EO, prepare, metadata, dashboard, daily
 
 
 class SurfaceWaterTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.regions = ['City of Tshwane', 'City of Cape Town', 'Siyanda', 'Greater Sekhukhune', 'Pixley Ka Seme', 'UMgungundlovu',
+                       *[f'District {index:02}' for index in range(6, 52)]]
+        rows, earth, catchments = [], [], []
+        for index, region in enumerate(cls.regions):
+            for month in ('2024-02', '2026-08', '2026-09'):
+                period = pd.Period(month, freq='M')
+                days = 24 if month == '2026-09' else period.days_in_month
+                volume = 86400. * (index + 1)
+                for day in range(1, days + 1):
+                    rows.append({'district_name': region, 'date': pd.Timestamp(f'{month}-{day:02}'),
+                                 'year': period.year, 'month': period.month, **dict.fromkeys(HYDRO, 1.),
+                                 'daily_mean_flow': volume, 'river_discharge_q': float(index + 1),
+                                 'monthly_mean_flow': volume * days + (1 if month == '2026-09' and day == 1 else 0),
+                                 'r_squared': 0.})
+                earth.append({'district_name': region, 'date': pd.Timestamp(f'{month}-01'), **dict.fromkeys(EO, .5)})
+            catchments.append({'district_name': region, 'catchment_area_km2': 2458.11,
+                               **dict.fromkeys([key for key, _ in surface.LAND], 15.)})
+        cls.source, cls.earth, cls.catchments = pd.DataFrame(rows), pd.DataFrame(earth), pd.DataFrame(catchments)
+        cls.meta = {'regions': cls.regions, 'months': ['2024-02', '2026-08', '2026-09'],
+                    'default_start': '2024-02', 'default_end': '2026-08', 'metrics': surface.METRICS,
+                    'source_tables': list(surface.DEFAULT_TABLES), 'latest_daily_date': '2026-09-24', 'latest_eo_month': '2026-09'}
+
+    def setUp(self):
+        for name, value in [('_snapshot', {'return_value': {}}), ('_metadata', {'return_value': self.meta}),
+                            ('_read_daily', {'side_effect': self.read_daily}),
+                            ('_read_catchments', {'return_value': self.catchments.copy()})]:
+            mock = patch.object(surface, name, **value)
+            mock.start()
+            self.addCleanup(mock.stop)
+        # Keep the actual cross-module alias matching and unavailable handling.
+        for name, value in [('signature', {'return_value': 1}),
+                            ('_metadata', {'return_value': {'regions': self.regions}}),
+                            ('_context_source', {'side_effect': self.rainfall_context})]:
+            mock = patch('app.rainfall_service.' + name, **value)
+            mock.start()
+            self.addCleanup(mock.stop)
+
+    def read_daily(self, snapshot, kind, start, end, region):
+        frame = self.source if kind == 'hydro' else self.earth
+        selected = frame.date.dt.strftime('%Y-%m').between(start, end)
+        if region:
+            selected &= frame.district_name.eq(region)
+        return frame[selected].copy()
+
+    def rainfall_context(self, region, start, end):
+        return {'latest_date': '2026-09-06', 'series': [{'month': str(month), 'rainfall': 10., 'complete': True}
+                for month in pd.period_range(start, end, freq='M')]}
+
     def fixture(self):
         hydro = pd.DataFrame([{**dict.fromkeys(HYDRO, 1.), 'district_name': 'Test', 'date': f'2024-01-{day:02}',
                                'daily_mean_flow': 172800., 'river_discharge_q': 2., 'daily_sediment_load_t_day': 3.,
@@ -54,13 +105,13 @@ class SurfaceWaterTests(unittest.TestCase):
         self.assertFalse(data.iloc[0].complete)
         self.assertEqual(data.iloc[0].observed_days, 0)
 
-    def test_source_files_and_static_attributes_are_not_renormalised(self):
+    def test_source_values_and_static_attributes_are_not_renormalised(self):
         meta = metadata()
         self.assertEqual(len(meta['regions']), 52)
         self.assertEqual(len(meta['metrics']), 17)
         self.assertEqual(meta['default_end'], '2026-08')
         data = dashboard(region='City of Cape Town', start='2024-02', end='2024-02')
-        source = pd.read_csv(ROOT / FILES[0])
+        source = self.source
         rows = source[(source.district_name == 'City of Cape Town') & (source.year == 2024) & (source.month == 2)]
         self.assertAlmostEqual(data['summary']['volume'], rows.daily_mean_flow.sum() / 1e6, places=8)
         self.assertAlmostEqual(data['latest']['discharge'], rows.river_discharge_q.mean(), places=8)

@@ -1,0 +1,320 @@
+﻿{
+    "status":  "removed",
+    "backup":  "C:\\Users\\student\\AppData\\Local\\Temp\\niwis-csv-recovery-20261020-161258.zip",
+    "csv_files":  58,
+    "csv_bytes":  701440831,
+    "retired_code_files":  4,
+    "files":  [
+                  {
+                      "path":  "11.3_aquifer_sustainability_unified_timeseries.csv",
+                      "bytes":  1193004,
+                      "sha256":  "f0316a374a1c8633fe5ea9bbf2c7583f687a1d0691fd87b746d38e344b9dfc92"
+                  },
+                  {
+                      "path":  "backend/app/climate_csv_source.py",
+                      "bytes":  5120,
+                      "sha256":  "d1bafa31f62ebae95c1ac9671d894a346fbb55f718db6f20c9fec449845e3a1c"
+                  },
+                  {
+                      "path":  "backend/compare_climate_sources.py",
+                      "bytes":  11601,
+                      "sha256":  "5241a7e33d71eebfceaa40d5bb943393e44b0658fefee9d93e3656cd738a2830"
+                  },
+                  {
+                      "path":  "climate/section_4_1_temperature_change_master.csv",
+                      "bytes":  41807982,
+                      "sha256":  "0f1e2dfb4c4061e3f8647f397b2c2c3262ad41fbe5bec55652b3de18c3095329"
+                  },
+                  {
+                      "path":  "climate/section_4_2_wet_dry_spells_master.csv",
+                      "bytes":  73206,
+                      "sha256":  "3d45756da50279216f9a2116397a9e6aab6a22a901b84eabad1405f726faeef2"
+                  },
+                  {
+                      "path":  "climate/section_4_3_Mean Annual Precipitation (MAP)_master.csv",
+                      "bytes":  150382,
+                      "sha256":  "8d2f8bf84872bf19335c4f44d6edb9f581855a74ba0b6ad3dc9d0e8c9bbfaa8f"
+                  },
+                  {
+                      "path":  "climate/section_4_4_evaporation_daily_master.csv",
+                      "bytes":  29804555,
+                      "sha256":  "a34393bcd343709b2350c5bd2ee798904053bbf1c948704703d607a5629e6f2f"
+                  },
+                  {
+                      "path":  "climate/section_4_5_irrigation_daily_master.csv",
+                      "bytes":  28708747,
+                      "sha256":  "47be9c7a1450e3c5f6aaf6b606722bb029647859f0ed7b188e2217ea23c62ce6"
+                  },
+                  {
+                      "path":  "climate/section_4_6_streamflow_annual_master.csv",
+                      "bytes":  110582,
+                      "sha256":  "56b0e2e416a2350b66eea940d3241e090d60044a85cf9eccf7bf7ffbb0e74548"
+                  },
+                  {
+                      "path":  "csv\u0027s/hydrology.csv",
+                      "bytes":  3078253,
+                      "sha256":  "59d267cd0c7199cc4ab04e78f6a3811cb6ce4a361e68ee5f69c4439d5bd29417"
+                  },
+                  {
+                      "path":  "csv\u0027s/mateological.csv",
+                      "bytes":  73636686,
+                      "sha256":  "a6a4e3d45d89f60516f2c10b41752bbf03946fb848a1e53e7492c3d1fcd08de9"
+                  },
+                  {
+                      "path":  "csv\u0027s/satelite.csv",
+                      "bytes":  2969761,
+                      "sha256":  "b9b75fd9e00f7b29a3b41a92ba1d869c0924db0ee44c3ff3c01cae5f5f3d5e43"
+                  },
+                  {
+                      "path":  "Dam and Reservoir Status/south_africa_reservoir_master_12vars_mapped.csv",
+                      "bytes":  144552281,
+                      "sha256":  "ecd8ac46e527dc3f51b9ea02c6ff664d20fe0a15891a11c23d2f6514a92cf4d3"
+                  },
+                  {
+                      "path":  "Groundwater Level Monitoring/section_10_1_complete_master_long_2000_2026.csv",
+                      "bytes":  7607847,
+                      "sha256":  "448b4bdb50cae6b60d7920df7f7e9d9b3e25a49e75babd5f77c8ea19d7d3099b"
+                  },
+                  {
+                      "path":  "Groundwater Level Monitoring/section_10_2_complete_master_wide_2000_2026.csv",
+                      "bytes":  1129263,
+                      "sha256":  "b394ae82153b20d30066040b850dfd99cef664f763469eaaa242600c02a1c226"
+                  },
+                  {
+                      "path":  "Groundwater Reserve Assessment/11.1_hydrogeology_unified_timeseries.csv",
+                      "bytes":  3576600,
+                      "sha256":  "ea4cc588204255fd1055f68ca65d600f256df0073816beeb6465fc6ed4216efc"
+                  },
+                  {
+                      "path":  "Groundwater Reserve Assessment/11.2_recharge_discharge_unified_timeseries.csv",
+                      "bytes":  1236564,
+                      "sha256":  "002d708fe258354fb94a38d15de9d1541f75292f6f89181298c8088d7b8bfdf2"
+                  },
+                  {
+                      "path":  "niwis_daily_climate_master.csv",
+                      "bytes":  14786942,
+                      "sha256":  "e6c792da67ed489660fbf39c444f01f6bd8fbabaa75d6ce3e53f42c0e4220a6d"
+                  },
+                  {
+                      "path":  "niwis_final_compliant_2015_2024.csv",
+                      "bytes":  2359033,
+                      "sha256":  "256ec60f91ca0fe96dc7ee8a6997791d823769331059512c0b51331337cd8a5b"
+                  },
+                  {
+                      "path":  "output/climate-data-comparison/dashboard-values.csv",
+                      "bytes":  2168,
+                      "sha256":  "317b5c3b0153a180690762002d3cac8ffdac0fbd575760aad4dd7854a5403841"
+                  },
+                  {
+                      "path":  "output/climate-data-comparison/evaporation-missing-rows.csv",
+                      "bytes":  27,
+                      "sha256":  "289e7a163a0dd416247306ba9a0932933d05367f39437f0e2ea4f60f49aee58e"
+                  },
+                  {
+                      "path":  "output/climate-data-comparison/irrigation-missing-rows.csv",
+                      "bytes":  27,
+                      "sha256":  "289e7a163a0dd416247306ba9a0932933d05367f39437f0e2ea4f60f49aee58e"
+                  },
+                  {
+                      "path":  "output/climate-data-comparison/rainfall-missing-rows.csv",
+                      "bytes":  27,
+                      "sha256":  "69ae05174f4a5eff3cab4ed57665acb885cd856f7ca04ac76ac04bf01ccba2e4"
+                  },
+                  {
+                      "path":  "output/climate-data-comparison/spells-missing-rows.csv",
+                      "bytes":  27,
+                      "sha256":  "69ae05174f4a5eff3cab4ed57665acb885cd856f7ca04ac76ac04bf01ccba2e4"
+                  },
+                  {
+                      "path":  "output/climate-data-comparison/streamflow-missing-rows.csv",
+                      "bytes":  27,
+                      "sha256":  "69ae05174f4a5eff3cab4ed57665acb885cd856f7ca04ac76ac04bf01ccba2e4"
+                  },
+                  {
+                      "path":  "output/climate-data-comparison/temperature-missing-rows.csv",
+                      "bytes":  27,
+                      "sha256":  "289e7a163a0dd416247306ba9a0932933d05367f39437f0e2ea4f60f49aee58e"
+                  },
+                  {
+                      "path":  "output/runoff-database/tshwane-february-daily.csv",
+                      "bytes":  3322,
+                      "sha256":  "08c17d3afbe8f0f67ae9631bae0e8c7d937bc006c36d01e43f53362504ff0d03"
+                  },
+                  {
+                      "path":  "output/surface-water-data-report/catchment-checks.csv",
+                      "bytes":  6119,
+                      "sha256":  "443c76187d0ca15972f2074f9e4a153087b99672e54b486e69859d070325a7a8"
+                  },
+                  {
+                      "path":  "output/surface-water-data-report/column-profile.csv",
+                      "bytes":  4094,
+                      "sha256":  "2401c7bda610b8dac6bacae4a40ff70702bb7ce2c856ff8775d98c1f7415daba"
+                  },
+                  {
+                      "path":  "output/surface-water-data-report/correlations-district_month.csv",
+                      "bytes":  8516,
+                      "sha256":  "8ab1fb0d160e97e490e113044f79f4358a087612063b871e0af4e75128cfed2c"
+                  },
+                  {
+                      "path":  "output/surface-water-data-report/correlations-national_month.csv",
+                      "bytes":  6896,
+                      "sha256":  "a7cd7ae659932951fdad6fe33021f31a2c6c409025b46e9fb8c25f0f1029a696"
+                  },
+                  {
+                      "path":  "output/surface-water-data-report/correlations-raw_eo.csv",
+                      "bytes":  876,
+                      "sha256":  "f0310e66ba418b12f82bda82c0f2c21e3a02fdbdcd0cbf8b5816547e360fba03"
+                  },
+                  {
+                      "path":  "output/surface-water-data-report/correlations-raw_hydro.csv",
+                      "bytes":  3168,
+                      "sha256":  "84857dc7073d2a800c4f940d68340ac2c1f58f1d5fb105a4cd1af4f5cc756b60"
+                  },
+                  {
+                      "path":  "output/surface-water-data-report/high-correlations.csv",
+                      "bytes":  1404,
+                      "sha256":  "0cddb4090928f3f751267ec205bc0ff3ec82a719d65a5d769a2906673f49c9ad"
+                  },
+                  {
+                      "path":  "output/surface-water-data-report/monthly-volume-checks.csv",
+                      "bytes":  1279124,
+                      "sha256":  "6c0a59fe0e3df7f0b33354dc1bab7fe7a563349e3f49fc8fadfe940f37aef2c1"
+                  },
+                  {
+                      "path":  "output/surface-water-data-report/repeated-satellite-examples.csv",
+                      "bytes":  551,
+                      "sha256":  "61484d1cb0d2c16fe910c65b5dc2b3f53b5ed88ff498806faa8ed6b407ed8427"
+                  },
+                  {
+                      "path":  "Rainfall Status Monitoring/6.1_core_rainfall_variables_master.csv",
+                      "bytes":  58744178,
+                      "sha256":  "0d4879ffc343c7ca2f4c92e56876b08fe1ed8c5057ae39487cf025fa7c761b33"
+                  },
+                  {
+                      "path":  "Rainfall Status Monitoring/6.2_rainfall_derived_drought_indices_master.csv",
+                      "bytes":  1190170,
+                      "sha256":  "c245c8bb18ad7d087abd5f5d5d029527286a47603394c170998e822b79326071"
+                  },
+                  {
+                      "path":  "Runoff Status Monitoring/7.1_runoff_variables_master.csv",
+                      "bytes":  69056687,
+                      "sha256":  "87a32d234b387bd4de1c583d6ac2af91eacb050f4ae3d511b542318923c948f1"
+                  },
+                  {
+                      "path":  "Runoff Status Monitoring/7.2_derived_runoff_indicators_master.csv",
+                      "bytes":  1531283,
+                      "sha256":  "fda18fb1bb5799a659617d985ec4dc36109ee2c55729030bc54d06b1e1b0aabc"
+                  },
+                  {
+                      "path":  "sa_daily_rainfall_clean.csv",
+                      "bytes":  3101065,
+                      "sha256":  "7747dcc964fc0d0b8457a69b3dd48a25f53ad0861f654b9d921673e8c516c07d"
+                  },
+                  {
+                      "path":  "sa_seasonal_rainfall.csv",
+                      "bytes":  44475,
+                      "sha256":  "80a173062968293ce6d02c1f7a1b60a7faae4e03d83e908625a2992adaa5c2b4"
+                  },
+                  {
+                      "path":  "scripts/audit_reservoir_data.py",
+                      "bytes":  6950,
+                      "sha256":  "49a66cb6e9ad048991249a7e98862bfe974937f7e143cc88c4d05dd32039eee0"
+                  },
+                  {
+                      "path":  "scripts/audit_surface_water.py",
+                      "bytes":  11125,
+                      "sha256":  "cc3a678273bdeaa06b284ec037c6b94ba12e9b3bddb6ef2b926b523a34531267"
+                  },
+                  {
+                      "path":  "South_Africa_Provinces/Eastern_cape.csv",
+                      "bytes":  8187574,
+                      "sha256":  "a38775b2fcf0cc6ccd5ced18dbb7b133897b63b701cdf7d5525f44f312712d32"
+                  },
+                  {
+                      "path":  "South_Africa_Provinces/Free_state.csv",
+                      "bytes":  8176159,
+                      "sha256":  "11c6f54c538f31600ffaab0103ee1605afd480c7ba737a16a30bbd0f2f6563db"
+                  },
+                  {
+                      "path":  "South_Africa_Provinces/Gauteng.csv",
+                      "bytes":  8112505,
+                      "sha256":  "3fc43cf28484a1eda21993c70e7894a80ecc922a8b09ce8d84932cd0056e098a"
+                  },
+                  {
+                      "path":  "South_Africa_Provinces/Kwazulu_natal.csv",
+                      "bytes":  8192372,
+                      "sha256":  "719d48c26846779f543feea4527bb1a452b1ee26284dd536f77ecd95333014b2"
+                  },
+                  {
+                      "path":  "South_Africa_Provinces/Limpopo.csv",
+                      "bytes":  8132726,
+                      "sha256":  "2d476cdec15079fe5d38aa229ea92fa1175922c89d1589132d72eea48bfc39e9"
+                  },
+                  {
+                      "path":  "South_Africa_Provinces/Mpumalanga.csv",
+                      "bytes":  8159775,
+                      "sha256":  "4b2485baf544c8331fa6af265f8a86834aa9cbd090ae0cf6024cb19382314789"
+                  },
+                  {
+                      "path":  "South_Africa_Provinces/North_west.csv",
+                      "bytes":  8167471,
+                      "sha256":  "c1df7612791d7298e9e5f411e2e8c706c06fa0b4b7cb8429d60d65a5b236a982"
+                  },
+                  {
+                      "path":  "South_Africa_Provinces/Northern_cape.csv",
+                      "bytes":  8210285,
+                      "sha256":  "f9c2435ed218248644ef1dc8b67aace48c420b7d6902b1fd53d0b142724576d3"
+                  },
+                  {
+                      "path":  "South_Africa_Provinces/Western_cape.csv",
+                      "bytes":  8186824,
+                      "sha256":  "2ba83a16f2e8379d7e42b21e79db29d8634a2ba1828d4a567c1968b44e909947"
+                  },
+                  {
+                      "path":  "Surface Water Monitoring Network/section_9_1_complete_unified_master_2000_2026.csv",
+                      "bytes":  62646919,
+                      "sha256":  "794235a0ff614fbd5133b8c7b4c40ebf1c6415577be8a5c819de1a900d6ee9a0"
+                  },
+                  {
+                      "path":  "Surface Water Monitoring Network/section_9_2_catchment_characteristics_master.csv",
+                      "bytes":  5405,
+                      "sha256":  "72b2743eced8bdea45de0d483ed9e10aad5536b0695c974e11fe4ffe98cebe29"
+                  },
+                  {
+                      "path":  "Surface Water Monitoring Network/section_9_3_sansa_earth_observation_master_2000_2026.csv",
+                      "bytes":  1011325,
+                      "sha256":  "f87571d526974dfd6d943fa39ea4581cdf6456e3e1235d883b3f5e627b94ce2d"
+                  },
+                  {
+                      "path":  "vegetation/5.1_primary_satellite_vegetation_variables_sansa_master.csv",
+                      "bytes":  66112899,
+                      "sha256":  "52cc0aff76f8f5eecdaf775291b81e149a3b62b4a23dc4ef0c8cb3afbfa2a396"
+                  },
+                  {
+                      "path":  "vegetation/5.2_meteorological_drivers_saws_master.csv",
+                      "bytes":  1564104,
+                      "sha256":  "8c682474dc1beec3ebf8109cfaa3e71fbb211896244001c5ff59ec6734f99090"
+                  },
+                  {
+                      "path":  "water Quality Monitor/12.1_physical_water_quality_monthly_2000_2026.csv",
+                      "bytes":  1216998,
+                      "sha256":  "7a7f2c37ec2bd1f2ee5a8183330e355ac0a50fc1fe18975cc2cff038981ef20d"
+                  },
+                  {
+                      "path":  "water Quality Monitor/12.2_chemical_water_quality_monthly_2000_2026.csv",
+                      "bytes":  1762240,
+                      "sha256":  "bea04b1e350d563cebebcc75a449486c5b27ed5a262c8fefacd8bf59e5bac563"
+                  },
+                  {
+                      "path":  "water Quality Monitor/12.3_biological_water_quality_monthly_2000_2026.csv",
+                      "bytes":  1017144,
+                      "sha256":  "6dd64e185c4ab57991d03470c9ea896b7d08831f8a42d15ebbb32357c3b969fa"
+                  },
+                  {
+                      "path":  "water Quality Monitor/12.4_sansa_water_quality_monthly_2000_2026.csv",
+                      "bytes":  812160,
+                      "sha256":  "bea669b0e7c4ffa5b91dbcf133b2dffd9b2b142fb2016fc32402358c08a0c748"
+                  }
+              ],
+    "remaining_project_csv_files":  0
+}

@@ -6,14 +6,6 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/multivariate-api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-      '/spatial-api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
       '/niwis-api': {
         target: 'http://localhost:8000',
         changeOrigin: true,

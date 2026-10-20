@@ -1,0 +1,129 @@
+{
+  "status": "passed",
+  "source_mode": "database",
+  "source_tables": [
+    "meteorological_drought_master",
+    "hydrological_drought_master",
+    "satellite_remote_sensing"
+  ],
+  "regional_checks": [
+    {
+      "source": "meteorological_drought_master",
+      "region": "City of Tshwane",
+      "rows": 9720,
+      "first_date": "2000-01-01",
+      "last_date": "2026-09-06"
+    },
+    {
+      "source": "hydrological_drought_master",
+      "region": "city of tshwane",
+      "rows": 300,
+      "first_date": "2001-01-01",
+      "last_date": "2025-12-01"
+    },
+    {
+      "source": "satellite_remote_sensing",
+      "region": "tshwane",
+      "rows": 300,
+      "first_date": "2001-01-01",
+      "last_date": "2025-12-01"
+    }
+  ],
+  "api_checks": [
+    {
+      "path": "/drought-monitoring/regions",
+      "status": 200,
+      "seconds": 0.876
+    },
+    {
+      "path": "/drought-monitoring/region?region=City+Of+Tshwane",
+      "status": 200,
+      "seconds": 7.877
+    },
+    {
+      "path": "/drought-monitoring/region?region=City+Of+Tshwane",
+      "status": 200,
+      "seconds": 0.02
+    },
+    {
+      "path": "/hydrology/metadata",
+      "status": 200,
+      "seconds": 0.035
+    },
+    {
+      "path": "/hydrology/observations?region=CITY+OF+TSHWANE",
+      "status": 200,
+      "seconds": 0.024
+    },
+    {
+      "path": "/hydrology/observations?region=City+of+Tshwane&start=2024-01-01&end=2024-01-31",
+      "status": 200,
+      "seconds": 0.252
+    },
+    {
+      "path": "/satellite/stations",
+      "status": 200,
+      "seconds": 0.007
+    },
+    {
+      "path": "/satellite/stations?date=2024-01",
+      "status": 200,
+      "seconds": 0.272
+    },
+    {
+      "path": "/satellite/stations?date=1990-01",
+      "status": 200,
+      "seconds": 0.24
+    },
+    {
+      "path": "/satellite/history?district=TSHWANE",
+      "status": 200,
+      "seconds": 0.028
+    },
+    {
+      "path": "/meteorological/regions",
+      "status": 200,
+      "seconds": 0.019
+    },
+    {
+      "path": "/meteorological/history?region=City+of+Tshwane",
+      "status": 200,
+      "seconds": 1.452
+    },
+    {
+      "path": "/hydrology/forecast-source?region=National",
+      "status": 200,
+      "seconds": 0.596
+    },
+    {
+      "path": "/hydrology/forecast-source?region=City+of+Tshwane",
+      "status": 200,
+      "seconds": 0.349
+    },
+    {
+      "path": "/satellite/forecast-source?region=National",
+      "status": 200,
+      "seconds": 0.728
+    },
+    {
+      "path": "/satellite/forecast-source?region=City+of+Tshwane",
+      "status": 200,
+      "seconds": 0.387
+    },
+    {
+      "path": "/drought-monitoring/regions?_source_check=offline",
+      "status": 200,
+      "seconds": 0.028
+    }
+  ],
+  "csv_reads": 0,
+  "checks": [
+    "52 districts per source",
+    "Regional values match direct database history",
+    "Complete-month rainfall and cross-source alignment",
+    "Case-insensitive region selection",
+    "Dated map snapshots and empty selections",
+    "National and regional forecast inputs",
+    "Database outages stay visible without CSV substitution"
+  ]
+}

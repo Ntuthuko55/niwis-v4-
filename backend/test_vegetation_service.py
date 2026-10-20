@@ -1,15 +1,55 @@
 import json
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
 from fastapi import HTTPException
 
-from app.vegetation_service import (ALL_KEYS, SAT_KEYS, ROOT, FILES, aggregate_satellite,
+from app import vegetation_service as vegetation
+from app.vegetation_service import (ALL_KEYS, SAT_KEYS, aggregate_satellite,
                                     comparisons, dashboard, metadata)
 
 
 class VegetationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.regions = ['City of Tshwane', *[f'District {index:02}' for index in range(1, 52)]]
+        cls.months = [str(period) for period in pd.period_range('2023-01', '2026-09', freq='M')]
+        rows = []
+        for index, region in enumerate(cls.regions):
+            for step, month in enumerate(cls.months):
+                period = pd.Period(month, freq='M')
+                complete = month not in ('2024-01', '2026-09')
+                days = 6 if month == '2026-09' else period.days_in_month - (not complete)
+                values = {key: .2 + step * .005 + index * .0001 for key in ALL_KEYS}
+                values.update(Monthly_Rainfall_mm=10. + step + index,
+                              Mean_Temperature_C=15. + step * .1 + index * .01,
+                              Potential_Evapotranspiration_ET0_mm=30. + step * .2 + index * .02,
+                              VHI_percent=50. + step * .1 + index * .2)
+                rows.append({'District_Name': region, 'month': month, 'Year': period.year,
+                             'complete': complete, 'observed_days': days,
+                             'expected_days': period.days_in_month, **values})
+        cls.source = pd.DataFrame(rows)
+        cls.meta = {'regions': cls.regions, 'months': cls.months, 'default_start': '2024-01', 'default_end': '2026-08',
+                    'metrics': [{'key': key} for key in ALL_KEYS], 'source_tables': list(vegetation.DEFAULT_TABLES),
+                    'latest_daily_date': '2026-09-06', 'constant_metrics': []}
+
+    def setUp(self):
+        snapshot = {'sat_keys': SAT_KEYS, 'driver_keys': vegetation.DRIVER_KEYS}
+        for name, value in [('_snapshot', {'return_value': snapshot}), ('_metadata', {'return_value': self.meta}),
+                            ('_monthly_range', {'side_effect': self.monthly_range})]:
+            mock = patch.object(vegetation, name, **value)
+            mock.start()
+            self.addCleanup(mock.stop)
+
+    def monthly_range(self, snapshot, start, end, region, **kwargs):
+        frame = self.source
+        selected = frame.month.between(start, end)
+        if region:
+            selected &= frame.District_Name.eq(region)
+        return frame[selected].copy()
+
     def test_daily_aggregation_deduplicates_and_marks_missing_days(self):
         rows = [{**dict.fromkeys(SAT_KEYS, None), 'District_Name': 'Test',
                  'Date': f'2024-01-{day:02}', 'NDVI_10day_composite': .2} for day in range(1, 32)]
@@ -36,13 +76,13 @@ class VegetationTests(unittest.TestCase):
         self.assertIsNone(changes['NDVI_10day_composite']['difference'])
         self.assertEqual(changes['NDVI_10day_composite']['paired_months'], 0)
 
-    def test_actual_sources_units_join_and_comparison(self):
+    def test_driver_values_units_join_and_comparison(self):
         meta = metadata()
         self.assertEqual(len(meta['regions']), 52)
         self.assertEqual(len(meta['metrics']), 25)
         self.assertEqual(meta['default_end'], '2026-08')
         data = dashboard(region='City of Tshwane', start='2024-01', end='2024-12')
-        source = pd.read_csv(ROOT / FILES[1])
+        source = self.source
         source = source[(source.District_Name == 'City of Tshwane') & (source.Year == 2024)]
         self.assertAlmostEqual(data['summary']['Monthly_Rainfall_mm'], source.Monthly_Rainfall_mm.mean(), places=8)
         self.assertAlmostEqual(data['series'][0]['Potential_Evapotranspiration_ET0_mm'], source.iloc[0].Potential_Evapotranspiration_ET0_mm, places=8)

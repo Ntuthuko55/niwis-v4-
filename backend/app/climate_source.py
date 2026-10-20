@@ -1,8 +1,4 @@
-"""Climate source adapter for the six section 4 indicator tables.
-
-Supabase/PostgreSQL is the production source. The packaged CSV reader remains
-available only when ``NIWIS_CLIMATE_SOURCE=csv`` is explicitly configured.
-"""
+"""Database source adapter for the six section 4 climate indicator tables."""
 import os
 from concurrent.futures import ThreadPoolExecutor
 from threading import BoundedSemaphore
@@ -11,7 +7,6 @@ from urllib.parse import quote, urlencode
 
 import pandas as pd
 
-from app import climate_csv_source
 from app.supabase_source import _request_page, _settings, SupabaseSourceError
 from app.database import postgres_enabled
 from app.postgres_source import read_climate_frames as read_climate_frames_postgres, read_table_rows
@@ -32,13 +27,8 @@ OPTIONAL_COLUMNS = frozenset({'SPEI_Daily'})
 _READ_SLOTS = BoundedSemaphore(12)
 
 
-def local_csv_enabled():
-    """Use packaged section 4 CSVs only when explicitly requested."""
-    return os.getenv('NIWIS_CLIMATE_SOURCE', 'supabase').strip().lower() in {'csv', 'local', 'file'}
-
-
 def source_label():
-    return 'Climate CSV files' if local_csv_enabled() else 'Supabase'
+    return 'Supabase'
 
 
 def query_columns(columns):
@@ -70,11 +60,6 @@ def settings():
 
 
 def signature():
-    if local_csv_enabled():
-        try:
-            return ('csv', climate_csv_source.signature())
-        except climate_csv_source.ClimateSourceError as exc:
-            raise SupabaseSourceError(str(exc)) from exc
     base, key, tables = settings()
     try:
         ttl = max(60, int(os.getenv('NIWIS_SUPABASE_CACHE_TTL', '900')))
@@ -147,11 +132,6 @@ def boundary_row(base, key, table, order, filters=None):
 
 def read_frames(columns, start=None, end=None, region=None, date_start=None, date_stop=None):
     """Read only requested sections, with optional exact daily date bounds."""
-    if local_csv_enabled():
-        try:
-            return climate_csv_source.read_frames(columns, start, end, region, date_start, date_stop)
-        except climate_csv_source.ClimateSourceError as exc:
-            raise SupabaseSourceError(str(exc)) from exc
     requested_columns = query_columns(columns)
     base, key, tables = settings()
     if start is None or end is None:
@@ -226,10 +206,6 @@ def last_observed_date(section, month):
     """Find the actual last source day in a month without reading its history."""
     first = pd.Period(month, freq='M').to_timestamp()
     stop = first + pd.offsets.MonthBegin(1)
-    if local_csv_enabled():
-        frame = climate_csv_source._load(section, [])
-        dates = frame.loc[frame.Date.ge(first) & frame.Date.lt(stop), 'Date']
-        return None if dates.empty else str(dates.max().date())
     base, key, tables = settings()
     if postgres_enabled():
         rows = read_table_rows(tables[section], columns=['Date'],
@@ -243,11 +219,6 @@ def last_observed_date(section, month):
 
 def describe_tables():
     """Use compact annual queries instead of sorting entire daily tables."""
-    if local_csv_enabled():
-        try:
-            return climate_csv_source.describe_tables()
-        except climate_csv_source.ClimateSourceError as exc:
-            raise SupabaseSourceError(str(exc)) from exc
     base, key, tables = settings()
     if postgres_enabled():
         catalogue = read_table_rows(tables['spells'], columns=['District_Name', 'Year'], order=[('District_Name', 'ASC'), ('Year', 'ASC')])

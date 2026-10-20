@@ -10,7 +10,6 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 from time import monotonic
 from urllib.error import HTTPError, URLError
@@ -23,14 +22,8 @@ from app.postgres_source import read_province_rows
 
 
 ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
-# The forecasting studio is intentionally file-first for this project.  This
-# is the same provincial dataset selected by the map; Supabase remains a
-# fallback for deployments where the local source is not packaged.
-LOCAL_CLIMATE_CSV = Path(__file__).resolve().parents[2] / "csv's" / "mateological.csv"
 _CACHE_LOCK = Lock()
 _SCHEMA_CACHE: dict[str, tuple[float, tuple[str, str | None]]] = {}
-_PROVINCE_CACHE: dict[str, tuple[float, pd.DataFrame]] = {}
-_CACHE_MAX_PROVINCES = 12
 
 
 def _load_local_env() -> None:
@@ -144,118 +137,8 @@ def _fresh_cache_entry(cache: dict, key: str):
         return value.copy(deep=True) if isinstance(value, pd.DataFrame) else value
 
 
-def _cache_frame(key: str, frame: pd.DataFrame) -> None:
-    with _CACHE_LOCK:
-        if len(_PROVINCE_CACHE) >= _CACHE_MAX_PROVINCES:
-            oldest_key = min(_PROVINCE_CACHE, key=lambda item: _PROVINCE_CACHE[item][0])
-            _PROVINCE_CACHE.pop(oldest_key, None)
-        _PROVINCE_CACHE[key] = (monotonic() + _CACHE_TTL_SECONDS, frame.copy(deep=True))
 
 
-def load_province_dataframe(province_id: str) -> pd.DataFrame:
-    """Load the selected province from the project CSV, then fall back to Supabase."""
-    if postgres_enabled():
-        rows = read_province_rows(province_id)
-        if not rows:
-            raise SupabaseSourceError(f"No PostgreSQL records found for province '{province_id}'.")
-        return pd.DataFrame(rows).sort_values("date", kind="stable").reset_index(drop=True)
-    local_cache_key = f"local-csv:{province_id}"
-    cached = _fresh_cache_entry(_PROVINCE_CACHE, local_cache_key)
-    if cached is not None:
-        return cached
-
-    if LOCAL_CLIMATE_CSV.exists():
-        try:
-            # Read only the requested province.  This prevents selecting one
-            # province in the UI while training on a national mixed series.
-            province_column = "province"
-            candidates = {value.casefold() for value in _province_candidates(province_id)}
-            chunks = pd.read_csv(LOCAL_CLIMATE_CSV, chunksize=100_000, low_memory=False)
-            matches = [
-                chunk.loc[chunk[province_column].astype(str).str.casefold().isin(candidates)]
-                for chunk in chunks
-            ]
-            matches = [chunk for chunk in matches if not chunk.empty]
-            if matches:
-                df = pd.concat(matches, ignore_index=True)
-                if "date" in df.columns:
-                    df = df.sort_values("date", kind="stable").reset_index(drop=True)
-                _cache_frame(local_cache_key, df)
-                return df.copy(deep=True)
-        except (OSError, ValueError, KeyError, pd.errors.ParserError) as exc:
-            raise SupabaseSourceError(f"Unable to read local climate CSV: {exc}") from exc
-
-        raise SupabaseSourceError(f"No records found in local climate CSV for province '{province_id}'.")
-
-    """Retrieve every row for one province, preserving the database schema."""
-    base_url, key, table = _settings()
-    table_url = f"{base_url}/rest/v1/{quote(table, safe='_')}"
-    cache_key = f"{base_url}:{table}:{province_id}"
-    cached = _fresh_cache_entry(_PROVINCE_CACHE, cache_key)
-    if cached is not None:
-        return cached
-
-    schema = _fresh_cache_entry(_SCHEMA_CACHE, table_url)
-    if schema is None:
-        sample = _request_json(f"{table_url}?select=*&limit=1", key)
-        if not sample:
-            raise SupabaseSourceError(f"The Supabase table '{table}' is empty.")
-        province_column = _column_name(list(sample[0]), "province", "province_name", "province x")
-        if not province_column:
-            raise SupabaseSourceError(
-                "The Supabase table has no recognised province column (expected province or province_name)."
-            )
-        date_column = _column_name(list(sample[0]), "date", "observation_date", "record_date")
-        schema = (province_column, date_column)
-        with _CACHE_LOCK:
-            _SCHEMA_CACHE[table_url] = (monotonic() + _CACHE_TTL_SECONDS, (province_column, date_column))
-    province_column, date_column = schema
-
-    rows: list[dict] = []
-    for candidate in _province_candidates(province_id):
-        encoded_filter = quote(f"eq.{candidate}", safe=".")
-        page_size = 1000
-        page_url = f"{table_url}?select=*&{quote(province_column, safe='_')}={encoded_filter}"
-        # With the province/date index, Postgres can filter and return the
-        # selected time series in chronological index order.
-        if date_column:
-            page_url += f"&order={quote(date_column, safe='_')}.asc"
-
-        first_page, content_range = _request_page(
-            page_url, key, 0, page_size - 1, count_exact=True
-        )
-        total_rows = _row_count(content_range, len(first_page))
-        page_count = (total_rows + page_size - 1) // page_size
-        candidate_rows = list(first_page)
-
-        # PostgREST caps a response at 1,000 rows. Fetch the remaining pages
-        # concurrently instead of paying network latency once per page.
-        if page_count > 1:
-            ranges = [
-                (page_number * page_size, min(total_rows - 1, (page_number + 1) * page_size - 1))
-                for page_number in range(1, page_count)
-            ]
-            workers = min(6, len(ranges))
-            with ThreadPoolExecutor(max_workers=workers) as executor:
-                pages = list(executor.map(lambda item: _request_json(page_url, key, *item), ranges))
-            for page in pages:
-                candidate_rows.extend(page)
-        if candidate_rows:
-            rows = candidate_rows
-            break
-
-    if not rows:
-        raise SupabaseSourceError(f"No records found in Supabase for province '{province_id}'.")
-
-    df = pd.DataFrame(rows)
-    # Give downstream analysis a stable province field even if the source used
-    # a slightly different database column spelling.
-    if province_column != "province":
-        df = df.rename(columns={province_column: "province"})
-    if date_column and date_column in df.columns:
-        df = df.sort_values(date_column, kind="stable").reset_index(drop=True)
-    _cache_frame(cache_key, df)
-    return df.copy(deep=True)
 
 
 def load_latest_province_record(province_id: str) -> dict:

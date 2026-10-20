@@ -105,18 +105,25 @@ class ReservoirTests(unittest.TestCase):
                     reservoirs.dashboard(region=filters.get('region', 'Test'), as_of='2024-01-02',
                                          **{key: value for key, value in filters.items() if key != 'region'})
 
-    def test_supplied_file_profile_inventory_and_national_stock_mean(self):
-        # The packaged source is an independent reference fixture. Runtime page
-        # loads use bounded queries and never read this file.
-        raw = pd.read_csv(reservoirs.SOURCE)
+    def test_source_profile_inventory_and_national_stock_mean(self):
+        rows = []
+        for index, name in enumerate(['City of Tshwane', 'Siyanda', 'Z F Mgcawu']):
+            for day in ('2024-06-29', '2024-06-30'):
+                row = self.raw_row(name, day)
+                row['storage_volume_m3'] = (index + 1) * 100000000.
+                row['dam_name'] = 'Gariep' if index == 0 else 'Test reservoir'
+                rows.append(row)
+        raw = pd.DataFrame(rows)
         snapshot = {'table': reservoirs.DEFAULT_TABLE}
         with patch.object(reservoirs, '_snapshot', return_value=snapshot), \
              patch.object(reservoirs, '_read_all', return_value=raw):
             frame, catalogue, meta = reservoirs.dataset('offline-reference')
-        self.assertEqual(meta['rows'], 522686)
-        self.assertEqual(meta['groups'], 53)
-        self.assertEqual(meta['constant_storage_groups'], 52)
+        self.assertEqual(meta['rows'], 6)
+        self.assertEqual(meta['groups'], 3)
+        self.assertEqual(meta['constant_storage_groups'], 3)
         self.assertEqual(meta['missing_values'], 0)
+        self.assertTrue(meta['has_overlapping_alias'])
+        self.assertEqual(meta['id_collisions'], 1)
         info = {**meta, 'observed_end': '2024-06-30', 'regions': catalogue.to_dict('records'),
                 'future_rows_excluded': None, 'has_future_records': True}
         def window(version, start, end, region=None):
@@ -127,9 +134,12 @@ class ReservoirTests(unittest.TestCase):
             metadata = reservoirs.metadata(as_of='2024-06-30')
             self.assertEqual(metadata['default_end'], '2024-06-30')
             self.assertEqual(len(metadata['metrics']), 12)
-            self.assertEqual([item['name'] for item in metadata['priority'] if not item['groups']], ['Vanderkloof', 'Katse'])
+            inventory = {item['name']: item['groups'] for item in metadata['priority']}
+            self.assertEqual(inventory['Gariep'], ['City of Tshwane'])
+            self.assertEqual(inventory['Vanderkloof'], [])
+            self.assertEqual(inventory['Katse'], [])
             data = reservoirs.dashboard(region='National', start='2024-06-30', end='2024-06-30', as_of='2024-06-30')
-        self.assertEqual(len(data['map']), 53)
+        self.assertEqual(len(data['map']), 3)
         self.assertAlmostEqual(data['latest']['storage'], np.mean([row['storage'] for row in data['map']]), places=6)
         self.assertIsNone(data['indicators']['rsi'])
         self.assertIsNone(data['indicators']['dir'])

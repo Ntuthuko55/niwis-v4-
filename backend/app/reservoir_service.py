@@ -1,15 +1,12 @@
 """Database-backed dam and reservoir monitoring.
 
-The dashboard reads the configured module 5 Supabase relation.  The packaged
-CSV remains in the repository as a comparison/audit artifact, but it is never
-used as a runtime fallback for this module.
+The dashboard reads the configured module 5 Supabase relation.
 """
 import json
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from time import monotonic, sleep
 from urllib.parse import quote, urlencode
 
@@ -20,8 +17,6 @@ from app.dashboard_loader import dashboard_cache
 from app.supabase_source import SupabaseSourceError, _request_page, _settings
 
 router = APIRouter(prefix='/reservoirs', tags=['Dam and reservoir status'])
-# Retained as a repository comparison artifact. Runtime reads use Supabase.
-SOURCE = Path(__file__).resolve().parents[2] / 'Dam and Reservoir Status' / 'south_africa_reservoir_master_12vars_mapped.csv'
 TABLE_ENV = 'NIWIS_SUPABASE_TABLES_MODULE_5'
 DEFAULT_TABLE = '8_1_reservoir_operational_master'
 PAGE_SIZE = 1000

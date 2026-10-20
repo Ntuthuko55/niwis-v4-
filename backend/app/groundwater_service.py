@@ -12,7 +12,6 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
-from pathlib import Path
 from threading import BoundedSemaphore, Lock
 from time import monotonic
 from urllib.error import HTTPError, URLError
@@ -29,8 +28,6 @@ from app.dashboard_loader import cached_call, cached_result
 router = APIRouter(prefix="/groundwater", tags=["Groundwater level monitoring"])
 TABLE_ENV = "NIWIS_SUPABASE_TABLES_MODULE_6"
 DEFAULT_TABLES = ("10_1_borehole_and_aquifer_master", "10_2_recharge_supporting _master")
-ROOT = Path(__file__).resolve().parents[2] / "Groundwater Level Monitoring"
-FILES = ["section_10_1_complete_master_long_2000_2026.csv", "section_10_2_complete_master_wide_2000_2026.csv"]
 PAGE_SIZE = 1000
 SCHEMA_TTL_SECONDS = 900
 READ_CACHE_TTL_SECONDS = 300

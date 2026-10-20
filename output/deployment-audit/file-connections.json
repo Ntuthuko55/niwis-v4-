@@ -3,45 +3,30 @@
     "entry": "frontend/src/main.jsx",
     "files": [
       "frontend/src/App.jsx",
-      "frontend/src/components/AutocorrelationAnalysis.jsx",
       "frontend/src/components/ClimateChart.jsx",
       "frontend/src/components/ClimateDashboard.jsx",
       "frontend/src/components/ClimateSectionCharts.jsx",
-      "frontend/src/components/CycleAnalysis.jsx",
       "frontend/src/components/DashboardForecastStudio.jsx",
       "frontend/src/components/DataFreshness.jsx",
-      "frontend/src/components/DataPreview.jsx",
-      "frontend/src/components/DecompositionAnalysis.jsx",
       "frontend/src/components/DeferredPanel.jsx",
       "frontend/src/components/DistrictMap.jsx",
       "frontend/src/components/DroughtMonitoring.jsx",
-      "frontend/src/components/ForecastingWorkspace.jsx",
       "frontend/src/components/GroundwaterLevelMonitoring.jsx",
       "frontend/src/components/GroundwaterReserveAssessment.jsx",
       "frontend/src/components/HydrologyDrought.jsx",
       "frontend/src/components/LazyPlot.jsx",
       "frontend/src/components/LoadingProgress.jsx",
       "frontend/src/components/MeteorologicalDrought.jsx",
-      "frontend/src/components/ModelTraining.jsx",
-      "frontend/src/components/MultivariateStatistics.tsx",
       "frontend/src/components/MunicipalityMapLabel.jsx",
       "frontend/src/components/NIWISPortal.jsx",
-      "frontend/src/components/PartialAutocorrelationAnalysis.jsx",
       "frontend/src/components/ProvinceMapLabels.jsx",
       "frontend/src/components/RainfallStatus.jsx",
       "frontend/src/components/ReservoirStatus.jsx",
       "frontend/src/components/RunoffStatus.jsx",
       "frontend/src/components/SatelliteDrought.jsx",
-      "frontend/src/components/SeasonalAnalysis.jsx",
-      "frontend/src/components/SouthAfricaProvinceMap.jsx",
-      "frontend/src/components/SpatialAnalysis.jsx",
-      "frontend/src/components/SpectralAnalysis.jsx",
-      "frontend/src/components/StationarityAnalysis.jsx",
       "frontend/src/components/SurfaceWaterNetwork.jsx",
-      "frontend/src/components/TimeSeriesDashboard.jsx",
       "frontend/src/components/VegetationCondition.jsx",
       "frontend/src/components/WaterQualityMonitoring.jsx",
-      "frontend/src/components/WaveletAnalysis.jsx",
       "frontend/src/lib/forecastDates.js",
       "frontend/src/lib/modelOptions.js",
       "frontend/src/lib/reservoirLocations.js",
@@ -63,7 +48,6 @@
       "frontend/src/niwis/water-quality.css",
       "frontend/src/services/api.js",
       "frontend/src/services/dashboardFetch.js",
-      "frontend/src/spatial.css",
       "frontend/src/styles.css"
     ],
     "edges": [
@@ -79,102 +63,12 @@
       },
       {
         "from": "frontend/src/App.jsx",
-        "to": "frontend/src/components/LoadingProgress.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/App.jsx",
-        "to": "frontend/src/components/SpatialAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/App.jsx",
-        "to": "frontend/src/components/MultivariateStatistics.tsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/App.jsx",
-        "to": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/App.jsx",
         "to": "frontend/src/components/NIWISPortal.jsx",
         "kind": "frontend import"
       },
       {
-        "from": "frontend/src/components/SpatialAnalysis.jsx",
-        "to": "frontend/src/services/dashboardFetch.js",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/SpatialAnalysis.jsx",
-        "to": "frontend/src/spatial.css",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/services/api.js",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/AutocorrelationAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/CycleAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/DataPreview.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/DecompositionAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/PartialAutocorrelationAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/SeasonalAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/SouthAfricaProvinceMap.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/SpectralAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/StationarityAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "to": "frontend/src/components/WaveletAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
         "from": "frontend/src/components/NIWISPortal.jsx",
         "to": "frontend/src/services/dashboardFetch.js",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/NIWISPortal.jsx",
-        "to": "frontend/src/components/DistrictMap.jsx",
         "kind": "frontend import"
       },
       {
@@ -289,47 +183,12 @@
       },
       {
         "from": "frontend/src/components/NIWISPortal.jsx",
-        "to": "frontend/src/components/TimeSeriesDashboard.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/NIWISPortal.jsx",
-        "to": "frontend/src/components/SpatialAnalysis.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/NIWISPortal.jsx",
-        "to": "frontend/src/components/MultivariateStatistics.tsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/NIWISPortal.jsx",
-        "to": "frontend/src/components/ModelTraining.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/NIWISPortal.jsx",
-        "to": "frontend/src/components/ForecastingWorkspace.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/NIWISPortal.jsx",
         "to": "frontend/src/components/HydrologyDrought.jsx",
         "kind": "frontend import"
       },
       {
         "from": "frontend/src/components/NIWISPortal.jsx",
         "to": "frontend/src/components/MeteorologicalDrought.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/DistrictMap.jsx",
-        "to": "frontend/src/components/ProvinceMapLabels.jsx",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/DistrictMap.jsx",
-        "to": "frontend/src/components/MunicipalityMapLabel.jsx",
         "kind": "frontend import"
       },
       {
@@ -663,31 +522,6 @@
         "kind": "frontend import"
       },
       {
-        "from": "frontend/src/components/ModelTraining.jsx",
-        "to": "frontend/src/services/api.js",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/ModelTraining.jsx",
-        "to": "frontend/src/lib/modelOptions.js",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/ModelTraining.jsx",
-        "to": "frontend/src/lib/modelOptions.js",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/ForecastingWorkspace.jsx",
-        "to": "frontend/src/services/api.js",
-        "kind": "frontend import"
-      },
-      {
-        "from": "frontend/src/components/ForecastingWorkspace.jsx",
-        "to": "frontend/src/components/ModelTraining.jsx",
-        "kind": "frontend import"
-      },
-      {
         "from": "frontend/src/components/HydrologyDrought.jsx",
         "to": "frontend/src/services/dashboardFetch.js",
         "kind": "frontend import"
@@ -733,6 +567,16 @@
         "kind": "frontend import"
       },
       {
+        "from": "frontend/src/components/DistrictMap.jsx",
+        "to": "frontend/src/components/ProvinceMapLabels.jsx",
+        "kind": "frontend import"
+      },
+      {
+        "from": "frontend/src/components/DistrictMap.jsx",
+        "to": "frontend/src/components/MunicipalityMapLabel.jsx",
+        "kind": "frontend import"
+      },
+      {
         "from": "frontend/src/components/ClimateSectionCharts.jsx",
         "to": "frontend/src/components/ClimateChart.jsx",
         "kind": "frontend import"
@@ -740,14 +584,10 @@
     ],
     "public_assets": [
       "frontend/public/Water-and-Sanitation.png",
-      "frontend/public/multivariate.css",
       "frontend/public/south_africa_adm2.display.geojson"
     ],
     "external_imports": [
-      "@highcharts/map-collection",
       "axios",
-      "highcharts",
-      "highcharts-react-official",
       "leaflet",
       "lucide-react",
       "react",
@@ -773,7 +613,6 @@
       "backend/app/database.py",
       "backend/app/drought_monitoring.py",
       "backend/app/drought_source.py",
-      "backend/app/feature_engineering.py",
       "backend/app/forecasting/__init__.py",
       "backend/app/forecasting/diagnostics.py",
       "backend/app/forecasting/evaluator.py",
@@ -790,20 +629,6 @@
       "backend/app/main.py",
       "backend/app/meteorological_service.py",
       "backend/app/model_training.py",
-      "backend/app/multivariate/__init__.py",
-      "backend/app/multivariate/analyses/__init__.py",
-      "backend/app/multivariate/analyses/additional.py",
-      "backend/app/multivariate/analyses/base.py",
-      "backend/app/multivariate/analyses/clustering.py",
-      "backend/app/multivariate/analyses/pca.py",
-      "backend/app/multivariate/analyses/registry.py",
-      "backend/app/multivariate/analyses/regression.py",
-      "backend/app/multivariate/core/__init__.py",
-      "backend/app/multivariate/core/assumptions.py",
-      "backend/app/multivariate/core/dataset_engine.py",
-      "backend/app/multivariate/core/type_detector.py",
-      "backend/app/multivariate/utils.py",
-      "backend/app/multivariate_flask.py",
       "backend/app/niwis_flask.py",
       "backend/app/postgres_source.py",
       "backend/app/rainfall_service.py",
@@ -811,11 +636,9 @@
       "backend/app/runoff_service.py",
       "backend/app/satellite_service.py",
       "backend/app/schemas.py",
-      "backend/app/spatial_flask.py",
       "backend/app/supabase_source.py",
       "backend/app/surface_water_service.py",
       "backend/app/training_worker.py",
-      "backend/app/trend_analysis.py",
       "backend/app/vegetation_service.py",
       "backend/app/water_quality_service.py"
     ],
@@ -823,175 +646,127 @@
       {
         "from": "backend/app/main.py",
         "to": "backend/app/dashboard_response_cache.py",
-        "line": 16,
+        "line": 12,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/training_worker.py",
-        "line": 17,
+        "line": 13,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/data_processing.py",
-        "line": 21,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/main.py",
-        "to": "backend/app/feature_engineering.py",
-        "line": 39,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/main.py",
-        "to": "backend/app/trend_analysis.py",
-        "line": 40,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/main.py",
-        "to": "backend/app/model_training.py",
-        "line": 41,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/main.py",
-        "to": "backend/app/forecasting/kzn_pipeline.py",
-        "line": 42,
+        "line": 16,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/supabase_source.py",
-        "line": 43,
+        "line": 17,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/meteorological_service.py",
-        "line": 44,
+        "line": 18,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/drought_monitoring.py",
-        "line": 45,
+        "line": 19,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/climate_service.py",
-        "line": 46,
+        "line": 20,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/vegetation_service.py",
-        "line": 47,
+        "line": 21,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/rainfall_service.py",
-        "line": 48,
+        "line": 22,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/runoff_service.py",
-        "line": 49,
+        "line": 23,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/surface_water_service.py",
-        "line": 50,
+        "line": 24,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/reservoir_service.py",
-        "line": 51,
+        "line": 25,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/groundwater_service.py",
-        "line": 52,
+        "line": 26,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/groundwater_reserve_service.py",
-        "line": 53,
+        "line": 27,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/water_quality_service.py",
-        "line": 54,
+        "line": 28,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/hydrology_dashboard.py",
-        "line": 55,
+        "line": 29,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/schemas.py",
-        "line": 56,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/main.py",
-        "to": "backend/app/spatial_flask.py",
-        "line": 67,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/main.py",
-        "to": "backend/app/multivariate_flask.py",
-        "line": 68,
+        "line": 30,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/niwis_flask.py",
-        "line": 69,
+        "line": 31,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/satellite_service.py",
-        "line": 115,
+        "line": 74,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/satellite_service.py",
-        "line": 116,
+        "line": 75,
         "kind": "python import"
       },
       {
         "from": "backend/app/main.py",
         "to": "backend/app/hydrology_service.py",
-        "line": 143,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/main.py",
-        "to": "backend/app/forecasting/kzn_pipeline.py",
-        "line": 983,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/main.py",
-        "to": "backend/app/model_training.py",
-        "line": 931,
+        "line": 102,
         "kind": "python import"
       },
       {
@@ -1001,57 +776,27 @@
         "kind": "python import"
       },
       {
-        "from": "backend/app/model_training.py",
-        "to": "backend/app/forecasting/forecaster.py",
-        "line": 403,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/model_training.py",
-        "to": "backend/app/forecasting/kzn_pipeline.py",
-        "line": 707,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/model_training.py",
-        "to": "backend/app/forecasting/kzn_pipeline.py",
-        "line": 641,
-        "kind": "python import"
-      },
-      {
         "from": "backend/app/supabase_source.py",
         "to": "backend/app/database.py",
-        "line": 21,
+        "line": 20,
         "kind": "python import"
       },
       {
         "from": "backend/app/supabase_source.py",
         "to": "backend/app/postgres_source.py",
-        "line": 22,
+        "line": 21,
         "kind": "python import"
       },
       {
         "from": "backend/app/meteorological_service.py",
         "to": "backend/app/supabase_source.py",
-        "line": 6,
+        "line": 4,
         "kind": "python import"
       },
       {
         "from": "backend/app/meteorological_service.py",
-        "to": "backend/app/database.py",
-        "line": 7,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/meteorological_service.py",
-        "to": "backend/app/postgres_source.py",
-        "line": 8,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/meteorological_service.py",
-        "to": "backend/app/dashboard_loader.py",
-        "line": 9,
+        "to": "backend/app/drought_source.py",
+        "line": 5,
         "kind": "python import"
       },
       {
@@ -1117,7 +862,13 @@
       {
         "from": "backend/app/runoff_service.py",
         "to": "backend/app/dashboard_loader.py",
-        "line": 8,
+        "line": 14,
+        "kind": "python import"
+      },
+      {
+        "from": "backend/app/runoff_service.py",
+        "to": "backend/app/supabase_source.py",
+        "line": 15,
         "kind": "python import"
       },
       {
@@ -1129,19 +880,19 @@
       {
         "from": "backend/app/surface_water_service.py",
         "to": "backend/app/__init__.py",
-        "line": 269,
+        "line": 289,
         "kind": "python import"
       },
       {
         "from": "backend/app/surface_water_service.py",
         "to": "backend/app/rainfall_service.py",
-        "line": 269,
+        "line": 289,
         "kind": "python import"
       },
       {
         "from": "backend/app/surface_water_service.py",
         "to": "backend/app/drought_source.py",
-        "line": 270,
+        "line": 290,
         "kind": "python import"
       },
       {
@@ -1211,18 +962,6 @@
         "kind": "python import"
       },
       {
-        "from": "backend/app/multivariate_flask.py",
-        "to": "backend/app/multivariate/analyses/registry.py",
-        "line": 16,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate_flask.py",
-        "to": "backend/app/multivariate/core/dataset_engine.py",
-        "line": 17,
-        "kind": "python import"
-      },
-      {
         "from": "backend/app/niwis_flask.py",
         "to": "backend/app/supabase_source.py",
         "line": 8,
@@ -1241,33 +980,21 @@
         "kind": "python import"
       },
       {
-        "from": "backend/app/forecasting/forecaster.py",
-        "to": "backend/app/forecasting/preprocessing.py",
-        "line": 22,
+        "from": "backend/app/model_training.py",
+        "to": "backend/app/forecasting/forecaster.py",
+        "line": 403,
         "kind": "python import"
       },
       {
-        "from": "backend/app/forecasting/forecaster.py",
-        "to": "backend/app/forecasting/diagnostics.py",
-        "line": 23,
+        "from": "backend/app/model_training.py",
+        "to": "backend/app/forecasting/kzn_pipeline.py",
+        "line": 707,
         "kind": "python import"
       },
       {
-        "from": "backend/app/forecasting/forecaster.py",
-        "to": "backend/app/forecasting/models.py",
-        "line": 24,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/forecasting/forecaster.py",
-        "to": "backend/app/forecasting/validation.py",
-        "line": 25,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/forecasting/forecaster.py",
-        "to": "backend/app/forecasting/evaluator.py",
-        "line": 33,
+        "from": "backend/app/model_training.py",
+        "to": "backend/app/forecasting/kzn_pipeline.py",
+        "line": 641,
         "kind": "python import"
       },
       {
@@ -1279,25 +1006,25 @@
       {
         "from": "backend/app/drought_source.py",
         "to": "backend/app/supabase_source.py",
-        "line": 16,
+        "line": 11,
         "kind": "python import"
       },
       {
         "from": "backend/app/drought_source.py",
         "to": "backend/app/dashboard_loader.py",
-        "line": 17,
+        "line": 12,
         "kind": "python import"
       },
       {
         "from": "backend/app/drought_source.py",
         "to": "backend/app/database.py",
-        "line": 18,
+        "line": 13,
         "kind": "python import"
       },
       {
         "from": "backend/app/drought_source.py",
         "to": "backend/app/postgres_source.py",
-        "line": 19,
+        "line": 14,
         "kind": "python import"
       },
       {
@@ -1331,99 +1058,33 @@
         "kind": "python import"
       },
       {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/regression.py",
-        "line": 30,
-        "kind": "dynamic registry"
+        "from": "backend/app/forecasting/forecaster.py",
+        "to": "backend/app/forecasting/preprocessing.py",
+        "line": 22,
+        "kind": "python import"
       },
       {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/additional.py",
-        "line": 31,
-        "kind": "dynamic registry"
+        "from": "backend/app/forecasting/forecaster.py",
+        "to": "backend/app/forecasting/diagnostics.py",
+        "line": 23,
+        "kind": "python import"
       },
       {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/pca.py",
-        "line": 32,
-        "kind": "dynamic registry"
+        "from": "backend/app/forecasting/forecaster.py",
+        "to": "backend/app/forecasting/models.py",
+        "line": 24,
+        "kind": "python import"
       },
       {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/additional.py",
+        "from": "backend/app/forecasting/forecaster.py",
+        "to": "backend/app/forecasting/validation.py",
+        "line": 25,
+        "kind": "python import"
+      },
+      {
+        "from": "backend/app/forecasting/forecaster.py",
+        "to": "backend/app/forecasting/evaluator.py",
         "line": 33,
-        "kind": "dynamic registry"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/clustering.py",
-        "line": 34,
-        "kind": "dynamic registry"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/additional.py",
-        "line": 35,
-        "kind": "dynamic registry"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/additional.py",
-        "line": 36,
-        "kind": "dynamic registry"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/additional.py",
-        "line": 37,
-        "kind": "dynamic registry"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/additional.py",
-        "line": 38,
-        "kind": "dynamic registry"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/additional.py",
-        "line": 39,
-        "kind": "dynamic registry"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/registry.py",
-        "to": "backend/app/multivariate/analyses/additional.py",
-        "line": 40,
-        "kind": "dynamic registry"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/__init__.py",
-        "to": "backend/app/multivariate/analyses/registry.py",
-        "line": 2,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/core/dataset_engine.py",
-        "to": "backend/app/multivariate/core/type_detector.py",
-        "line": 15,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/core/__init__.py",
-        "to": "backend/app/multivariate/core/dataset_engine.py",
-        "line": 2,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/core/__init__.py",
-        "to": "backend/app/multivariate/core/type_detector.py",
-        "line": 3,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/core/__init__.py",
-        "to": "backend/app/multivariate/core/assumptions.py",
-        "line": 4,
         "kind": "python import"
       },
       {
@@ -1451,105 +1112,9 @@
         "kind": "python import"
       },
       {
-        "from": "backend/app/multivariate/analyses/regression.py",
-        "to": "backend/app/multivariate/core/assumptions.py",
-        "line": 28,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/regression.py",
-        "to": "backend/app/multivariate/utils.py",
-        "line": 29,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/regression.py",
-        "to": "backend/app/multivariate/analyses/base.py",
-        "line": 30,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/additional.py",
-        "to": "backend/app/multivariate/core/assumptions.py",
-        "line": 20,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/additional.py",
-        "to": "backend/app/multivariate/utils.py",
-        "line": 21,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/additional.py",
-        "to": "backend/app/multivariate/analyses/base.py",
-        "line": 22,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/pca.py",
-        "to": "backend/app/multivariate/core/assumptions.py",
-        "line": 19,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/pca.py",
-        "to": "backend/app/multivariate/core/assumptions.py",
-        "line": 20,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/pca.py",
-        "to": "backend/app/multivariate/utils.py",
-        "line": 21,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/pca.py",
-        "to": "backend/app/multivariate/analyses/base.py",
-        "line": 22,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/clustering.py",
-        "to": "backend/app/multivariate/core/assumptions.py",
-        "line": 25,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/clustering.py",
-        "to": "backend/app/multivariate/utils.py",
-        "line": 26,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/clustering.py",
-        "to": "backend/app/multivariate/analyses/base.py",
-        "line": 27,
-        "kind": "python import"
-      },
-      {
         "from": "backend/app/forecasting/features.py",
         "to": "backend/app/forecasting/preprocessing.py",
         "line": 8,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/base.py",
-        "to": "backend/app/multivariate/core/assumptions.py",
-        "line": 9,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/base.py",
-        "to": "backend/app/multivariate/utils.py",
-        "line": 10,
-        "kind": "python import"
-      },
-      {
-        "from": "backend/app/multivariate/analyses/base.py",
-        "to": "backend/app/multivariate/core/dataset_engine.py",
-        "line": 11,
         "kind": "python import"
       }
     ],
@@ -1561,45 +1126,30 @@
       "concurrent",
       "contextlib",
       "copy",
-      "csv",
-      "dataclasses",
       "datetime",
-      "factor_analyzer",
       "fastapi",
       "flask",
       "flask_cors",
       "functools",
-      "importlib",
-      "io",
       "json",
       "math",
-      "matplotlib",
       "multiprocessing",
       "numpy",
       "os",
       "pandas",
       "pathlib",
-      "plotly",
       "prophet",
       "pydantic",
-      "pymannkendall",
-      "pywt",
-      "random",
       "re",
-      "reportlab",
       "scipy",
       "sklearn",
       "sqlalchemy",
       "starlette",
-      "statistics",
       "statsmodels",
-      "sys",
-      "textwrap",
       "threading",
       "threadpoolctl",
       "time",
       "torch",
-      "traceback",
       "typing",
       "urllib",
       "uuid",
@@ -1608,38 +1158,7 @@
   },
   "frontend_outside_entry_graph": [],
   "backend_outside_entry_graph": [],
-  "required_runtime_data": [
-    {
-      "path": "csv's/mateological.csv",
-      "bytes": 73636686,
-      "reason": "Provincial forecasting history is file-first in supabase_source.py; the latest provincial summary uses a separate database query."
-    },
-    {
-      "path": "csv's/hydrology.csv",
-      "bytes": 3078253,
-      "reason": "Packaged hydrological drought fallback."
-    },
-    {
-      "path": "csv's/satelite.csv",
-      "bytes": 2969761,
-      "reason": "Packaged satellite drought fallback."
-    },
-    {
-      "path": "vegetation/5.2_meteorological_drivers_saws_master.csv",
-      "bytes": 1564104,
-      "reason": "Packaged meteorological drought fallback."
-    },
-    {
-      "path": "Runoff Status Monitoring/7.1_runoff_variables_master.csv",
-      "bytes": 69056687,
-      "reason": "Active runoff dashboard daily source."
-    },
-    {
-      "path": "Runoff Status Monitoring/7.2_derived_runoff_indicators_master.csv",
-      "bytes": 1531283,
-      "reason": "Active runoff dashboard derived source."
-    }
-  ],
-  "runtime_data_bytes": 151836774,
+  "required_runtime_data": [],
+  "runtime_data_bytes": 0,
   "note": "Reachability is evidence for review, not permission to discard tests, build inputs, reference data or dynamic plugins."
 }

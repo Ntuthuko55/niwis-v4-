@@ -1,0 +1,97 @@
+{
+  "checks": [
+    "National dashboard: six KPIs, charts, 52 districts and database source",
+    "District filters preserve all 52 map districts; daily export contains 29 February observations",
+    "Mobile layout fits the viewport",
+    "Database failure is visible; retry restores the dashboard without a CSV fallback"
+  ],
+  "errors": [],
+  "csv_requests": [],
+  "api_responses": [
+    {
+      "path": "/api/runoff/metadata",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ]
+    },
+    {
+      "path": "/api/runoff/dashboard",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ],
+      "map_rows": 52
+    },
+    {
+      "path": "/api/runoff/daily",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ]
+    },
+    {
+      "path": "/api/runoff/dashboard",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ],
+      "map_rows": 52
+    },
+    {
+      "path": "/api/runoff/daily",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ]
+    },
+    {
+      "path": "/api/runoff/daily",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ]
+    },
+    {
+      "path": "/api/runoff/metadata",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ]
+    },
+    {
+      "path": "/api/runoff/dashboard",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ],
+      "map_rows": 52
+    },
+    {
+      "path": "/api/runoff/daily",
+      "source": "Supabase",
+      "source_mode": "database",
+      "tables": [
+        "runoff_variables_master",
+        "7.2_derived_runoff_indicators_master"
+      ]
+    }
+  ],
+  "status": "passed"
+}

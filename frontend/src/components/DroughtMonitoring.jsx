@@ -53,7 +53,6 @@ function Comparison({ title, data, unit }) {
 export default function DroughtMonitoring({ renderForecast }) {
   const [regions, setRegions] = useState([])
   const [mapRegions, setMapRegions] = useState([])
-  const [sourceStatus, setSourceStatus] = useState('database')
   const [geometry, setGeometry] = useState([])
   const [selected, setSelected] = useState('')
   const [payload, setPayload] = useState(null)
@@ -78,7 +77,6 @@ export default function DroughtMonitoring({ renderForecast }) {
         const availableRegions = Array.isArray(catalog.regions) ? catalog.regions : []
         setRegions(availableRegions)
         setMapRegions(availableRegions)
-        setSourceStatus(catalog.source || 'database')
         setGeometry(geo.features || [])
         setSelected((current) => availableRegions.find((r) => r.key === normaliseDistrictName(current))?.name || availableRegions.find((r) => r.key === 'tshwane')?.name || availableRegions[0]?.name || '')
         if (!availableRegions.length) {
@@ -146,7 +144,7 @@ export default function DroughtMonitoring({ renderForecast }) {
   ]
   const titleRegion = selected || 'South Africa'
   return <div className="dm-dashboard">
-    <div className="dm-heading"><div><span className="dm-eyebrow">NIWIS / INTEGRATED WATER INTELLIGENCE</span><h1>Drought monitoring</h1><p>Climate, water and vegetation. One regional picture.</p></div><div className="dm-heading-actions"><span className="dm-source-pill"><Database size={13} /> {sourceStatus === 'local_csv_fallback' ? 'Packaged drought observations' : 'Supabase observations'}</span><button className="dm-refresh" onClick={() => setRevision((v) => v + 1)} aria-label="Refresh drought monitoring"><RefreshCw size={16} /></button></div></div>
+    <div className="dm-heading"><div><span className="dm-eyebrow">NIWIS / INTEGRATED WATER INTELLIGENCE</span><h1>Drought monitoring</h1><p>Climate, water and vegetation. One regional picture.</p></div><div className="dm-heading-actions"><span className="dm-source-pill"><Database size={13} /> Supabase observations</span><button className="dm-refresh" onClick={() => setRevision((v) => v + 1)} aria-label="Refresh drought monitoring"><RefreshCw size={16} /></button></div></div>
     <div className="dm-controls"><label className="dm-region"><MapPin size={23} /><div><span>REGION / MUNICIPALITY</span><select aria-label="Monitoring region" value={selected} onChange={(e) => setSelected(e.target.value)}>{regions.map((r) => <option key={r.key}>{r.name}</option>)}</select></div></label><div className="dm-source-dates">{Object.entries(names).map(([kind, label]) => <div key={kind}><i className={source[kind]?.status === 'ok' ? 'ok' : ''} /><span>{label}<strong>{loading ? 'Loading…' : source[kind]?.end || 'Unavailable'}</strong></span></div>)}</div><label className="dm-range">Chart history<select aria-label="Chart history" value={windowMonths} onChange={(e) => setWindowMonths(Number(e.target.value))}><option value={60}>Last 5 years</option><option value={120}>Last 10 years</option><option value={0}>All observations</option></select></label></div>
     {catalogError && <p className="dm-warning" role="alert">{catalogError}</p>}{error && <p className="dm-warning" role="alert">{error}</p>}
     {loading && <LoadingProgress className="dm-loading" message="Assembling the regional drought picture" />}
@@ -196,7 +194,7 @@ export default function DroughtMonitoring({ renderForecast }) {
         <Panel title={`Forecasting studio · ${titleRegion}`} subtitle="Regional meteorological history · LSTM default · selectable models, targets and horizon" className="dm-forecast nw-overview-forecast"><span className="dm-forecast-badge">FORWARD OUTLOOK</span>{source.meteorological?.status === 'ok' ? renderForecast(met.district_name || selected) : <p className="dm-empty">Meteorological observations are required to run a regional forecast.</p>}</Panel>
       </div>
       <details className="dm-method"><summary>How this overview is calculated</summary><p>All observations come from the three Supabase drought tables. Climate charts use monthly means; rainfall uses daily sums only where every day of the month is present. Seasonal comparisons use complete observations from the same calendar month in prior years, with at least three years required. They are not a 1981–2010 reference climatology. Heat and frost counts use available daily observations; incomplete years are marked with an asterisk. SSI, SPI and VHI signals are aligned to the latest complete month shared by all three sources. Forecasts reuse the existing regional forecasting service; historical comparisons and thresholds are observational indicators, not validated impact predictions.</p></details>
-      <footer className="dm-footer"><span><Droplets size={16} /> NIWIS <b>Drought intelligence</b></span><span>{Object.values(source).reduce((n, s) => n + s.records, 0).toLocaleString()} regional observations · {sourceStatus === 'local_csv_fallback' ? 'Packaged CSV fallback' : 'Database cache: up to 5 minutes'}</span></footer>
+      <footer className="dm-footer"><span><Droplets size={16} /> NIWIS <b>Drought intelligence</b></span><span>{Object.values(source).reduce((n, s) => n + s.records, 0).toLocaleString()} regional observations · Database observations</span></footer>
     </>}
   </div>
 }

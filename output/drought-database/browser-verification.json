@@ -1,0 +1,121 @@
+{
+  "checks": [
+    "Drought Monitoring: database label, six metrics, charts, region/layer selection and all 52 districts",
+    "Hydrological Drought: database observations, district charts and complete national map after district selection",
+    "Satellite drought: rendered history count matches API, dated map, charts and 52 districts after filtering",
+    "Database outage is shown explicitly without substituting CSV observations"
+  ],
+  "errors": [],
+  "csv_requests": [],
+  "sources": [
+    {
+      "path": "/api/drought-monitoring/regions",
+      "source_mode": "database",
+      "tables": [
+        "meteorological_drought_master",
+        "hydrological_drought_master",
+        "satellite_remote_sensing"
+      ]
+    },
+    {
+      "path": "/api/drought-monitoring/region",
+      "source_mode": "database",
+      "tables": [
+        "meteorological_drought_master",
+        "hydrological_drought_master",
+        "satellite_remote_sensing"
+      ]
+    },
+    {
+      "path": "/api/drought-monitoring/regions",
+      "source_mode": "database",
+      "tables": [
+        "meteorological_drought_master",
+        "hydrological_drought_master",
+        "satellite_remote_sensing"
+      ]
+    },
+    {
+      "path": "/api/drought-monitoring/region",
+      "source_mode": "database",
+      "tables": [
+        "meteorological_drought_master",
+        "hydrological_drought_master",
+        "satellite_remote_sensing"
+      ]
+    },
+    {
+      "path": "/api/drought-monitoring/regions",
+      "source_mode": "database",
+      "tables": [
+        "meteorological_drought_master",
+        "hydrological_drought_master",
+        "satellite_remote_sensing"
+      ]
+    },
+    {
+      "path": "/api/hydrology/metadata",
+      "source_mode": "database",
+      "tables": [
+        "hydrological_drought_master"
+      ]
+    },
+    {
+      "path": "/api/hydrology/observations",
+      "source_mode": "database",
+      "tables": [
+        "hydrological_drought_master"
+      ]
+    },
+    {
+      "path": "/api/satellite/stations",
+      "source_mode": "database",
+      "tables": [
+        "satellite_remote_sensing"
+      ]
+    },
+    {
+      "path": "/api/satellite/stations",
+      "source_mode": "database",
+      "tables": [
+        "satellite_remote_sensing"
+      ]
+    },
+    {
+      "path": "/api/satellite/history",
+      "source_mode": "database",
+      "tables": [
+        "satellite_remote_sensing"
+      ]
+    },
+    {
+      "path": "/api/satellite/history",
+      "source_mode": "database",
+      "tables": [
+        "satellite_remote_sensing"
+      ]
+    },
+    {
+      "path": "/api/satellite/stations",
+      "source_mode": "database",
+      "tables": [
+        "satellite_remote_sensing"
+      ]
+    }
+  ],
+  "timings": [
+    {
+      "path": "/drought",
+      "first_visible_ms": 13044
+    },
+    {
+      "path": "/hydrological-drought",
+      "first_visible_ms": 307
+    },
+    {
+      "path": "/satellite-drought",
+      "first_visible_ms": 182
+    }
+  ],
+  "status": "passed"
+}

@@ -14,7 +14,6 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
-from pathlib import Path
 from threading import BoundedSemaphore, Lock
 from time import monotonic
 from urllib.error import HTTPError, URLError
@@ -30,8 +29,6 @@ from app.dashboard_loader import cached_call, cached_result
 
 
 router = APIRouter(prefix="/rainfall", tags=["Rainfall status"])
-ROOT = Path(__file__).resolve().parents[2] / "Rainfall Status Monitoring"
-FILES = ["6.1_core_rainfall_variables_master.csv", "6.2_rainfall_derived_drought_indices_master.csv"]
 DEFAULT_TABLES = (
     "6.1_core_rainfall_variables_master",
     "6.2_rainfall_derived_drought_indices_master",

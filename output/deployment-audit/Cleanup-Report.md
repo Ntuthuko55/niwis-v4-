@@ -2,6 +2,13 @@
 
 Completed 19 October 2026 after reviewing the [system flow](System-Flow.md).
 
+The later removal of Analysis Studio and Prediction Engine is recorded separately
+in [Dashboard-Removal.md](Dashboard-Removal.md).
+
+This records the cleanup state on that date. Runoff subsequently moved to the
+database on 20 October; see the [migration report](../runoff-database/Runoff-Database-Migration.md)
+for its current source and the updated runtime CSV inventory.
+
 Removed **169 files**, reducing the project contents by **383,044,016 bytes (365.30 MiB)**. No active dashboard, backend service, original dataset, research notebook, report, or required map asset was removed.
 
 ## Removed files

@@ -108,24 +108,12 @@ class BoundedSourceTests(unittest.TestCase):
                     reservoirs._boundary_rows(snapshot, params)
                 self.assertEqual(request.call_count, attempts)
 
-    def test_failed_remote_windows_use_one_scoped_configured_fallback(self):
+    def test_failed_remote_windows_propagate_without_reading_local_data(self):
         from app import drought_source as source
-        local = [
-            {'district_name': 'City of Tshwane', 'date': '2024-01-01', '_niwis_source': 'local_csv_fallback'},
-            {'district_name': 'City of Tshwane', 'date': '2024-02-01', '_niwis_source': 'local_csv_fallback'},
-            {'district_name': 'Vhembe', 'date': '2024-01-01', '_niwis_source': 'local_csv_fallback'},
-        ]
         with patch.object(source, 'read_rows', side_effect=source.SupabaseSourceError('offline')), \
-                patch.object(source, '_local_rows', return_value=local), \
-                patch.object(source, '_can_use_local', return_value=True):
-            rows = source.bounded_rows('hydrological_drought_master', '2024-01-01', '2024-01-31', 'City of Tshwane')
-        self.assertEqual(rows, local[:1])
-        with patch.object(source, 'read_rows', side_effect=source.SupabaseSourceError('offline')), \
-                patch.object(source, '_local_rows') as fallback, \
-                patch.object(source, '_can_use_local', return_value=False):
+                patch('pandas.read_csv', side_effect=AssertionError('CSV reads forbidden')):
             with self.assertRaises(source.SupabaseSourceError):
                 source.bounded_rows('hydrological_drought_master', '2024-01-01', '2024-01-31')
-            fallback.assert_not_called()
 
     def test_postgres_bounds_are_both_bound_and_identifiers_quoted(self):
         from contextlib import contextmanager

@@ -1,0 +1,545 @@
+[
+  {
+    "table": "meteorological_drought_master",
+    "first_date": "2000-01-01",
+    "last_date": "2026-09-06",
+    "latest_snapshot_rows": 52,
+    "districts": [
+      "Alfred Nzo",
+      "Amajuba",
+      "Amathole",
+      "Bojanala",
+      "Buffalo City",
+      "Cacadu",
+      "Cape Winelands",
+      "Capricorn",
+      "Central Karoo",
+      "Chris Hani",
+      "City of Cape Town",
+      "City of Johannesburg",
+      "City of Tshwane",
+      "Dr Kenneth Kaunda",
+      "Dr Ruth Segomotsi Mompati",
+      "Eden",
+      "Ehlanzeni",
+      "Ekurhuleni",
+      "Fezile Dabi",
+      "Frances Baard",
+      "Gert Sibande",
+      "Joe Gqabi",
+      "John Taolo Gaetsewe",
+      "Lejweleputswa",
+      "Mangaung",
+      "Mopani",
+      "Namakwa",
+      "Nelson Mandela Bay",
+      "Ngaka Modiri Molema",
+      "Nkangala",
+      "O.R.Tambo",
+      "Overberg",
+      "Pixley ka Seme",
+      "Sedibeng",
+      "Sekhukhune",
+      "Sisonke",
+      "Thabo Mofutsanyane",
+      "Ugu",
+      "Umgungundlovu",
+      "Umkhanyakude",
+      "Umzinyathi",
+      "Uthukela",
+      "Uthungulu",
+      "Vhembe",
+      "Waterberg",
+      "West Coast",
+      "West Rand",
+      "Xhariep",
+      "Z F Mgcawu",
+      "Zululand",
+      "eThekwini",
+      "iLembe"
+    ],
+    "columns": [
+      {
+        "name": "id",
+        "type": "integer",
+        "format": "bigint"
+      },
+      {
+        "name": "district_name",
+        "type": "string",
+        "format": "character varying"
+      },
+      {
+        "name": "date",
+        "type": "string",
+        "format": "date"
+      },
+      {
+        "name": "year",
+        "type": "integer",
+        "format": "integer"
+      },
+      {
+        "name": "month",
+        "type": "integer",
+        "format": "integer"
+      },
+      {
+        "name": "daily_rainfall_mm_day",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "monthly_rainfall_mm_month",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "seasonal_rainfall_mm_season",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "rainfall_anomaly_mm",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "rainfall_anomaly_pct",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "rainfall_intensity_mm_h",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "tmin_c",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "tmax_c",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "tavg_c",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "temp_anomaly_c",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "pet_mm_day",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "et0_mm_day",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "relative_humidity_pct",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "solar_radiation_wm2",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "wind_speed_2m_ms",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spi_1",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spi_3",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spi_6",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spi_12",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spi_24",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spei_1",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spei_3",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spei_6",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spei_12",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "spei_24",
+        "type": "number",
+        "format": "double precision"
+      }
+    ],
+    "sample": {
+      "id": 336148,
+      "district_name": "Sekhukhune",
+      "date": "2015-07-23",
+      "year": 2015,
+      "month": 7,
+      "daily_rainfall_mm_day": 0.02,
+      "monthly_rainfall_mm_month": 6.23,
+      "seasonal_rainfall_mm_season": 412.32,
+      "rainfall_anomaly_mm": 1.235,
+      "rainfall_anomaly_pct": 24.729,
+      "rainfall_intensity_mm_h": 0.003,
+      "tmin_c": 9.23,
+      "tmax_c": 20.66,
+      "tavg_c": 14.945,
+      "temp_anomaly_c": 1.017,
+      "pet_mm_day": 3.31,
+      "et0_mm_day": 3.245,
+      "relative_humidity_pct": 68.617,
+      "solar_radiation_wm2": 154.837,
+      "wind_speed_2m_ms": 2.5,
+      "spi_1": -0.831,
+      "spi_3": -1.146,
+      "spi_6": -0.733,
+      "spi_12": -0.521,
+      "spi_24": 0.382,
+      "spei_1": -0.528,
+      "spei_3": -1.2,
+      "spei_6": -1.277,
+      "spei_12": -0.566,
+      "spei_24": 0.296
+    },
+    "seconds": 1.677
+  },
+  {
+    "table": "hydrological_drought_master",
+    "first_date": "2001-01-01",
+    "last_date": "2025-12-01",
+    "latest_snapshot_rows": 52,
+    "districts": [
+      "alfred nzo",
+      "amajuba",
+      "amathole",
+      "bojanala",
+      "buffalo city",
+      "cacadu",
+      "cape winelands",
+      "capricorn",
+      "central karoo",
+      "chris hani",
+      "city of cape town",
+      "city of johannesburg",
+      "city of tshwane",
+      "dr kenneth kaunda",
+      "dr ruth segomotsi mompati",
+      "eden",
+      "ehlanzeni",
+      "ekurhuleni",
+      "ethekwini",
+      "fezile dabi",
+      "frances baard",
+      "gert sibande",
+      "ilembe",
+      "joe gqabi",
+      "john taolo gaetsewe",
+      "lejweleputswa",
+      "mangaung",
+      "mopani",
+      "namakwa",
+      "nelson mandela bay",
+      "ngaka modiri molema",
+      "nkangala",
+      "o.r.tambo",
+      "overberg",
+      "pixley ka seme",
+      "sedibeng",
+      "sekhukhune",
+      "sisonke",
+      "thabo mofutsanyane",
+      "ugu",
+      "umgungundlovu",
+      "umkhanyakude",
+      "umzinyathi",
+      "uthukela",
+      "uthungulu",
+      "vhembe",
+      "waterberg",
+      "west coast",
+      "west rand",
+      "xhariep",
+      "z f mgcawu",
+      "zululand"
+    ],
+    "columns": [
+      {
+        "name": "id",
+        "type": "integer",
+        "format": "bigint"
+      },
+      {
+        "name": "date",
+        "type": "string",
+        "format": "date"
+      },
+      {
+        "name": "district_name",
+        "type": "string",
+        "format": "character varying"
+      },
+      {
+        "name": "river_discharge_m3_s",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "fdc_percentiles_m3_s",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "ssi_dimensionless",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "dam_storage_million_m3",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "dam_level_pct_fsc",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "dam_inflow_m3_s",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "dam_outflow_m3_s",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "borehole_water_level_m_bgl",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "sgi_dimensionless",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "surface_runoff_m3_s",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "baseflow_separation_m3_s",
+        "type": "number",
+        "format": "double precision"
+      }
+    ],
+    "sample": {
+      "id": 1,
+      "date": "2001-01-01",
+      "district_name": "alfred nzo",
+      "river_discharge_m3_s": 0.02005729341,
+      "fdc_percentiles_m3_s": 0.01,
+      "ssi_dimensionless": 0.123678318035832,
+      "dam_storage_million_m3": 18.9843190766314,
+      "dam_level_pct_fsc": 16.4464051013098,
+      "dam_inflow_m3_s": 0.02005729341,
+      "dam_outflow_m3_s": 0.02005729341,
+      "borehole_water_level_m_bgl": -0.0006906687892261,
+      "sgi_dimensionless": -0.681191705240271,
+      "surface_runoff_m3_s": 0.02005729341,
+      "baseflow_separation_m3_s": 0
+    },
+    "seconds": 1.024
+  },
+  {
+    "table": "satellite_remote_sensing",
+    "first_date": "2001-01-01",
+    "last_date": "2025-12-01",
+    "latest_snapshot_rows": 52,
+    "districts": [
+      "alfred nzo",
+      "amajuba",
+      "amathole",
+      "bojanala",
+      "buffalo city",
+      "cape town",
+      "cape winelands",
+      "capricorn",
+      "central karoo",
+      "chris hani",
+      "dr kenneth kaunda",
+      "dr ruth segomotsi mompati",
+      "eden",
+      "ehlanzeni",
+      "ekurhuleni",
+      "ethekwini",
+      "fezile dabi",
+      "frances baard",
+      "gert sibande",
+      "ilembe",
+      "joe gqabi",
+      "johannesburg",
+      "john taolo gaetsewe",
+      "lejweleputswa",
+      "mangaung",
+      "mopani",
+      "namakwa",
+      "nelson mandela bay",
+      "ngaka modiri molema",
+      "nkangala",
+      "ortambo",
+      "overberg",
+      "pixley ka seme",
+      "sarah baartman",
+      "sedibeng",
+      "sekhukhune",
+      "sisonke",
+      "thabo mofutsanyane",
+      "tshwane",
+      "ugu",
+      "umgungundlovu",
+      "umkhanyakude",
+      "umzinyathi",
+      "uthukela",
+      "uthungulu",
+      "vhembe",
+      "waterberg",
+      "west coast",
+      "west rand",
+      "xhariep",
+      "z f mgcawu",
+      "zululand"
+    ],
+    "columns": [
+      {
+        "name": "id",
+        "type": "integer",
+        "format": "bigint"
+      },
+      {
+        "name": "date",
+        "type": "string",
+        "format": "date"
+      },
+      {
+        "name": "district_name",
+        "type": "string",
+        "format": "character varying"
+      },
+      {
+        "name": "year",
+        "type": "integer",
+        "format": "integer"
+      },
+      {
+        "name": "ndvi",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "lst",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "ndwi",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "vci",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "tci",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "vhi",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "rootzone_soil_moisture",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "surface_soil_moisture",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "surface_water_extent_km2",
+        "type": "number",
+        "format": "double precision"
+      },
+      {
+        "name": "grace_tws",
+        "type": "number",
+        "format": "double precision"
+      }
+    ],
+    "sample": {
+      "id": 1,
+      "date": "2001-01-01",
+      "district_name": "alfred nzo",
+      "year": 2001,
+      "ndvi": 0.610972222637816,
+      "lst": 30.6803,
+      "ndwi": -0.586281186069842,
+      "vci": 64.4003868121074,
+      "tci": 60.6667040641741,
+      "vhi": 62.5335454381407,
+      "rootzone_soil_moisture": 0.208867692307692,
+      "surface_soil_moisture": 0.167326153846154,
+      "surface_water_extent_km2": 5.37444460602022,
+      "grace_tws": 281.465749982377
+    },
+    "seconds": 1.001
+  }
+]

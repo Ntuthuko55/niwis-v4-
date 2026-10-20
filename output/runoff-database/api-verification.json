@@ -1,0 +1,107 @@
+{
+  "source": "Supabase",
+  "source_tables": [
+    "runoff_variables_master",
+    "7.2_derived_runoff_indicators_master"
+  ],
+  "regions": 52,
+  "first_date": "2000-01-01",
+  "latest_date": "2026-09-06",
+  "default_start": "2024-09",
+  "default_end": "2026-08",
+  "indicators": 23,
+  "monthly_source_rows": 16692,
+  "schema": [
+    {
+      "table": "runoff_variables_master",
+      "configured_table": "runoff_variables_master",
+      "columns": [
+        "District_Name",
+        "Date",
+        "Year",
+        "Month",
+        "Catchment_Area_km2",
+        "Mean_Catchment_Rainfall_mm",
+        "Actual_ET_from_Catchment_mm",
+        "Daily_Surface_Runoff_Volume_m3_day",
+        "Monthly_Runoff_Totals_Million_m3_month",
+        "Runoff_Coefficient_dimensionless",
+        "Soil_Moisture_Prior_m3m3",
+        "Curve_Number_CN",
+        "Peak_Flow_Rates_m3s",
+        "Baseflow_Component_m3s",
+        "Dominant_LandCover_Class",
+        "Impervious_Surface_Fraction_percent"
+      ]
+    },
+    {
+      "table": "7.2_derived_runoff_indicators_master",
+      "configured_table": "7.2_derived_runoff_indicators_master",
+      "columns": [
+        "District_Name",
+        "Year",
+        "Month",
+        "Runoff_Anomaly_percent",
+        "Runoff_Ratio_Trend_percent_per_yr",
+        "SSI_Standardized_Streamflow_Index",
+        "Flood_Flow_2yr_m3s",
+        "Flood_Flow_5yr_m3s",
+        "Flood_Flow_10yr_m3s",
+        "Flood_Flow_20yr_m3s",
+        "Flood_Flow_50yr_m3s",
+        "Flood_Flow_100yr_m3s",
+        "Hydrological_Response_Time_hours",
+        "date"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "path": "/runoff/metadata",
+      "http_status": 200,
+      "seconds": 7.325
+    },
+    {
+      "path": "/runoff/dashboard",
+      "http_status": 200,
+      "seconds": 7.395
+    },
+    {
+      "path": "/runoff/dashboard?region=City+of+Tshwane&start=2024-02&end=2024-03",
+      "http_status": 200,
+      "seconds": 0.911
+    },
+    {
+      "path": "/runoff/daily?region=City+of+Tshwane&month=2024-02",
+      "http_status": 200,
+      "seconds": 0.297
+    },
+    {
+      "path": "/runoff/forecast-source?region=City+of+Tshwane&start=2024-02&end=2024-03",
+      "http_status": 200,
+      "seconds": 0.01
+    },
+    {
+      "path": "/runoff/dashboard?start=2026-09&end=2026-09",
+      "http_status": 200,
+      "seconds": 0.025
+    },
+    {
+      "path": "/runoff/dashboard",
+      "http_status": 200,
+      "seconds": 0.05
+    }
+  ],
+  "runtime_csv_reads": 0,
+  "reference_comparison": {
+    "region": "City of Tshwane",
+    "start": "2024-02",
+    "end": "2024-03",
+    "volume": 93.460174925,
+    "baseflow": 5.76914,
+    "peak_flow": 319.1628,
+    "matched": true
+  },
+  "national_map_rows": 52,
+  "partial_month_observed_days": 312
+}

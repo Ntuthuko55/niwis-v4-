@@ -181,7 +181,7 @@ export const ROADMAP = [
   { ph: 'Phase 1 — Foundation', mo: 'What this project has now', st: 'now', items: [
     ['Supabase climate warehouse (niwis_daily_climate_v2)', 'done'],
     ['Province-level drought scoring from latest observation', 'done'],
-    ['Time series, spatial and multivariate studio', 'done'],
+    ['Monitoring dashboard forecasts', 'done'],
     ['Prototype portal layout for the full NIWIS catalogue', 'now'],
     ['DWS / SAWS / SANSA operational feeds', 'next'],
   ] },
@@ -237,10 +237,6 @@ export const NAV = [
   ]],
   ['Platform', [
     ['admin', 'Administration', '', true],
-  ]],
-  ['Intelligence', [
-    ['studio', 'Analysis Studio', '', true],
-    ['ai', 'Prediction Engine', '', true],
   ]],
 ]
 

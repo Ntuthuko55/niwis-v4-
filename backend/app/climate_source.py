@@ -62,7 +62,7 @@ def settings():
 def signature():
     base, key, tables = settings()
     try:
-        ttl = max(60, int(os.getenv('NIWIS_SUPABASE_CACHE_TTL', '900')))
+        ttl = max(60, int(os.getenv('NIWIS_SUPABASE_CACHE_TTL', '86400')))
     except ValueError as exc:
         raise SupabaseSourceError('NIWIS_SUPABASE_CACHE_TTL must be a number of seconds.') from exc
     return base, hash(key), tuple(tables.items()), int(monotonic() // ttl)

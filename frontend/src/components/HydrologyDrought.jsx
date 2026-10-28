@@ -1,28 +1,12 @@
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  Droplets, Waves, Gauge, Activity, Calendar, User, MapPin,
-  AlertTriangle, AlertCircle, CheckCircle2, ArrowDown, ArrowUp,
-  ChevronRight, Info, Loader2
+  Droplets, Waves, Activity, Calendar, MapPin,
+  AlertTriangle, CheckCircle2, ChevronRight
 } from 'lucide-react'
 import '../niwis/hydrology.css'
-import { normaliseDistrictName } from './DistrictMap'
-import ProvinceMapLabels from './ProvinceMapLabels'
+import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import LoadingProgress from './LoadingProgress'
-
-const NUMERIC_FIELDS = [
-  'river_discharge_m3_s',
-  'fdc_percentiles_m3_s',
-  'ssi_dimensionless',
-  'dam_storage_million_m3',
-  'dam_level_pct_fsc',
-  'dam_inflow_m3_s',
-  'dam_outflow_m3_s',
-  'borehole_water_level_m_bgl',
-  'sgi_dimensionless',
-  'surface_runoff_m3_s',
-  'baseflow_separation_m3_s',
-]
 
 const DISTRICT_PROVINCES = {
   'alfred nzo': 'Eastern Cape', amajuba: 'KwaZulu-Natal', amathole: 'Eastern Cape',
@@ -53,6 +37,57 @@ const SSI_THRESHOLDS = [
   { y: -1.5, label: 'Severe' },
   { y: -2.0, label: 'Extreme' },
 ]
+
+const HYDRO_MAP_OPTIONS = [
+  { key: 'ssi', label: 'Streamflow drought index (SSI)', type: 'ssi' },
+  { key: 'sgi', label: 'Groundwater drought index (SGI)', type: 'sgi' },
+  { key: 'discharge_change_pct', label: 'River discharge vs same-month mean (%)', type: 'anomaly' },
+  { key: 'dam_level_pct_fsc', label: 'Reservoir level (% full)', type: 'storage' },
+  { key: 'river_discharge_m3_s', label: 'River discharge (m3/s)', type: 'relative' },
+  { key: 'surface_runoff_m3_s', label: 'Surface runoff (m3/s)', type: 'relative' },
+  { key: 'baseflow_m3_s', label: 'Baseflow (m3/s)', type: 'relative' },
+]
+
+const HYDRO_MAP_COLORS = ['#e94f63', '#f58b48', '#f0c85b', '#58c99a', '#279fd3']
+const HYDRO_MAP_GRADIENT = `linear-gradient(180deg, ${[...HYDRO_MAP_COLORS].reverse().join(', ')})`
+const mapNumber = value => Number(value).toLocaleString('en-ZA', { maximumFractionDigits: 2 })
+
+function hydrologyMapStyle(metric, stations) {
+  if (metric.type === 'ssi') return {
+    color: value => value <= -1.5 ? HYDRO_MAP_COLORS[0] : value <= -1 ? HYDRO_MAP_COLORS[1] : value <= -0.5 ? HYDRO_MAP_COLORS[2] : value <= 0.5 ? HYDRO_MAP_COLORS[3] : HYDRO_MAP_COLORS[4],
+    legend: { title: 'SSI - drought condition', gradient: HYDRO_MAP_GRADIENT, items: [['> 0.5', 'Wetter than normal'], ['-0.5 to 0.5', 'Near normal'], ['-1 to -0.5', 'Mild dryness'], ['-1.5 to -1', 'Moderate drought'], ['<= -1.5', 'Severe / extreme drought']] },
+  }
+  if (metric.type === 'sgi') return {
+    color: value => value <= -1.5 ? HYDRO_MAP_COLORS[0] : value <= -1 ? HYDRO_MAP_COLORS[1] : value <= -0.5 ? HYDRO_MAP_COLORS[2] : value <= 0.5 ? HYDRO_MAP_COLORS[3] : HYDRO_MAP_COLORS[4],
+    legend: { title: 'SGI - groundwater condition', gradient: HYDRO_MAP_GRADIENT, items: [['> 0.5', 'Above normal'], ['-0.5 to 0.5', 'Near normal'], ['-1 to -0.5', 'Below normal'], ['-1.5 to -1', 'Moderate drought'], ['<= -1.5', 'Severe drought']] },
+  }
+  if (metric.type === 'anomaly') return {
+    color: value => value <= -50 ? HYDRO_MAP_COLORS[0] : value <= -25 ? HYDRO_MAP_COLORS[1] : value < -10 ? HYDRO_MAP_COLORS[2] : value <= 10 ? HYDRO_MAP_COLORS[3] : HYDRO_MAP_COLORS[4],
+    legend: { title: 'Discharge vs same-month mean', gradient: HYDRO_MAP_GRADIENT, items: [['> 10%', 'Above mean'], ['-10% to 10%', 'Near mean'], ['-25% to -10%', 'Slightly lower'], ['-50% to -25%', 'Lower'], ['<= -50%', 'Much lower']] },
+  }
+  if (metric.type === 'storage') return {
+    color: value => value < 20 ? HYDRO_MAP_COLORS[0] : value < 40 ? HYDRO_MAP_COLORS[1] : value < 60 ? HYDRO_MAP_COLORS[2] : value < 80 ? HYDRO_MAP_COLORS[3] : HYDRO_MAP_COLORS[4],
+    legend: { title: 'Reservoir level - % full', gradient: HYDRO_MAP_GRADIENT, items: [['80%+', 'Very high'], ['60-80%', 'High'], ['40-60%', 'Mid range'], ['20-40%', 'Low'], ['0-20%', 'Very low']] },
+  }
+  const values = stations.map(row => Number(row[metric.key])).filter(Number.isFinite).sort((a, b) => a - b)
+  if (values.length && values[0] === values[values.length - 1]) return {
+    color: () => HYDRO_MAP_COLORS[2],
+    legend: { title: `${metric.label} - national range`, gradient: HYDRO_MAP_GRADIENT, items: [[mapNumber(values[0]), 'Same value across reporting districts']] },
+  }
+  const breaks = [0.2, 0.4, 0.6, 0.8].map(fraction => values[Math.min(values.length - 1, Math.floor((values.length - 1) * fraction))])
+  const band = value => breaks.findIndex(limit => value <= limit) < 0 ? 4 : breaks.findIndex(limit => value <= limit)
+  const ranges = values.length ? [
+    [`> ${mapNumber(breaks[3])}`, 'Highest district range'],
+    [`${mapNumber(breaks[2])} - ${mapNumber(breaks[3])}`, 'Upper district range'],
+    [`${mapNumber(breaks[1])} - ${mapNumber(breaks[2])}`, 'Middle district range'],
+    [`${mapNumber(breaks[0])} - ${mapNumber(breaks[1])}`, 'Lower district range'],
+    [`<= ${mapNumber(breaks[0])}`, 'Lowest district range'],
+  ] : [['No values', 'Unavailable']]
+  return {
+    color: value => HYDRO_MAP_COLORS[band(Number(value))],
+    legend: { title: `${metric.label} - national range`, gradient: HYDRO_MAP_GRADIENT, items: ranges },
+  }
+}
 
 function isValidNumber(val) {
   if (val === null || val === undefined || val === '') return false
@@ -103,6 +138,21 @@ async function loadHydrologyRecords(region, signal) {
   return (payload.records || []).map((row) => ({ ...row,
     district_name: row.district_name.replace(/\b\w/g, (letter) => letter.toUpperCase()),
   }))
+}
+
+function exportHydrologyCsv(rows, district) {
+  if (!rows.length) return
+  const columns = Object.keys(rows[0])
+  const quote = value => `"${String(value ?? '').replaceAll('"', '""')}"`
+  const csv = [columns.map(quote).join(','), ...rows.map(row => columns.map(column => quote(row[column])).join(','))].join('\r\n')
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `hydrology-${district.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.csv`
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  window.setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
 function classifySSI(ssi) {
@@ -335,17 +385,6 @@ function DualSeriesChart({ seriesA, seriesB, labelA, labelB, colorA, colorB, gra
   )
 }
 
-function ChangeBadge({ change }) {
-  if (!isValidNumber(change)) return null
-  const down = Number(change) < 0
-  return (
-    <span className={`hydro-kpi-badge ${down ? 'down-danger' : 'up-success'}`}>
-      {down ? <ArrowDown size={11} /> : <ArrowUp size={11} />}
-      {Math.abs(change).toFixed(0)}%
-    </span>
-  )
-}
-
 function MetricValue({ value, unit, digits }) {
   if (!isValidNumber(value)) {
     return <span className="hydro-nodata-text">No data available</span>
@@ -363,9 +402,15 @@ export default function HydrologyDrought() {
   const [parsedData, setParsedData] = useState([])
   const [catalogue, setCatalogue] = useState(null)
   const [districtsGeoJson, setDistrictsGeoJson] = useState([])
+  const [mapStations, setMapStations] = useState([])
+  const [mapDates, setMapDates] = useState([])
+  const [mapDate, setMapDate] = useState('')
+  const [mapMetric, setMapMetric] = useState('ssi')
+  const [mapLoading, setMapLoading] = useState(true)
+  const [mapError, setMapError] = useState('')
+  const skipInitialMapDateFetch = useRef(true)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
-  const [mapMode, setMapMode] = useState('regional')
 
   useEffect(() => {
     const controller = new AbortController()
@@ -389,6 +434,43 @@ export default function HydrologyDrought() {
   }, [])
 
   useEffect(() => {
+    const controller = new AbortController()
+    fetch('/api/hydrology/stations', { signal: controller.signal }).then(async response => {
+      const payload = await response.json()
+      if (!response.ok) throw new Error(payload.detail || 'Unable to load district hydrology map values.')
+      return payload
+    }).then(payload => {
+      if (controller.signal.aborted) return
+      setMapStations(payload.stations || [])
+      setMapDates(payload.available_dates || [])
+      setMapDate(payload.date || '')
+      setMapError('')
+    }).catch(error => { if (!controller.signal.aborted) setMapError(error.message) })
+      .finally(() => { if (!controller.signal.aborted) setMapLoading(false) })
+    return () => controller.abort()
+  }, [])
+
+  useEffect(() => {
+    if (!mapDate) return undefined
+    if (skipInitialMapDateFetch.current) {
+      skipInitialMapDateFetch.current = false
+      return undefined
+    }
+    const controller = new AbortController()
+    setMapLoading(true)
+    setMapError('')
+    fetch(`/api/hydrology/stations?${new URLSearchParams({ date: mapDate })}`, { signal: controller.signal }).then(async response => {
+      const payload = await response.json()
+      if (!response.ok) throw new Error(payload.detail || 'Unable to load district hydrology map values.')
+      return payload
+    }).then(payload => {
+      if (!controller.signal.aborted) setMapStations(payload.stations || [])
+    }).catch(error => { if (!controller.signal.aborted) setMapError(error.message) })
+      .finally(() => { if (!controller.signal.aborted) setMapLoading(false) })
+    return () => controller.abort()
+  }, [mapDate])
+
+  useEffect(() => {
     if (!catalogue || !selectedDistrict) return undefined
     const controller = new AbortController()
     setLoading(true); setLoadError(null)
@@ -401,6 +483,13 @@ export default function HydrologyDrought() {
 
   const districts = useMemo(() => (catalogue?.districts || []).map(name =>
     name.replace(/\b\w/g, letter => letter.toUpperCase())).sort((a, b) => a.localeCompare(b)), [catalogue])
+  const mapValues = useMemo(() => Object.fromEntries(mapStations.map(row => [normaliseDistrictName(row.name), {
+    ...row,
+    ...Object.fromEntries(HYDRO_MAP_OPTIONS.map(option => [option.key, isValidNumber(row[option.key]) ? Number(row[option.key]) : null])),
+  }])), [mapStations])
+  const selectedMapMetric = HYDRO_MAP_OPTIONS.find(option => option.key === mapMetric) || HYDRO_MAP_OPTIONS[0]
+  const mapStyle = useMemo(() => hydrologyMapStyle(selectedMapMetric, mapStations), [selectedMapMetric, mapStations])
+  const selectMapDistrict = name => setSelectedDistrict(districts.find(district => normaliseDistrictName(district) === normaliseDistrictName(name)) || name)
 
   const filteredData = useMemo(() => (
     parsedData
@@ -446,12 +535,7 @@ export default function HydrologyDrought() {
   const ssiClass = classifySSI(latest.ssi)
   const sgiClass = classifySGI(latest.sgi)
   const districtName = latestRow?.district_name || selectedDistrict
-  const provinceName = DISTRICT_PROVINCES[districtName.trim().toLowerCase()] || 'South Africa'
-  const droughtStatus = {
-    ...ssiClass,
-    trend: !isValidNumber(latest.ssi) ? 'No data available' : Number(latest.ssi) < -0.5 ? 'Worsening' : Number(latest.ssi) > 0.5 ? 'Improving' : 'Stable',
-  }
-
+  const provinceName = Object.entries(DISTRICT_PROVINCES).find(([name]) => normaliseDistrictName(name) === normaliseDistrictName(districtName))?.[1] || 'South Africa'
   const alerts = useMemo(() => {
     if (!latestRow) return []
     const items = []
@@ -465,576 +549,147 @@ export default function HydrologyDrought() {
     return items
   }, [latestRow, latest.ssi, latest.sgi, latest.date, dischargeChange, runoffChange, baseflowChange, districtName])
 
-  const insights = useMemo(() => {
-    if (!latestRow) return [{ type: 'warning', text: `No data available for ${selectedDistrict}.` }]
-    const items = []
-    items.push({
-      type: isValidNumber(dischargeChange) && dischargeChange < -10 ? 'danger' : 'info',
-      text: isValidNumber(latest.river_discharge)
-        ? `River discharge is ${formatMetric(latest.river_discharge)} m³/s on ${latest.date} in ${districtName} (historical mean ${displayMetric(dischargeMean)} m³/s).`
-        : `River Discharge: No data available for ${districtName}.`,
-    })
-    items.push({
-      type: ssiClass.severity === 'normal' || ssiClass.severity === 'unknown' ? 'info' : 'warning',
-      text: isValidNumber(latest.ssi)
-        ? `SSI is ${Number(latest.ssi).toFixed(2)} (${ssiClass.status}) for ${districtName}.`
-        : `SSI: No data available for ${districtName}.`,
-    })
-    items.push({
-      type: 'info',
-      text: isValidNumber(latest.dam_inflow) || isValidNumber(latest.dam_outflow)
-        ? `Dam inflow mean is ${displayMetric(inflowMean)} m³/s and outflow mean is ${displayMetric(outflowMean)} m³/s across ${filteredData.length} ${districtName} records.`
-        : `Dam Inflow / Dam Outflow: No data available for ${districtName}.`,
-    })
-    items.push({
-      type: isValidNumber(runoffChange) && runoffChange < 0 ? 'danger' : 'info',
-      text: isValidNumber(latest.surface_runoff)
-        ? `Surface runoff is ${formatMetric(latest.surface_runoff)} m³/s and baseflow is ${displayMetric(latest.baseflow)} m³/s in ${districtName}.`
-        : `Surface Runoff: No data available for ${districtName}.`,
-    })
-    return items
-  }, [latestRow, selectedDistrict, districtName, latest.date, latest.river_discharge, latest.ssi, latest.dam_inflow, latest.dam_outflow, latest.surface_runoff, latest.baseflow, dischargeChange, dischargeMean, ssiClass, inflowMean, outflowMean, runoffChange, filteredData.length])
 
   const recommendations = useMemo(() => {
     if (!latestRow) return [{ text: `No data available for ${selectedDistrict}.` }]
     return [
       { text: `Continue monitoring river discharge (${displayMetric(latest.river_discharge)} m³/s) in ${districtName}.` },
       { text: isValidNumber(latest.dam_storage) ? `Evaluate reservoir balance: dam storage is ${formatMetric(latest.dam_storage)} Mm³ (${displayMetric(latest.dam_level_pct)}% FSC).` : 'Dam Storage: No data available' },
-      { text: `Assess ecological reserve using baseflow (${displayMetric(latest.baseflow)} m³/s).` },
+      { text: `Compare baseflow (${displayMetric(latest.baseflow)} m³/s) with applicable ecological reserve targets.` },
       { text: `Maintain drought preparedness in ${districtName} (${provinceName}).` },
     ]
   }, [latestRow, selectedDistrict, districtName, provinceName, latest.river_discharge, latest.dam_storage, latest.dam_level_pct, latest.baseflow])
 
   const variablesTable = [
-    { variable: 'River Discharge', value: latest.river_discharge, unit: 'm³/s', trend: dischargeChange, status: !isValidNumber(latest.river_discharge) ? 'No data available' : dischargeChange < -10 ? 'Below Normal' : dischargeChange > 10 ? 'Above Normal' : 'Normal', tone: dischargeChange < -10 ? 'warning' : 'info' },
-    { variable: 'SSI (Streamflow)', value: latest.ssi, unit: '(dimensionless)', trend: isValidNumber(latest.ssi) ? (latest.ssi < 0 ? -1 : 1) : null, status: ssiClass.label, tone: ssiClass.severity === 'normal' ? 'info' : 'warning' },
-    { variable: 'Dam Inflow', value: latest.dam_inflow, unit: 'm³/s', trend: null, status: !isValidNumber(latest.dam_inflow) ? 'No data available' : latest.dam_inflow > 0 ? 'Active' : 'Recorded', tone: 'info' },
-    { variable: 'Dam Outflow', value: latest.dam_outflow, unit: 'm³/s', trend: null, status: !isValidNumber(latest.dam_outflow) ? 'No data available' : latest.dam_outflow > 0 ? 'Active' : 'Recorded', tone: 'info' },
-    { variable: 'Surface Runoff', value: latest.surface_runoff, unit: 'm³/s', trend: runoffChange, status: !isValidNumber(latest.surface_runoff) ? 'No data available' : runoffChange < -10 ? 'Below Normal' : 'Normal', tone: runoffChange < -10 ? 'warning' : 'info' },
-    { variable: 'Baseflow Separation', value: latest.baseflow, unit: 'm³/s', trend: baseflowChange, status: !isValidNumber(latest.baseflow) ? 'No data available' : baseflowChange < -10 ? 'Below Normal' : 'Normal', tone: baseflowChange < -10 ? 'warning' : 'info' },
-    { variable: 'Dam Storage', value: latest.dam_storage, unit: 'million m³', trend: null, status: !isValidNumber(latest.dam_storage) ? 'No data available' : 'Database', tone: 'info' },
-    { variable: 'Borehole Water Level', value: latest.borehole, unit: 'm bgl', trend: null, status: !isValidNumber(latest.borehole) ? 'No data available' : 'Database', tone: 'info' },
-    { variable: 'SGI (Groundwater)', value: latest.sgi, unit: '(dimensionless)', trend: null, status: sgiClass.label, tone: 'info' },
+    { variable: 'River Discharge', value: latest.river_discharge, unit: 'm³/s', status: !isValidNumber(latest.river_discharge) ? 'No data available' : dischargeChange < -10 ? 'Below Normal' : dischargeChange > 10 ? 'Above Normal' : 'Normal', tone: dischargeChange < -10 ? 'warning' : 'info' },
+    { variable: 'SSI (Streamflow)', value: latest.ssi, unit: '(dimensionless)', status: ssiClass.label, tone: ['severe', 'extreme'].includes(ssiClass.severity) ? 'danger' : ['mild', 'moderate'].includes(ssiClass.severity) ? 'warning' : 'info' },
+    { variable: 'Dam Inflow', value: latest.dam_inflow, unit: 'm³/s', status: !isValidNumber(latest.dam_inflow) ? 'No data available' : latest.dam_inflow > 0 ? 'Active' : 'Recorded', tone: 'info' },
+    { variable: 'Dam Outflow', value: latest.dam_outflow, unit: 'm³/s', status: !isValidNumber(latest.dam_outflow) ? 'No data available' : latest.dam_outflow > 0 ? 'Active' : 'Recorded', tone: 'info' },
+    { variable: 'Surface Runoff', value: latest.surface_runoff, unit: 'm³/s', status: !isValidNumber(latest.surface_runoff) ? 'No data available' : runoffChange < -10 ? 'Below Normal' : 'Normal', tone: runoffChange < -10 ? 'warning' : 'info' },
+    { variable: 'Baseflow Separation', value: latest.baseflow, unit: 'm³/s', status: !isValidNumber(latest.baseflow) ? 'No data available' : baseflowChange < -10 ? 'Below Normal' : 'Normal', tone: baseflowChange < -10 ? 'warning' : 'info' },
+    { variable: 'Dam Storage', value: latest.dam_storage, unit: 'million m³', status: !isValidNumber(latest.dam_storage) ? 'No data available' : 'Recorded', tone: 'info' },
+    { variable: 'Borehole Water Level', value: latest.borehole, unit: 'm bgl', status: !isValidNumber(latest.borehole) ? 'No data available' : 'Recorded', tone: 'info' },
+    { variable: 'SGI (Groundwater)', value: latest.sgi, unit: '(dimensionless)', status: sgiClass.label, tone: 'info' },
   ]
-
-  useEffect(() => {
-    const debug = {
-      selectedDistrict,
-      records: filteredData.length,
-      firstDate: firstRow?.date || null,
-      latestDate: latestRow?.date || null,
-      latestRiverDischarge: latest.river_discharge,
-      latestSSI: latest.ssi,
-      latestDamInflow: latest.dam_inflow,
-      latestDamOutflow: latest.dam_outflow,
-      latestSurfaceRunoff: latest.surface_runoff,
-      latestBaseflow: latest.baseflow,
-      meanDamInflow: inflowMean,
-      meanDamOutflow: outflowMean,
-      chartCounts: {
-        river_discharge_m3_s: riverDischargeData.filter((point) => isValidNumber(point.value)).length,
-        ssi_dimensionless: ssiData.filter((point) => isValidNumber(point.value)).length,
-        dam_inflow_m3_s: inflowData.filter((point) => isValidNumber(point.value)).length,
-        dam_outflow_m3_s: outflowData.filter((point) => isValidNumber(point.value)).length,
-        surface_runoff_m3_s: runoffData.filter((point) => isValidNumber(point.value)).length,
-        baseflow_separation_m3_s: baseflowData.filter((point) => isValidNumber(point.value)).length,
-      },
-      sample: filteredData.slice(0, 3),
-    }
-    try { window.__hydrologyDebug = debug } catch (error) { /* ignore */ }
-    if (import.meta.env.DEV) console.info('[Hydrology] filteredData rebuilt', debug)
-  }, [selectedDistrict, filteredData, firstRow, latestRow, latest.river_discharge, latest.ssi, latest.dam_inflow, latest.dam_outflow, latest.surface_runoff, latest.baseflow, inflowMean, outflowMean, riverDischargeData, ssiData, inflowData, outflowData, runoffData, baseflowData])
-
-  const project = ([lon, lat]) => [((lon - 16.45) / 16.5) * 440, ((-22.12 - lat) / 12.75) * 230]
-  const mapPaths = useMemo(() => new Map(districtsGeoJson.map(feature => {
-    const geometry = feature.geometry
-    const polygons = geometry?.type === 'Polygon' ? [geometry.coordinates] : geometry?.type === 'MultiPolygon' ? geometry.coordinates : []
-    const path = polygons.flatMap(polygon => polygon.map(ring => ring.map((point, index) => {
-      const [x, y] = project(point)
-      return `${index ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`
-    }).join(' ') + 'Z')).join(' ')
-    return [geometry, path]
-  })), [districtsGeoJson])
-  const pathFor = geometry => mapPaths.get(geometry) || ''
 
 
   if (loading) {
     return (
-      <div className="hydro-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#38bdf8', fontSize: '15px' }}>
-            <LoadingProgress className="hydro-loading" message="Reading hydrological observations from Supabase" />
-        </div>
+      <div className="hydro-container hydro-dashboard hydro-loading-state">
+        <LoadingProgress className="hydro-loading" message="Reading hydrological observations from Supabase" />
       </div>
     )
   }
 
   if (loadError) {
     return (
-      <div className="hydro-container">
-        <div className="hydro-nodata">{loadError}</div>
+      <div className="hydro-container hydro-dashboard">
+        <section className="hydro-error-card" role="alert">
+          <span className="hydro-panel-kicker">DATA SOURCE UNAVAILABLE</span>
+          <h1>Hydrological data could not be loaded</h1>
+          <p>{loadError}</p>
+          <button type="button" className="hydro-btn-report" onClick={() => window.location.reload()}>Reload dashboard</button>
+        </section>
       </div>
     )
   }
 
   return (
-    <div className="hydro-container">
-      <header className="hydro-header-bar">
-        <div className="hydro-title-section">
-          <div className="hydro-icon-bubble">
-            <Droplets size={22} />
-          </div>
-          <div className="hydro-title-text">
-            <h2>Hydrological Drought Monitoring</h2>
-            <div className="hydro-title-sub">
-              Rivers <span>|</span> Reservoirs <span>|</span> Groundwater <span>|</span> Runoff <span>|</span> Baseflow
-            </div>
-          </div>
+    <div className="hydro-container hydro-dashboard">
+      <header className="hydro-page-header">
+        <div className="hydro-page-title">
+          <div className="hydro-eyebrow"><Droplets size={15} /> WATER SYSTEM MONITORING <span>·</span> SUPABASE DATA</div>
+          <h1>Hydrological drought</h1>
+          <p>Streamflow conditions and related water indicators for South Africa’s districts.</p>
         </div>
-
-        <div className="hydro-meta-section">
-          <div className="hydro-meta-item">
-            <Calendar size={18} className="icon" />
-            <div className="meta-col">
-              <span className="meta-label">Latest Observation</span>
-              <span className="meta-val">{latest.date || 'No data available'}</span>
-            </div>
-          </div>
-          <div className="hydro-meta-item">
-            <User size={18} className="icon" />
-            <div className="meta-col">
-              <span className="meta-label">User Access</span>
-              <span className="meta-val">Data Scientist</span>
-            </div>
-          </div>
+        <div className="hydro-header-controls">
+          <label className="hydro-region-control">
+            <span><MapPin size={14} /> District</span>
+            <select value={selectedDistrict} onChange={(event) => setSelectedDistrict(event.target.value)} aria-label="Select South African district">
+              {districts.map((name) => <option key={name} value={name}>{name}</option>)}
+            </select>
+          </label>
+          <div className="hydro-latest-date"><Calendar size={15} /><span><small>Latest observation</small><strong>{latest.date || 'No observation date'}</strong></span></div>
         </div>
       </header>
 
-      <section className="hydro-kpi-bar" aria-label="Hydrological key indicators">
-        <div className="hydro-district-card">
-          <div className="hydro-district-head">
-            <MapPin size={15} />
-            <span>{districtName}</span>
-          </div>
-          <div className="hydro-district-select-wrap">
-            <select
-              value={selectedDistrict}
-              onChange={(event) => setSelectedDistrict(event.target.value)}
-              aria-label="Select South African District"
-            >
-              {districts.map((name) => (
-                <option key={name} value={name}>{name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="hydro-district-sub">
-            Municipality | {provinceName}
-          </div>
+      <section className={`hydro-status-banner ${ssiClass.severity}`} aria-label={`Streamflow status: ${ssiClass.status}`}>
+        <div className="hydro-status-copy">
+          <span className="hydro-status-label"><i /> STREAMFLOW STATUS</span>
+          <h2>{ssiClass.label}</h2>
+          <p>{isValidNumber(latest.ssi) ? `Based on the latest Streamflow Standardised Index observation for ${districtName}.` : `No SSI observation is available for ${districtName} in the selected source records.`}</p>
         </div>
-
-        <div className="hydro-kpi-cell">
-          <div className="hydro-kpi-top">
-            <span className="hydro-kpi-title">River Discharge</span>
-            <Waves size={16} className="hydro-kpi-icon" />
-          </div>
-          <div className="hydro-kpi-val-row">
-            <MetricValue value={latest.river_discharge} unit="m³/s" />
-            <ChangeBadge change={dischargeChange} />
-          </div>
-          <div className="hydro-kpi-note">vs historical average: {displayMetric(dischargeMean)} m³/s</div>
-        </div>
-
-        <div className="hydro-kpi-cell">
-          <div className="hydro-kpi-top">
-            <span className="hydro-kpi-title">SSI (Streamflow)</span>
-            <Gauge size={16} className="hydro-kpi-icon" />
-          </div>
-          <div className="hydro-kpi-val-row">
-            <MetricValue value={latest.ssi} digits={2} />
-          </div>
-          <div className="hydro-kpi-note">{ssiClass.label}</div>
-        </div>
-
-        <div className="hydro-kpi-cell">
-          <div className="hydro-kpi-top">
-            <span className="hydro-kpi-title">Dam Inflow</span>
-            <Activity size={16} className="hydro-kpi-icon" />
-          </div>
-          <div className="hydro-kpi-val-row">
-            <MetricValue value={latest.dam_inflow} unit="m³/s" />
-          </div>
-          <div className="hydro-kpi-note">series mean: {displayMetric(inflowMean)} m³/s</div>
-        </div>
-
-        <div className="hydro-kpi-cell">
-          <div className="hydro-kpi-top">
-            <span className="hydro-kpi-title">Dam Outflow</span>
-            <Activity size={16} className="hydro-kpi-icon" />
-          </div>
-          <div className="hydro-kpi-val-row">
-            <MetricValue value={latest.dam_outflow} unit="m³/s" />
-          </div>
-          <div className="hydro-kpi-note">series mean: {displayMetric(outflowMean)} m³/s</div>
-        </div>
-
-        <div className="hydro-kpi-cell">
-          <div className="hydro-kpi-top">
-            <span className="hydro-kpi-title">Surface Runoff</span>
-            <Waves size={16} className="hydro-kpi-icon" />
-          </div>
-          <div className="hydro-kpi-val-row">
-            <MetricValue value={latest.surface_runoff} unit="m³/s" />
-            <ChangeBadge change={runoffChange} />
-          </div>
-          <div className="hydro-kpi-note">(vs. historical avg)</div>
-        </div>
-
-        <div className="hydro-kpi-cell">
-          <div className="hydro-kpi-top">
-            <span className="hydro-kpi-title">Baseflow</span>
-            <Waves size={16} className="hydro-kpi-icon" />
-          </div>
-          <div className="hydro-kpi-val-row">
-            <MetricValue value={latest.baseflow} unit="m³/s" />
-            <ChangeBadge change={baseflowChange} />
-          </div>
-          <div className="hydro-kpi-note">(vs. historical avg)</div>
-        </div>
+        <div className="hydro-status-index"><strong>{isValidNumber(latest.ssi) ? Number(latest.ssi).toFixed(2) : '—'}</strong><span>SSI · dimensionless</span></div>
+        <div className="hydro-status-trend"><span>SSI category</span><strong>{ssiClass.status}</strong><small>{latest.date || 'Date unavailable'}</small></div>
       </section>
 
-      {/* Debug panel removed for production view */}
+      <section className="hydro-kpi-bar" aria-label="Latest hydrological indicators">
+        <article className="hydro-kpi-cell"><div className="hydro-kpi-top"><span className="hydro-kpi-title">River discharge</span><Waves size={16} className="hydro-kpi-icon" /></div><div className="hydro-kpi-val-row"><MetricValue value={latest.river_discharge} unit="m³/s" /></div><div className="hydro-kpi-note">{isValidNumber(dischargeChange) ? `${Math.abs(dischargeChange).toFixed(0)}% ${dischargeChange < 0 ? 'below' : 'above'} historical mean` : 'Historical comparison unavailable'}</div></article>
+        <article className="hydro-kpi-cell"><div className="hydro-kpi-top"><span className="hydro-kpi-title">Dam inflow</span><Activity size={16} className="hydro-kpi-icon" /></div><div className="hydro-kpi-val-row"><MetricValue value={latest.dam_inflow} unit="m³/s" /></div><div className="hydro-kpi-note">Period mean: {displayMetric(inflowMean)} m³/s</div></article>
+        <article className="hydro-kpi-cell"><div className="hydro-kpi-top"><span className="hydro-kpi-title">Dam outflow</span><Activity size={16} className="hydro-kpi-icon" /></div><div className="hydro-kpi-val-row"><MetricValue value={latest.dam_outflow} unit="m³/s" /></div><div className="hydro-kpi-note">Period mean: {displayMetric(outflowMean)} m³/s</div></article>
+        <article className="hydro-kpi-cell"><div className="hydro-kpi-top"><span className="hydro-kpi-title">Surface runoff</span><Waves size={16} className="hydro-kpi-icon" /></div><div className="hydro-kpi-val-row"><MetricValue value={latest.surface_runoff} unit="m³/s" /></div><div className="hydro-kpi-note">{isValidNumber(runoffChange) ? `${Math.abs(runoffChange).toFixed(0)}% ${runoffChange < 0 ? 'below' : 'above'} period mean` : 'Historical comparison unavailable'}</div></article>
+        <article className="hydro-kpi-cell"><div className="hydro-kpi-top"><span className="hydro-kpi-title">Baseflow</span><Waves size={16} className="hydro-kpi-icon" /></div><div className="hydro-kpi-val-row"><MetricValue value={latest.baseflow} unit="m³/s" /></div><div className="hydro-kpi-note">Period mean: {displayMetric(baseflowMean)} m³/s</div></article>
+      </section>
 
-      <div className="hydro-grid-row">
-        <section className="hydro-panel">
-          <div className="hydro-panel-head">
-            <span className="hydro-panel-title">{districtName} – Hydrological Overview</span>
-            <div className="hydro-panel-actions">
-              <button type="button" className={`hydro-badge-toggle ${mapMode === 'regional' ? 'active' : ''}`} onClick={() => setMapMode('regional')}>Watershed</button>
-              <button type="button" className={`hydro-badge-toggle ${mapMode === 'national' ? 'active' : ''}`} onClick={() => setMapMode('national')}>National (52)</button>
-            </div>
+      <div className="hydro-primary-grid">
+        <section className="hydro-panel hydro-map-panel">
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">DISTRICT INDICATOR MAP</span><h2 className="hydro-panel-title">{selectedMapMetric.label}</h2><p>Choose an indicator and date; select a district to update the dashboard below.</p></div><MapPin size={18} className="hydro-map-icon" /></div>
+          <div className="hydro-map-controls">
+            <label><span>Map indicator</span><select aria-label="Hydrological map indicator" value={mapMetric} onChange={event => setMapMetric(event.target.value)}>{HYDRO_MAP_OPTIONS.map(option => <option value={option.key} key={option.key}>{option.label}</option>)}</select></label>
+            <label><span>Map date</span><select aria-label="Hydrological map date" value={mapDate} onChange={event => setMapDate(event.target.value)} disabled={!mapDates.length}>{mapDates.map(date => <option value={date} key={date}>{date}</option>)}</select></label>
           </div>
-          <div className="hydro-map-wrap">
-            {mapMode === 'regional' ? (
-              <div className="hydro-map-svg-area">
-                <svg viewBox="0 0 380 230" preserveAspectRatio="xMidYMid meet">
-                  <rect width="380" height="230" fill="#061623" />
-                  <path d="M 110,65 L 210,60 L 265,95 L 280,145 L 225,175 L 135,170 L 95,125 Z" fill="#082b42" stroke="#38bdf8" strokeWidth="1.8" />
-                  <g transform="translate(170, 110)">
-                    <circle cx="0" cy="0" r="6" fill="#38bdf8" stroke="#ffffff" strokeWidth="1.5" />
-                    <text x="0" y="22" fill="#ffffff" fontSize="8" fontWeight="700" textAnchor="middle">{districtName}</text>
-                  </g>
-                </svg>
-              </div>
-            ) : (
-              <div className="hydro-map-svg-area">
-                <svg viewBox="0 0 440 230" preserveAspectRatio="xMidYMid meet">
-                  {districtsGeoJson.map((feature) => {
-                    const name = feature.properties?.shapeName || ''
-                    const isSelected = normaliseDistrictName(name) === normaliseDistrictName(selectedDistrict)
-                    return (
-                      <path
-                        key={feature.properties?.shapeID || name}
-                        d={pathFor(feature.geometry)}
-                        fill={isSelected ? '#0284c7' : '#0a273b'}
-                        stroke={isSelected ? '#ffffff' : '#143c55'}
-                        strokeWidth={isSelected ? '2' : '0.7'}
-                        cursor="pointer"
-                        onClick={() => setSelectedDistrict(name)}
-                      >
-                        <title>{name}</title>
-                      </path>
-                    )
-                  })}
-                  <ProvinceMapLabels project={project} fontSize={11} />
-                </svg>
-              </div>
-            )}
-          </div>
+          {mapError ? <div className="hydro-map-message" role="alert">{mapError}</div> : mapLoading ? <LoadingProgress className="hydro-map-loading" message="Loading district indicator values" /> : districtsGeoJson.length && mapStations.length ? <div className="hydro-map-wrap"><DistrictMap districts={districtsGeoJson} values={mapValues} valueKey={mapMetric} colorFn={mapStyle.color} selected={selectedDistrict} onSelect={selectMapDistrict} legend={mapStyle.legend} /></div> : <div className="hydro-map-message">District boundaries or hydrological map values are unavailable for {mapDate || 'the latest available date'}.</div>}
+          <p className="hydro-map-caption">{mapStations.length} districts with observations on {mapDate || 'the latest available date'} - {districtName}, {provinceName} selected.</p>
         </section>
 
-        <section className="hydro-panel">
-          <div className="hydro-panel-head">
-            <span className="hydro-panel-title">River Discharge – {districtName}</span>
-            <div className="hydro-panel-actions" style={{ fontSize: '9px', gap: '10px' }}>
-              <span style={{ color: '#38bdf8' }}>Discharge</span>
-              <span style={{ color: '#7ba7be' }}>Historical mean</span>
-            </div>
-          </div>
-          <div className="hydro-chart-canvas" key={`discharge-${selectedDistrict}`}>
-            <SmoothSeriesChart series={riverDischargeData} gradId={`dg-${selectedDistrict.replace(/[^a-z0-9]/gi, '')}`} meanValue={dischargeMean} yLabel="Discharge (m³/s)" unit="m³/s" />
-
-          </div>
-          <div className="hydro-chart-stats-row">
-            <div className="hydro-stat-col">
-              <small>Current Discharge</small>
-              <strong>{isValidNumber(latest.river_discharge) ? `${formatMetric(latest.river_discharge)} m³/s` : 'No data available'}</strong>
-            </div>
-            <div className="hydro-stat-col">
-              <small>Historical Avg</small>
-              <strong>{isValidNumber(dischargeMean) ? `${formatMetric(dischargeMean)} m³/s` : 'No data available'}</strong>
-            </div>
-            <div className="hydro-stat-col">
-              <small>Latest Date</small>
-              <strong>{latest.date || 'No data available'}</strong>
-            </div>
-          </div>
-        </section>
-
-        <section className="hydro-panel">
-          <div className="hydro-panel-head">
-            <span className="hydro-panel-title">SSI — Streamflow Drought – {districtName}</span>
-          </div>
-          <div className="hydro-chart-canvas" key={`ssi-${selectedDistrict}`}>
-            <SsiChart series={ssiData} />
-          </div>
-          <div className="hydro-chart-stats-row" style={{ gridTemplateColumns: '1fr 1fr' }}>
-            <div className="hydro-stat-col">
-              <small>Latest SSI</small>
-              <strong>{isValidNumber(latest.ssi) ? Number(latest.ssi).toFixed(2) : 'No data available'}</strong>
-            </div>
-            <div className="hydro-stat-col">
-              <small>Status</small>
-              <strong>{ssiClass.status}</strong>
-            </div>
-          </div>
+        <section className="hydro-panel hydro-primary-chart">
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">STREAMFLOW HISTORY</span><h2 className="hydro-panel-title">River discharge</h2><p>Observed daily values for {districtName}</p></div><span className="hydro-chart-unit">m³/s</span></div>
+          <div className="hydro-chart-canvas" key={`discharge-${selectedDistrict}`}><SmoothSeriesChart series={riverDischargeData} gradId={`dg-${selectedDistrict.replace(/[^a-z0-9]/gi, '')}`} meanValue={dischargeMean} yLabel="Discharge (m³/s)" unit="m³/s" /></div>
+          <div className="hydro-chart-stats-row"><div className="hydro-stat-col"><small>Latest</small><strong>{displayMetric(latest.river_discharge)} m³/s</strong></div><div className="hydro-stat-col"><small>Period mean</small><strong>{displayMetric(dischargeMean)} m³/s</strong></div><div className="hydro-stat-col"><small>Records</small><strong>{riverDischargeData.filter(point => isValidNumber(point.value)).length.toLocaleString()}</strong></div></div>
         </section>
       </div>
 
-      <div className="hydro-grid-row">
+      <div className="hydro-chart-grid">
         <section className="hydro-panel">
-          <div className="hydro-panel-head">
-            <span className="hydro-panel-title">Hydrological Drought Status – {districtName}</span>
-          </div>
-          <div className="hydro-status-wrap">
-            <div className="hydro-donut-gauge">
-              {(() => {
-                const ssiVal = isValidNumber(latest.ssi) ? Number(latest.ssi) : 0
-                // Map SSI from range [-2.5, 1.5] to arc sweep [0, 1]
-                const pct = Math.max(0, Math.min(1, (ssiVal + 2.5) / 4))
-                const color = ssiVal <= -1.3 ? '#ef4444' : ssiVal <= -0.5 ? '#f59e0b' : '#06b6d4'
-                const glow = ssiVal <= -1.3 ? 'rgba(239,68,68,0.5)' : ssiVal <= -0.5 ? 'rgba(245,158,11,0.5)' : 'rgba(6,182,212,0.4)'
-                const r = 46
-                const cx = 60; const cy = 60
-                const startAngle = -210 // degrees (bottom-left)
-                const totalSweep = 240  // degrees
-                const endAngle = startAngle + pct * totalSweep
-                const toRad = (deg) => (deg * Math.PI) / 180
-                const ax = cx + r * Math.cos(toRad(startAngle))
-                const ay = cy + r * Math.sin(toRad(startAngle))
-                const bx = cx + r * Math.cos(toRad(endAngle))
-                const by = cy + r * Math.sin(toRad(endAngle))
-                const largeArc = pct * totalSweep > 180 ? 1 : 0
-                return (
-                  <svg viewBox="0 0 120 120" style={{ width: '100%', height: '100%' }}>
-                    <defs>
-                      <filter id="gauge-glow">
-                        <feGaussianBlur stdDeviation="2.5" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                      </filter>
-                    </defs>
-                    {/* Track arc */}
-                    <path
-                      d={`M ${cx + r * Math.cos(toRad(startAngle))} ${cy + r * Math.sin(toRad(startAngle))} A ${r} ${r} 0 1 1 ${cx + r * Math.cos(toRad(startAngle + totalSweep))} ${cy + r * Math.sin(toRad(startAngle + totalSweep))}`}
-                      fill="none" stroke="#0f2d42" strokeWidth="12" strokeLinecap="round"
-                    />
-                    {/* Value arc */}
-                    {pct > 0.01 && (
-                      <path
-                        d={`M ${ax} ${ay} A ${r} ${r} 0 ${largeArc} 1 ${bx} ${by}`}
-                        fill="none" stroke={color} strokeWidth="12" strokeLinecap="round"
-                        style={{ filter: `drop-shadow(0 0 4px ${glow})` }}
-                      />
-                    )}
-                    {/* Center glow dot */}
-                    <circle cx={bx} cy={by} r="4" fill={color} style={{ filter: `drop-shadow(0 0 6px ${glow})` }} />
-                  </svg>
-                )
-              })()}
-
-              <div className="hydro-gauge-text">
-                <span className="gauge-tag">SSI</span>
-                <span className="gauge-val">{isValidNumber(latest.ssi) ? Number(latest.ssi).toFixed(2) : '—'}</span>
-                <span className="gauge-cond">({droughtStatus.condition})</span>
-              </div>
-            </div>
-            <div className="hydro-status-info">
-              <div className="hydro-info-row">
-                <small>Current Status</small>
-                <strong>{droughtStatus.status}</strong>
-              </div>
-              <div className="hydro-info-row">
-                <small>Trend</small>
-                <strong className={droughtStatus.trend === 'Worsening' ? 'worsening' : ''}>
-                  {droughtStatus.trend === 'Worsening' ? <ArrowDown size={14} /> : droughtStatus.trend === 'Improving' ? <ArrowUp size={14} /> : null}
-                  {droughtStatus.trend}
-                </strong>
-              </div>
-              <div className="hydro-info-row">
-                <small>Records</small>
-                <strong>{filteredData.length} from Supabase hydrological_drought_master</strong>
-              </div>
-            </div>
-          </div>
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">DROUGHT INDEX</span><h2 className="hydro-panel-title">Streamflow Standardised Index</h2><p>Negative values indicate drier-than-normal streamflow.</p></div><span className={`hydro-status-chip ${ssiClass.severity}`}>{ssiClass.status}</span></div>
+          <div className="hydro-chart-canvas" key={`ssi-${selectedDistrict}`}><SsiChart series={ssiData} /></div>
+          <div className="hydro-chart-stats-row hydro-two-stats"><div className="hydro-stat-col"><small>Latest SSI</small><strong>{displayMetric(latest.ssi, 2)}</strong></div><div className="hydro-stat-col"><small>Observed series</small><strong>{ssiData.filter(point => isValidNumber(point.value)).length.toLocaleString()} values</strong></div></div>
         </section>
 
         <section className="hydro-panel">
-          <div className="hydro-panel-head">
-            <span className="hydro-panel-title">Dam Inflow vs Dam Outflow – {districtName}</span>
-          </div>
-          <div className="hydro-chart-canvas" key={`dams-${selectedDistrict}`}>
-            <DualSeriesChart
-              seriesA={inflowData}
-              seriesB={outflowData}
-              labelA="Inflow"
-              labelB="Outflow"
-              colorA="#22d3ee"
-              colorB="#f97316"
-              gradIdA="dam-in"
-              gradIdB="dam-out"
-              yLabel="Dam Flow (m³/s)"
-            />
-
-          </div>
-          <div className="hydro-chart-stats-row">
-            <div className="hydro-stat-col">
-              <small>Latest Inflow</small>
-              <strong>{isValidNumber(latest.dam_inflow) ? `${formatMetric(latest.dam_inflow)} m³/s` : 'No data available'}</strong>
-            </div>
-            <div className="hydro-stat-col">
-              <small>Latest Outflow</small>
-              <strong>{isValidNumber(latest.dam_outflow) ? `${formatMetric(latest.dam_outflow)} m³/s` : 'No data available'}</strong>
-            </div>
-            <div className="hydro-stat-col">
-              <small>Mean Inflow</small>
-              <strong>{isValidNumber(inflowMean) ? `${formatMetric(inflowMean)} m³/s` : 'No data available'}</strong>
-            </div>
-          </div>
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">RESERVOIR FLOWS</span><h2 className="hydro-panel-title">Dam inflow and outflow</h2><p>Compare observed flow rates over time.</p></div><span className="hydro-chart-unit">m³/s</span></div>
+          <div className="hydro-chart-canvas" key={`dams-${selectedDistrict}`}><DualSeriesChart seriesA={inflowData} seriesB={outflowData} labelA="Inflow" labelB="Outflow" colorA="#22d3ee" colorB="#f59e0b" gradIdA="dam-in" gradIdB="dam-out" yLabel="Dam flow (m³/s)" /></div>
+          <div className="hydro-chart-stats-row"><div className="hydro-stat-col"><small>Latest inflow</small><strong>{displayMetric(latest.dam_inflow)} m³/s</strong></div><div className="hydro-stat-col"><small>Latest outflow</small><strong>{displayMetric(latest.dam_outflow)} m³/s</strong></div><div className="hydro-stat-col"><small>Mean inflow</small><strong>{displayMetric(inflowMean)} m³/s</strong></div></div>
         </section>
 
         <section className="hydro-panel">
-          <div className="hydro-panel-head">
-            <span className="hydro-panel-title">Surface Runoff vs Baseflow – {districtName}</span>
-          </div>
-          <div className="hydro-chart-canvas" key={`contrib-${selectedDistrict}`}>
-            <DualSeriesChart
-              seriesA={runoffData}
-              seriesB={baseflowData}
-              labelA="Surface Runoff"
-              labelB="Baseflow"
-              colorA="#06b6d4"
-              colorB="#a78bfa"
-              gradIdA="run-a"
-              gradIdB="run-b"
-              yLabel="Water Contribution (m³/s)"
-            />
-
-          </div>
-          <div className="hydro-chart-stats-row">
-            <div className="hydro-stat-col">
-              <small>Latest Runoff</small>
-              <strong>{isValidNumber(latest.surface_runoff) ? `${formatMetric(latest.surface_runoff)} m³/s` : 'No data available'}</strong>
-            </div>
-            <div className="hydro-stat-col">
-              <small>Latest Baseflow</small>
-              <strong>{isValidNumber(latest.baseflow) ? `${formatMetric(latest.baseflow)} m³/s` : 'No data available'}</strong>
-            </div>
-          </div>
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">CATCHMENT RESPONSE</span><h2 className="hydro-panel-title">Runoff and baseflow</h2><p>Surface runoff and baseflow contribution.</p></div><span className="hydro-chart-unit">m³/s</span></div>
+          <div className="hydro-chart-canvas" key={`contrib-${selectedDistrict}`}><DualSeriesChart seriesA={runoffData} seriesB={baseflowData} labelA="Surface runoff" labelB="Baseflow" colorA="#38bdf8" colorB="#a78bfa" gradIdA="run-a" gradIdB="run-b" yLabel="Water flow (m³/s)" /></div>
+          <div className="hydro-chart-stats-row hydro-two-stats"><div className="hydro-stat-col"><small>Latest runoff</small><strong>{displayMetric(latest.surface_runoff)} m³/s</strong></div><div className="hydro-stat-col"><small>Latest baseflow</small><strong>{displayMetric(latest.baseflow)} m³/s</strong></div></div>
         </section>
       </div>
 
-      <div className="hydro-grid-row">
-        <section className="hydro-panel">
-          <div className="hydro-panel-head">
-            <span className="hydro-panel-title">Hydrological Variables – {districtName}</span>
-          </div>
-          <div className="hydro-table-shell">
-            <table className="hydro-table">
-              <thead>
-                <tr>
-                  <th>Variable</th>
-                  <th>Value (from database)</th>
-                  <th>Unit</th>
-                  <th>Trend</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {variablesTable.map((row) => (
-                  <tr key={row.variable}>
-                    <td style={{ color: '#dbeafe', fontWeight: '500' }}>{row.variable}</td>
-                    <td style={{ fontWeight: '700' }}>{isValidNumber(row.value) ? (row.variable.includes('SSI') || row.variable.includes('SGI') ? Number(row.value).toFixed(2) : formatMetric(row.value)) : 'No data available'}</td>
-                    <td style={{ color: '#88afc5', fontSize: '9.5px' }}>{row.unit}</td>
-                    <td style={{ color: isValidNumber(row.trend) && row.trend < 0 ? '#f87171' : '#34d399', fontWeight: '600' }}>
-                      {isValidNumber(row.trend) ? `${row.trend < 0 ? '↓' : '↑'} ${Math.abs(row.trend).toFixed(1)}%` : '—'}
-                    </td>
-                    <td>
-                      <span className={`hydro-tag-pill ${row.tone}`}>{row.status}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <div className="hydro-detail-grid">
+        <section className="hydro-panel hydro-variables-panel">
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">OBSERVATION SUMMARY</span><h2 className="hydro-panel-title">Latest hydrological variables</h2><p>Values recorded for {districtName} on {latest.date || 'the latest available date'}.</p></div></div>
+          <div className="hydro-table-shell"><table className="hydro-table"><thead><tr><th>Indicator</th><th>Observed value</th><th>Unit</th><th>Interpretation</th></tr></thead><tbody>
+            {variablesTable.map(row => <tr key={row.variable}><td>{row.variable}</td><td>{isValidNumber(row.value) ? (row.variable.includes('SSI') || row.variable.includes('SGI') ? Number(row.value).toFixed(2) : formatMetric(row.value)) : 'No data'}</td><td>{row.unit}</td><td><span className={`hydro-tag-pill ${row.tone}`}>{row.status}</span></td></tr>)}
+          </tbody></table></div>
         </section>
 
-        <section className="hydro-panel">
-          <div className="hydro-panel-head">
-            <span className="hydro-panel-title">Key Insights – {districtName}</span>
-          </div>
-          <div className="hydro-insights-list">
-            {insights.map((insight, index) => (
-              <div key={index} className={`hydro-insight-item ${insight.type}`}>
-                {insight.type === 'danger' ? <AlertTriangle size={17} style={{ color: '#ef4444', flexShrink: 0 }} /> : insight.type === 'warning' ? <AlertCircle size={17} style={{ color: '#f59e0b', flexShrink: 0 }} /> : <Info size={17} style={{ color: '#38bdf8', flexShrink: 0 }} />}
-                <span>{insight.text}</span>
-              </div>
-            ))}
-            {alerts.map((alert, index) => (
-              <div key={`alert-${index}`} className={`hydro-insight-item ${alert.level === 'Severe' ? 'danger' : alert.level === 'Warning' ? 'warning' : 'info'}`}>
-                {alert.level === 'Severe' ? <AlertTriangle size={17} style={{ color: '#ef4444', flexShrink: 0 }} /> : <AlertCircle size={17} style={{ color: '#f59e0b', flexShrink: 0 }} />}
-                <span>{alert.text}</span>
-              </div>
-            ))}
-          </div>
+        <section className="hydro-panel hydro-alert-panel">
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">THRESHOLD CHECKS</span><h2 className="hydro-panel-title">Alerts and observations</h2><p>Rule-based signals from the latest available readings.</p></div><AlertTriangle size={18} className="hydro-map-icon" /></div>
+          <div className="hydro-insights-list">{alerts.map((alert, index) => <div key={`${alert.level}-${index}`} className={`hydro-insight-item ${alert.level === 'Severe' ? 'danger' : alert.level === 'Warning' ? 'warning' : 'info'}`}><span className="hydro-alert-level">{alert.level}</span><span>{alert.text}</span></div>)}</div>
         </section>
 
-        <section className="hydro-panel">
-          <div className="hydro-panel-head">
-            <span className="hydro-panel-title">Recommendations</span>
-          </div>
-          <div className="hydro-recom-list">
-            {recommendations.map((rec, index) => (
-              <div key={index} className="hydro-recom-item">
-                <CheckCircle2 size={16} className="check-icon" />
-                <span>{rec.text}</span>
-              </div>
-            ))}
-          </div>
-          <button
-            type="button"
-            className="hydro-btn-report"
-            onClick={() => alert(`Operational hydrological report exported for ${districtName} (${latest.date || 'n/a'}) from Supabase hydrological_drought_master.`)}
-          >
-            Export CSV Report <ChevronRight size={14} />
-          </button>
+        <section className="hydro-panel hydro-recommend-panel">
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">NEXT STEPS</span><h2 className="hydro-panel-title">Monitoring guidance</h2><p>Operational prompts based on available indicators.</p></div></div>
+          <div className="hydro-recom-list">{recommendations.map((rec, index) => <div key={`${index}-${rec.text}`} className="hydro-recom-item"><CheckCircle2 size={16} className="check-icon" /><span>{rec.text}</span></div>)}</div>
+          <button type="button" className="hydro-btn-report" onClick={() => exportHydrologyCsv(filteredData, districtName)} disabled={!filteredData.length}>Download district CSV <ChevronRight size={14} /></button>
         </section>
       </div>
 
-      <footer className="hydro-footer-strip">
-        <div className="hydro-footer-links">
-          <strong>NIWIS v1.0</strong>
-          <span>|</span>
-          <span>Hydrological Drought Intelligence</span>
-          <span>|</span>
-          <span>{districts.length} Districts &amp; Municipalities</span>
-          <span>|</span>
-          <span>Source: Database hydrological_drought_master</span>
-          <span>|</span>
-          <span>Data-driven Decisions for a Water Secure South Africa</span>
-        </div>
-        <div className="hydro-system-online">
-          <i className="online-dot" />
-          <span>System Online</span>
-        </div>
-      </footer>
+      <footer className="hydro-footer-strip"><span><strong>Source</strong> Supabase · hydrological_drought_master</span><span>{filteredData.length.toLocaleString()} records · {firstRow?.date || '—'} to {latest.date || '—'}</span></footer>
     </div>
   )
 }

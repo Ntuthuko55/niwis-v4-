@@ -23,14 +23,14 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException
 
 from app.supabase_source import SupabaseSourceError, _request_page, _settings
-from app.dashboard_loader import cached_call, cached_result
+from app.dashboard_loader import cached_call, cached_result, dashboard_cache_ttl
 
 router = APIRouter(prefix="/groundwater", tags=["Groundwater level monitoring"])
 TABLE_ENV = "NIWIS_SUPABASE_TABLES_MODULE_6"
 DEFAULT_TABLES = ("10_1_borehole_and_aquifer_master", "10_2_recharge_supporting _master")
 PAGE_SIZE = 1000
-SCHEMA_TTL_SECONDS = 900
-READ_CACHE_TTL_SECONDS = 300
+SCHEMA_TTL_SECONDS = dashboard_cache_ttl()
+READ_CACHE_TTL_SECONDS = dashboard_cache_ttl()
 READ_CACHE_MAX_ENTRIES = 96
 _READ_CACHE: dict[tuple, tuple[float, pd.DataFrame]] = {}
 _READ_CACHE_LOCK = Lock()

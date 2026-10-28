@@ -6,6 +6,7 @@ responses bypass storage. Cache metadata describes retrieval time, not the date
 of the underlying observations.
 """
 import asyncio
+import json
 import os
 from collections import OrderedDict
 from datetime import datetime, timezone
@@ -13,14 +14,32 @@ from time import monotonic
 from urllib.parse import parse_qsl
 
 PREFIXES = ('/climate/', '/vegetation/', '/rainfall/', '/runoff/', '/surface-water/',
-            '/groundwater/', '/groundwater-reserve/', '/water-quality/',
-            '/reservoirs/', '/drought-monitoring/', '/meteorological/', '/hydrology/', '/satellite/')
+            '/groundwater/', '/groundwater-reserve/', '/water-quality/', '/wastewater/', '/drinking-water/',
+            '/rwqo/', '/wrm/', '/water-quantity/', '/reservoirs/', '/drought-monitoring/', '/meteorological/', '/hydrology/', '/satellite/')
+
+
+def _has_source_error(body):
+    """Do not retain HTTP 200 dashboard payloads that report source failures."""
+    try:
+        payload = json.loads(body)
+    except (TypeError, ValueError):
+        return False
+    if not isinstance(payload, dict):
+        return False
+    if isinstance(payload.get('errors'), dict) and payload['errors']:
+        return True
+    sources = payload.get('sources')
+    return isinstance(sources, dict) and any(
+        isinstance(source, dict) and source.get('status') == 'error'
+        for source in sources.values()
+    )
 
 
 class DashboardResponseCache:
     def __init__(self, app, ttl=None, max_bytes=32 * 1024 * 1024, max_response_bytes=2 * 1024 * 1024):
         self.app = app
-        self.ttl = max(0, int(os.getenv('NIWIS_RESPONSE_CACHE_TTL', '30'))) if ttl is None else ttl
+        default_ttl = os.getenv('NIWIS_DASHBOARD_CACHE_TTL', '86400')
+        self.ttl = max(0, int(os.getenv('NIWIS_RESPONSE_CACHE_TTL', default_ttl))) if ttl is None else ttl
         self.max_bytes = max_bytes
         self.max_response_bytes = max_response_bytes
         self.entries = OrderedDict()
@@ -84,7 +103,8 @@ class DashboardResponseCache:
             if (start and start['status'] == 200 and complete and total <= self.max_response_bytes
                     and b'application/json' in response_headers.get(b'content-type', b'')
                     and b'set-cookie' not in response_headers
-                    and b'no-store' not in response_headers.get(b'cache-control', b'')):
+                    and b'no-store' not in response_headers.get(b'cache-control', b'')
+                    and not _has_source_error(b''.join(chunks))):
                 body = b''.join(chunks)
                 while self.entries and (self.size + len(body) > self.max_bytes or len(self.entries) >= 128):
                     _, old = self.entries.popitem(last=False)

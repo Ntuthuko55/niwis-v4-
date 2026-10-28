@@ -60,6 +60,14 @@ export async function dashboardFetch(url, options = {}) {
     entry.promise = (async () => {
       const response = await nativeFetch(url, { ...options, signal: entry.controller.signal })
       const bytes = await response.arrayBuffer()
+      if (key.startsWith('/api/') || key.startsWith('/niwis-api/')) {
+        const body = new TextDecoder().decode(bytes).trim()
+        const context = `API request ${key} (HTTP ${response.status})`
+        if (!body) throw new Error(`${context} returned an empty response. Check that the backend is running and the frontend proxy points to its port, then restart the frontend.`)
+        try { JSON.parse(body) } catch {
+          throw new Error(`${context} returned invalid JSON. Check the backend logs and frontend proxy configuration.`)
+        }
+      }
       const init = { status: response.status, statusText: response.statusText, headers: [...response.headers] }
       const value = { bytes, init }
       if (response.ok && ttl && bytes.byteLength < 5_000_000) {

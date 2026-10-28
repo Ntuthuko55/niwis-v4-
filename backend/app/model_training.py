@@ -6,6 +6,8 @@ import warnings
 
 import numpy as np
 import pandas as pd
+from app.data_processing import validate_monthly_cadence
+from app.annual_forecasting import train_annual, validate_annual_cadence
 
 warnings.filterwarnings("ignore")
 
@@ -49,6 +51,24 @@ def prepare_training_data(df: pd.DataFrame, config: Dict[str, Any]) -> tuple[pd.
 
     data = df.copy()
     data[date_column] = pd.to_datetime(data[date_column], errors='coerce')
+    if config.get('frequency') == 'monthly':
+        validate_monthly_cadence(data, date_column)
+    if config.get('frequency') == 'annual':
+        validate_annual_cadence(data, date_column)
+    if config.get('missing_strategy') == 'reject':
+        if data[date_column].isna().any():
+            raise ValueError('Forecasting requires a valid date for every selected observation.')
+        selected = list(dict.fromkeys([target, *features]))
+        for column in selected:
+            data[column] = pd.to_numeric(data[column], errors='coerce').replace([np.inf, -np.inf], np.nan)
+        missing_counts = data[selected].isna().sum()
+        incomplete = [f'{column} ({int(count)} missing)' for column, count in missing_counts.items() if count]
+        if incomplete:
+            raise ValueError(
+                'The selected history has missing or nonfinite measurements: '
+                + ', '.join(incomplete)
+                + '. Choose a complete target and input history; missing measurements are not interpolated.'
+            )
     data = data.dropna(subset=[date_column]).sort_values(([group_column] if group_column else []) + [date_column])
     numeric_cols = data.select_dtypes(include='number').columns.tolist()
     if config.get('missing_strategy') == 'group_linear_bfill_ffill' and numeric_cols:
@@ -178,7 +198,7 @@ def _train_lstm_monthly(data: pd.DataFrame, date_column: str, target: str, featu
 
     selected_features = list(dict.fromkeys(feature for feature in features if feature != target))
     if not selected_features:
-        raise ValueError('LSTM needs at least one input feature. Select the climate features to use with the target.')
+        raise ValueError('LSTM needs at least one input feature. Select an input measurement to use with the target.')
     required = [date_column, target, *selected_features]
     missing = [column for column in required if column not in data.columns]
     if missing:
@@ -313,7 +333,7 @@ def _train_lstm_monthly(data: pd.DataFrame, date_column: str, target: str, featu
         'lower_bound': [float(value) for value in future_values - spread],
         'upper_bound': [float(value) for value in future_values + spread],
         'selected_model': 'lstm',
-        'warnings': ['Future feature values use the latest observed monthly climate inputs until external future climate scenarios are supplied.'],
+        'warnings': ['Future input features use their latest observed monthly measurements until future scenarios are supplied.'],
     }
 
 
@@ -601,12 +621,38 @@ def _train_multivariate_monthly(data: pd.DataFrame, config: Dict[str, Any]) -> D
     }
 
 
+def _monthly_auto_result(data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
+    """Compare inexpensive monthly baselines without inventing daily records."""
+    candidates = ('naive', 'historicaverage', 'windowaverage', 'seasonalnaive')
+    results = [train_model(data, {**config, 'model_type': candidate}) for candidate in candidates]
+    valid = [result for result in results if np.isfinite(result['metrics']['rmse'])]
+    if not valid:
+        raise ValueError('Monthly Auto could not produce a finite validation score.')
+    winner = min(valid, key=lambda result: result['metrics']['rmse'])
+    comparison = {result['selected_model']: {'metrics': result['metrics'], 'status': 'ok'} for result in valid}
+    return {
+        **winner,
+        'model_type': 'auto',
+        'model_comparison': comparison,
+        'warnings': [
+            f"Monthly Auto selected {winner['selected_model']} by chronological holdout RMSE "
+            'from Naive, Historic Average, Window Average and Seasonal Naive.'
+        ],
+    }
+
+
 def train_model(df: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
     """Train a forecasting model and return results."""
     data, numeric_cols = prepare_training_data(df, config)
     model_type = config['model_type'].lower()
     target = config['target']
     date_column = config['date_column']
+
+    if config.get('frequency') == 'annual':
+        return train_annual(data, config)
+
+    if model_type == 'auto' and config.get('frequency') == 'monthly':
+        return _monthly_auto_result(data, config)
 
     if model_type in {'var', 'varmax'}:
         return _train_multivariate_monthly(data, config)
@@ -620,7 +666,7 @@ def train_model(df: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
     # for classical monthly models (SARIMA, naive baselines, etc.).
     if (
         model_type in _MONTHLY_MODELS
-        and len(data) >= 30
+        and (len(data) >= 30 or config.get('frequency') == 'monthly')
         and (pd.api.types.is_numeric_dtype(data[target]) or target in data.columns)
     ):
         monthly = _monthly_series(data, date_column, target)

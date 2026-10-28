@@ -1,0 +1,20 @@
+.wrm-dashboard .rq-heading-icon{background:#144659;color:#8bd8f1}
+.wr-area-filter{min-width:235px}
+.wrm-dashboard .rq-region{min-width:210px}
+.wrm-dashboard .rq-kpi small{display:inline-block;max-width:90px;line-height:1.5}
+.wr-volume-panel,.wr-matrix-panel{margin-bottom:21px}
+.wr-variable-table{min-width:700px}
+.nw .wrm-dashboard .wr-variable-table tbody th{font-size:10px;color:#cbe4f0;min-width:220px;text-transform:none;letter-spacing:0}
+.wr-area-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:19px}
+.nw .wrm-dashboard .wr-area-card{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;min-width:0;padding:19px;border:1px solid #32536c;border-radius:11px;background:linear-gradient(130deg,#13374d,#0b273f);color:#c6dfed;line-height:1.6}
+.nw .wrm-dashboard .wr-area-card.selected{border-color:#68d2c4;box-shadow:inset 0 0 0 1px #68d2c433}
+.wr-area-card>svg{color:#75c6d9}.wr-area-card>strong{font-size:13px;font-weight:500}.wr-area-card>span{font-size:10px;color:#9cbed0}
+.nw.nw-unified-theme .wrm-dashboard .wr-area-card p{margin:3px 0;font-size:10px;color:#9bb9cc}.wr-area-card b{display:block;margin-bottom:3px;font-size:9px;font-weight:400;color:#6d99b3}
+.wr-area-card em{margin-top:auto;font-size:10px;color:#75cdbb;font-style:normal}
+.wr-selected-profile{display:flex;align-items:flex-start;gap:12px;padding:16px 19px;border:1px solid #367085;border-radius:10px;background:#153e51;margin-bottom:19px;color:#a6cbdc}
+.wr-selected-profile svg{flex:none;color:#8edbe2}.wr-selected-profile strong{display:block;font-size:15px;color:#deeff8;font-weight:500}.wr-selected-profile span{display:block;margin-top:4px;font-size:11px}
+.nw.nw-unified-theme .wrm-dashboard .wr-selected-profile p{margin:7px 0 0;color:#a2c2d4;font-size:11px}
+.wrm-dashboard .wr-all-areas{margin:0 0 20px}
+.wr-source-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1250px){.wr-area-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wr-filters .rq-cache{width:100%;margin-left:0}}
+@media(max-width:760px){.nw .wrm-shell>.nw-nav:not(.open){display:none}.nw .wrm-shell>.nw-nav.open{display:block;position:fixed;inset:78px auto 0 0;width:min(280px,calc(100vw - 30px));z-index:50;overflow-y:auto}.wr-area-grid,.wr-source-grid{grid-template-columns:1fr}.wr-area-filter{min-width:0;width:100%}.wrm-dashboard .rq-region{min-width:0}.nw .wrm-shell .nw-iconbtn{background:#102d43}}

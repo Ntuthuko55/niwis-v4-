@@ -21,13 +21,14 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException
 
 from app.supabase_source import SupabaseSourceError, _request_page, _settings
+from app.dashboard_loader import dashboard_cache_ttl
 
 router = APIRouter(prefix="/surface-water", tags=["Surface water network"])
 TABLE_ENV = "NIWIS_SUPABASE_TABLES_MODULE_7"
 DEFAULT_TABLES = ("9_1_hydrological_station_master", "9_2_catchment_characteristics_master", "9_3_sansa_earth_observation_master")
 PAGE_SIZE = 1000
-SCHEMA_TTL_SECONDS = 900
-READ_CACHE_TTL_SECONDS = 300
+SCHEMA_TTL_SECONDS = dashboard_cache_ttl()
+READ_CACHE_TTL_SECONDS = dashboard_cache_ttl()
 READ_CACHE_MAX_ENTRIES = 96
 _READ_CACHE: dict[tuple, tuple[float, pd.DataFrame]] = {}
 _READ_CACHE_LOCK = Lock()

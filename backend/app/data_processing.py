@@ -65,7 +65,24 @@ def construct_year_month_date(df: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
-def clean_dataset(df: pd.DataFrame, date_column: Optional[str] = None) -> tuple[pd.DataFrame, List[str], Optional[str]]:
+def validate_monthly_cadence(df: pd.DataFrame, date_column: str) -> None:
+    """Require one actual observation row in each consecutive reporting month."""
+    if date_column not in df:
+        raise ValueError(f"Date column '{date_column}' was not found.")
+    dates = pd.to_datetime(df[date_column], errors='coerce')
+    if dates.isna().any() or dates.empty:
+        raise ValueError('Monthly forecasting requires a valid date for every observation.')
+    months = dates.dt.to_period('M')
+    if months.duplicated().any():
+        raise ValueError('Monthly forecasting requires one observation per reporting month; duplicate months were supplied.')
+    expected = pd.period_range(months.min(), months.max(), freq='M')
+    missing = expected.difference(pd.PeriodIndex(months))
+    if len(missing):
+        examples = ', '.join(str(value) for value in missing[:3])
+        raise ValueError(f'Monthly forecasting cannot compress missing reporting months ({examples}). Choose a complete history.')
+
+
+def clean_dataset(df: pd.DataFrame, date_column: Optional[str] = None, *, interpolate_missing: bool = True) -> tuple[pd.DataFrame, List[str], Optional[str]]:
     df = df.copy()
     df = df.dropna(how='all')
     df = df.drop_duplicates()
@@ -89,13 +106,13 @@ def clean_dataset(df: pd.DataFrame, date_column: Optional[str] = None) -> tuple[
     if index_column is not None and df[index_column].is_unique:
         df = df.sort_values(by=index_column)
         numeric_cols = df.select_dtypes(include=[np.number]).columns
-        if len(numeric_cols) > 0:
+        if interpolate_missing and len(numeric_cols) > 0:
             temp = df.set_index(index_column)
             temp[numeric_cols] = temp[numeric_cols].interpolate(method='time', limit=3, limit_direction='both')
             df = temp.reset_index()
     else:
         numeric_cols = df.select_dtypes(include=[np.number]).columns
-        if len(numeric_cols) > 0:
+        if interpolate_missing and len(numeric_cols) > 0:
             df[numeric_cols] = df[numeric_cols].interpolate(method='linear', limit=3, limit_direction='both')
 
     return df, inferred_time_columns, index_column

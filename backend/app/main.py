@@ -13,7 +13,7 @@ from app.dashboard_response_cache import DashboardResponseCache
 from app.training_worker import submit_training, shutdown_training
 from starlette.middleware.wsgi import WSGIMiddleware
 
-from app.data_processing import clean_dataset, get_columns, get_dataset_summary, get_preview
+from app.data_processing import clean_dataset, get_columns, get_dataset_summary, get_preview, validate_monthly_cadence
 from app.supabase_source import SupabaseSourceError
 from app.meteorological_service import router as meteorological_router, history as meteorological_history
 from app.drought_monitoring import router as drought_monitoring_router
@@ -26,9 +26,18 @@ from app.reservoir_service import router as reservoir_router
 from app.groundwater_service import router as groundwater_router
 from app.groundwater_reserve_service import router as groundwater_reserve_router
 from app.water_quality_service import router as water_quality_router
+from app.wastewater_service import router as wastewater_router
+from app.drinking_water_service import router as drinking_water_router
+from app.rwqo_service import router as rwqo_router
+from app.wrm_service import router as wrm_router
+from app.water_quantity_service import router as water_quantity_router
+from app.annual_forecasting import validate_annual_cadence
 from app.hydrology_dashboard import router as hydrology_dashboard_router
 from app.schemas import ModelTrainingRequest, TrainingJobResponse, UploadResponse, DashboardDatasetRequest
 from app.niwis_flask import app as niwis_app
+
+_QUALITY_FORECAST_DASHBOARDS = frozenset({'wastewater', 'drinking-water', 'rwqo', 'water-quantity'})
+_ANNUAL_FORECAST_DASHBOARDS = frozenset({'wrm'})
 
 # FastAPI app with enhanced metadata for Swagger UI
 app = FastAPI(
@@ -66,6 +75,11 @@ app.include_router(reservoir_router)
 app.include_router(groundwater_router)
 app.include_router(groundwater_reserve_router)
 app.include_router(water_quality_router)
+app.include_router(wastewater_router)
+app.include_router(drinking_water_router)
+app.include_router(rwqo_router)
+app.include_router(wrm_router)
+app.include_router(water_quantity_router)
 app.include_router(hydrology_dashboard_router)
 
 # Shared provincial drought summaries used by the Drought Status route.
@@ -170,8 +184,16 @@ async def register_dashboard_dataset(request: DashboardDatasetRequest):
     raw_df = pd.DataFrame(request.rows)
     if request.date_column not in raw_df.columns:
         raise HTTPException(status_code=422, detail=f"Date column '{request.date_column}' was not found in dashboard rows.")
+    quality_forecast = request.dashboard in _QUALITY_FORECAST_DASHBOARDS
+    annual_forecast = request.dashboard in _ANNUAL_FORECAST_DASHBOARDS
     try:
-        df, inferred_time_columns, index_column = clean_dataset(raw_df, request.date_column)
+        if quality_forecast:
+            validate_monthly_cadence(raw_df, request.date_column)
+        if annual_forecast:
+            validate_annual_cadence(raw_df, request.date_column)
+        df, inferred_time_columns, index_column = clean_dataset(
+            raw_df, request.date_column, interpolate_missing=not (quality_forecast or annual_forecast),
+        )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     if index_column is None:
@@ -188,6 +210,8 @@ async def register_dashboard_dataset(request: DashboardDatasetRequest):
         'dataset_summary': summary,
         'dashboard': request.dashboard,
         'region': request.region,
+        'forecast_frequency': 'annual' if annual_forecast else 'monthly' if quality_forecast else None,
+        'forecast_missing_strategy': 'reject' if quality_forecast or annual_forecast else None,
     }
     return UploadResponse(
         dataset_id=dataset_id,
@@ -258,6 +282,13 @@ async def start_training(request: ModelTrainingRequest):
     if request.dataset_id not in DATASETS:
         raise HTTPException(status_code=404, detail='Dataset not found')
     config = request.model_dump()
+    dataset = DATASETS[request.dataset_id]
+    if dataset.get('dashboard') in _QUALITY_FORECAST_DASHBOARDS:
+        # Quality sources are already district-month observations. The policy
+        # comes from the registered source and cannot be overridden by a client.
+        config.update(frequency='monthly', missing_strategy='reject', group_column=None)
+    if dataset.get('dashboard') in _ANNUAL_FORECAST_DASHBOARDS:
+        config.update(frequency='annual', missing_strategy='reject', group_column=None, features=[])
     job_id = str(uuid.uuid4())
     estimated_minutes = 3 if request.model_type.lower() in {'lstm', 'transformer', 'prophet'} else 1
     TRAINING_JOBS[job_id] = {'status': 'queued', 'progress': 0, 'message': 'Training job queued.', 'estimated_minutes': estimated_minutes}

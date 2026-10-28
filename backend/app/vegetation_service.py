@@ -24,7 +24,7 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException
 
 from app.supabase_source import SupabaseSourceError, _request_page, _settings
-from app.dashboard_loader import cached_call, cached_result
+from app.dashboard_loader import cached_call, cached_result, dashboard_cache_ttl
 
 
 router = APIRouter(prefix="/vegetation", tags=["Vegetation condition"])
@@ -35,8 +35,8 @@ DEFAULT_TABLES = (
 )
 TABLE_ENV = "NIWIS_SUPABASE_TABLES_MODULE_3"
 PAGE_SIZE = 1000
-SCHEMA_TTL_SECONDS = 900
-READ_CACHE_TTL_SECONDS = 300
+SCHEMA_TTL_SECONDS = dashboard_cache_ttl()
+READ_CACHE_TTL_SECONDS = dashboard_cache_ttl()
 READ_CACHE_MAX_ENTRIES = 64
 _READ_CACHE: dict[tuple, tuple[float, pd.DataFrame]] = {}
 _READ_CACHE_LOCK = Lock()

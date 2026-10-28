@@ -1,7 +1,7 @@
 """Shared server-side cache used by every NIWIS dashboard data reader.
 
 The loader keeps source credentials server-only, caches successful reads for a
-short period, copies mutable results at the boundary, and never caches source
+configured period, copies mutable results at the boundary, and never caches source
 errors. Supabase modules still keep their bounded table-specific reads; this
 module gives those readers and the packaged-data dashboards one cache policy.
 """
@@ -15,10 +15,15 @@ from threading import Lock
 from time import monotonic
 
 
-try:
-    _TTL = max(60, int(os.getenv("NIWIS_DASHBOARD_CACHE_TTL", "300")))
-except ValueError:
-    _TTL = 300
+def dashboard_cache_ttl() -> int:
+    """Return the shared successful-data cache lifetime (24 hours by default)."""
+    try:
+        return max(60, int(os.getenv("NIWIS_DASHBOARD_CACHE_TTL", "86400")))
+    except ValueError:
+        return 86400
+
+
+_TTL = dashboard_cache_ttl()
 _MAX_ENTRIES = 256
 _CACHE: dict[tuple, tuple[float, object]] = {}
 # A page can mount two components that request the same dashboard source at
@@ -105,7 +110,7 @@ def cached_result(namespace: str, *key_parts):
 
 
 def dashboard_cache(namespace: str):
-    """Decorator for source readers with a common five-minute cache policy."""
+    """Decorator for source readers with the shared dashboard cache policy."""
     def decorate(function):
         @wraps(function)
         def wrapped(*args, **kwargs):

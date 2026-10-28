@@ -1,0 +1,16 @@
+.water-quantity-dashboard .rq-heading-icon{background:#174456;color:#9cdee9}
+.water-quantity-dashboard .rq-kpi small{display:inline-block;max-width:80px;line-height:1.5}
+.wq-comparison-panel,.wq-calculation-panel,.wq-component-panel{margin-bottom:21px}
+.wq-scope-note{display:flex;align-items:flex-start;gap:10px;padding:13px 16px;margin-bottom:19px;background:#123b50;color:#9dc4d8;border:1px solid #31627b;border-radius:8px;font-size:11px;line-height:1.7}
+.wq-scope-note svg{flex:none;margin-top:2px}.wq-scope-note strong{font-weight:500;color:#cde8f4}
+.wq-calculation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.wq-calculation-grid article{display:flex;flex-direction:column;gap:10px;min-width:0;padding:15px 17px;background:#102b40;border:1px solid #31556f;border-radius:9px}
+.wq-calculation-grid article>span{color:#b3d1e2;font-size:11px}.wq-calculation-grid code{display:block;white-space:normal;overflow-wrap:anywhere;line-height:1.8;font-size:11px;color:#d8e9f3}
+.wq-calculation-grid strong{color:#7dd5c3;font-size:13px;font-weight:500}
+.nw.nw-unified-theme .water-quantity-dashboard .wq-calculation-grid p{font-size:10px;color:#9cb8cb;margin:0;line-height:1.7}
+.wq-component-table{min-width:690px}
+.nw .water-quantity-dashboard .wq-component-table tbody th{text-transform:none;letter-spacing:0;font-size:10px;min-width:230px;color:#cce4f1}
+.wq-source-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.wq-balance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1100px){.wq-balance-grid{grid-template-columns:1fr}}
+@media(max-width:760px){.nw .water-quantity-shell>.nw-nav:not(.open){display:none}.nw .water-quantity-shell>.nw-nav.open{display:block;position:fixed;inset:78px auto 0 0;width:min(280px,calc(100vw - 30px));z-index:50;overflow-y:auto}.nw .water-quantity-shell .nw-iconbtn{background:#102d43}.wq-source-grid,.wq-calculation-grid{grid-template-columns:1fr}.water-quantity-dashboard .rq-kpi>strong{font-size:23px}.water-quantity-dashboard .rq-kpi small{font-size:9px;margin-left:5px}}

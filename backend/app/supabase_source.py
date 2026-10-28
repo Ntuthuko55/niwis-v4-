@@ -39,7 +39,7 @@ def _load_local_env() -> None:
 
 
 _load_local_env()
-_CACHE_TTL_SECONDS = max(60, int(os.getenv("NIWIS_SUPABASE_CACHE_TTL", "900")))
+_CACHE_TTL_SECONDS = max(60, int(os.getenv("NIWIS_SUPABASE_CACHE_TTL", "86400")))
 
 
 class SupabaseSourceError(RuntimeError):

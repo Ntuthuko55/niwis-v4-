@@ -234,6 +234,11 @@ export const NAV = [
     ['groundwater-reserve', 'Groundwater Reserve Assessment', '8', false],
     ['water-quality', 'Water Quality Monitoring Network', '9', false],
     ['dams', 'Dam and Reservoir Status', '10', false],
+    ['wastewater', 'Wastewater Quality Compliance', '11', false],
+    ['drinking-water', 'Drinking Water Quality Compliance', '12', false],
+    ['rwqo', 'Resource Water Quality Objectives', '13', false],
+    ['wrm', 'Water Resource Management', '14', false],
+    ['water-quantity', 'Water Quantity Assessment', '15', false],
   ]],
   ['Platform', [
     ['admin', 'Administration', '', true],

@@ -1,0 +1,137 @@
+.wastewater-dashboard {
+  --ww-text: #e9f5ff;
+  --ww-muted: #94b2c8;
+  --ww-border: #21455e;
+  --ww-teal: #54d9cb;
+  --ww-control: #0a253b;
+  color: var(--ww-text);
+  padding-bottom: 12px;
+}
+.nw .wastewater-dashboard .ww-heading { gap: 16px; margin-bottom: 22px; }
+.nw .wastewater-dashboard .ww-heading h1 { font-size: clamp(24px, 2vw, 32px); letter-spacing: -.7px; }
+.nw .wastewater-dashboard .ww-heading p { font-size: 12px; line-height: 1.6; max-width: 760px; color: var(--ww-muted); }
+.wastewater-dashboard .wastewater-icon { border-radius: 16px; }
+.nw .wastewater-dashboard .wastewater-filters { border-radius: 12px; padding: 16px 20px; gap: 18px; margin-bottom: 18px; }
+.nw .wastewater-dashboard .wastewater-filters label { font-size: 11px; gap: 7px; }
+.nw .wastewater-dashboard .wastewater-filters :is(input, select) { min-height: 40px; min-width: 100px; padding: 9px 12px; border: 1px solid var(--ww-border); border-radius: 7px; background: var(--ww-control); color: var(--ww-text); font: inherit; font-size: 12px; }
+.nw .wastewater-dashboard .wastewater-filters .rf-apply, .nw .wastewater-dashboard .rf-export { min-height: 40px; font-size: 12px; border-radius: 7px; }
+.ww-context { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 15px; color: var(--ww-muted); font-size: 11px; }
+.ww-context > span { display: flex; align-items: center; gap: 9px; }
+.ww-context strong { color: #d4e9f7; font-weight: 600; }
+.ww-context > span > i { width: 6px; height: 6px; border-radius: 50%; background: var(--ww-teal); box-shadow: 0 0 9px #54d9cb44; }
+.ww-context-divider { width: 1px; height: 11px; margin: 0 4px; background: #39566d; }
+
+.ww-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+.ww-kpi { position: relative; overflow: hidden; min-width: 0; padding: 18px 19px 16px; border: 1px solid var(--ww-border); border-radius: 13px; background: linear-gradient(135deg, #102f47, #0a2237); }
+.ww-kpi::before { position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--ww-accent); opacity: .9; content: ''; }
+.ww-kpi-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #b3ccde; font-size: 12px; }
+.ww-kpi-title > svg { color: var(--ww-accent); }
+.ww-kpi-value { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; margin: 12px 0; }
+.ww-kpi-value strong { color: #f1f8ff; font-size: clamp(23px, 2vw, 32px); font-weight: 650; line-height: 1.15; letter-spacing: -.7px; font-variant-numeric: tabular-nums; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-kpi-value small { color: #a7c2d6; font-size: 11px; }
+.ww-kpi-bottom { display: flex; align-items: end; justify-content: space-between; gap: 8px; }
+.ww-kpi-bottom > div { min-width: 0; }
+.ww-kpi-year { display: block; margin-top: 5px; color: #7699b2; font-size: 10px; }
+.ww-change { display: flex; align-items: center; gap: 3px; color: #c1d8e8; font-size: 11px; white-space: nowrap; }
+.ww-change > span { color: #819fb8; }
+.ww-sparkline { flex: none; display: block; width: 36%; max-width: 116px; min-width: 50px; overflow: visible; }
+.ww-sparkline-empty { opacity: .3; }
+
+.ww-primary-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.32fr); align-items: stretch; gap: 20px; }
+.ww-panel { min-width: 0; padding: 21px 21px 15px; border: 1px solid var(--ww-border); border-radius: 14px; background: linear-gradient(145deg, #0c2b43, #092136); box-shadow: 0 8px 26px #0000000b; }
+.ww-panel-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+.ww-panel-header > div:first-child { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+.ww-panel-icon { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border: 1px solid #276074; border-radius: 9px; background: #113e50; color: #7de0d4; }
+.nw .wastewater-dashboard .ww-panel-header h2 { margin: 0 0 4px; color: var(--ww-text); font-family: inherit; font-size: 15px; font-weight: 650; line-height: 1.35; letter-spacing: -.15px; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-panel-header p { margin: 0; color: var(--ww-muted); font-size: 11px; line-height: 1.5; }
+.ww-picker { display: grid; gap: 6px; min-width: 0; margin-bottom: 14px; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-picker > span { color: #90adc2; font-size: 10px; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-picker select { width: 100%; max-width: 100%; min-height: 37px; padding: 8px 30px 8px 10px; border: 1px solid #2b526a; border-radius: 7px; background: #0a263d; color: #cfe3f2; font-family: inherit; font-size: 11px; }
+.ww-explorer-controls { display: grid; grid-template-columns: minmax(100px, .8fr) minmax(0, 1.5fr); gap: 12px; }
+.ww-readout { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; min-height: 67px; margin-bottom: 8px; }
+.ww-readout > div > strong { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; font-size: 30px; font-weight: 650; letter-spacing: -.6px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-readout small { color: #a3bfd3; font-size: 11px; font-weight: 400; letter-spacing: 0; }
+.ww-readout > div > span { display: block; margin-top: 4px; color: #789bb5; font-size: 10px; }
+.ww-chart-switch { display: flex; padding: 3px; border: 1px solid #254a64; border-radius: 8px; background: #092237; }
+.ww-chart-switch button { display: flex; align-items: center; gap: 5px; padding: 6px 9px; border: 0; border-radius: 5px; background: transparent; color: #8baec6; font: inherit; font-size: 10px; cursor: pointer; }
+.ww-chart-switch button[aria-pressed=true] { background: #194c60; color: #b7f3e8; }
+.ww-chart-switch button:hover { background: #123d54; }
+.ww-chart { width: 100%; min-width: 0; }
+.ww-chart-empty { display: grid; place-items: center; min-height: 240px; padding: 20px; color: #8facc3; font-size: 12px; text-align: center; }
+.ww-chart .recharts-cartesian-axis-tick-value { font-family: inherit; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-chart-caption { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; color: #7e9fb8; font-size: 10px; line-height: 1.6; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-map-panel .sat-district-map { height: 325px; min-height: 325px; margin-top: 8px; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-map-panel .map-color-legend { min-width: 67px !important; width: 67px; }
+.ww-map-dot { width: 6px; height: 6px; flex: none; background: #54d9cb; border-radius: 50%; }
+
+.ww-section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin: 32px 0 17px; }
+.ww-section-heading > div > span { color: #6ac8c8; font-size: 9px; font-weight: 600; letter-spacing: 1.5px; }
+.nw .wastewater-dashboard .ww-section-heading h2 { margin: 7px 0 0; color: #e2f0fb; font-family: inherit; font-size: 20px; font-weight: 600; letter-spacing: -.35px; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-section-heading p { max-width: 340px; margin: 0; color: #809fb7; font-size: 11px; line-height: 1.6; text-align: right; }
+.ww-chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+.ww-series-controls { display: flex; flex-wrap: wrap; gap: 7px; min-height: 78px; align-content: flex-start; margin-bottom: 4px; }
+.ww-series-controls button { display: flex; align-items: center; gap: 6px; padding: 7px 9px; border: 1px solid #2c536d; border-radius: 6px; background: #102f47; color: #c5dceb; font-family: inherit; font-size: 10px; cursor: pointer; }
+.ww-series-controls i { width: 7px; height: 7px; border-radius: 50%; background: var(--series-color); }
+.ww-series-controls button[aria-pressed=false] { opacity: .45; background: transparent; }
+.ww-series-controls button:hover { border-color: #56859b; }
+.ww-methods { margin-top: 25px; padding: 18px 20px; border: 1px solid var(--ww-border); border-radius: 12px; background: #0a2338; }
+.ww-methods summary { color: #a6c2d8; font-size: 12px; font-weight: 600; cursor: pointer; }
+.nw.nw-unified-theme .wastewater-dashboard .ww-methods p { color: #8eabc0; font-size: 11px; line-height: 1.8; }
+.ww-source-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+.ww-source-grid > div { display: grid; gap: 7px; min-width: 0; padding: 14px; border: 1px solid #26475e; border-radius: 8px; background: #0d2b41; }
+.ww-source-grid strong { color: #c5ddeb; font-size: 12px; }
+.ww-source-grid span { overflow-wrap: anywhere; color: #71b7cf; font-size: 10px; }
+.ww-source-grid small { font-size: 10px; }
+.ww-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding: 10px 0; color: #7395af; font-size: 10px; }
+.ww-footer > span:first-child { display: flex; align-items: center; gap: 8px; color: #a5c5dc; font-weight: 600; }
+.wastewater-dashboard :is(button, select, input):focus-visible { outline: 2px solid #75dbd2; outline-offset: 3px; }
+@media (max-width: 1200px) {
+  .ww-kpi-grid { gap: 12px; }
+  .ww-kpi { padding: 16px 14px; }
+  .ww-kpi-title { font-size: 11px; }
+  .ww-kpi-value strong { font-size: 25px; }
+  .ww-primary-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; }
+  .ww-panel { padding: 18px 16px 14px; }
+  .ww-panel-header { gap: 10px; }
+}
+@media (max-width: 1000px) {
+  .ww-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ww-primary-grid, .ww-chart-grid { grid-template-columns: minmax(0, 1fr); }
+  .ww-section-heading { align-items: flex-start; }
+  .ww-source-grid { grid-template-columns: minmax(0, 1fr); }
+  .nw.nw-unified-theme .wastewater-dashboard .ww-map-panel .sat-district-map { height: 340px; min-height: 340px; }
+}
+@media (max-width: 560px) {
+  .nw .wastewater-dashboard .ww-heading { display: grid; grid-template-columns: 43px minmax(0, 1fr); align-items: start; gap: 11px; margin-bottom: 15px; }
+  .nw .wastewater-dashboard .ww-heading .rf-export { grid-column: 2; justify-self: start; margin-left: 0; }
+  .nw .wastewater-dashboard .ww-heading h1 { font-size: 23px; letter-spacing: -.3px; }
+  .nw .wastewater-dashboard .ww-heading p { font-size: 11px; }
+  .nw .wastewater-dashboard .wastewater-filters { gap: 12px; padding: 13px; }
+  .ww-context { font-size: 10px; }
+  .ww-context > span:last-child { font-size: 9px; }
+  .ww-kpi-grid { gap: 10px; }
+  .ww-kpi { padding: 14px 12px; border-radius: 10px; }
+  .ww-kpi-title { align-items: flex-start; gap: 5px; min-height: 28px; font-size: 10px; }
+  .ww-kpi-title svg { width: 14px; height: 14px; flex: none; }
+  .ww-kpi-value { gap: 4px; }
+  .ww-kpi-value strong { font-size: 23px; }
+  .ww-kpi-bottom { flex-direction: column-reverse; align-items: stretch; gap: 6px; }
+  .ww-sparkline { width: 100%; max-width: none; height: 32px; }
+  .ww-change { font-size: 9px; }
+  .ww-kpi-year { font-size: 9px; }
+  .ww-panel { padding: 17px 12px 13px; border-radius: 11px; }
+  .nw .wastewater-dashboard .ww-panel-header h2 { font-size: 14px; }
+  .nw.nw-unified-theme .wastewater-dashboard .ww-panel-header p { font-size: 10px; }
+  .ww-explorer-controls { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .ww-readout { gap: 8px; }
+  .ww-readout > div > strong { font-size: 27px; }
+  .nw.nw-unified-theme .wastewater-dashboard .ww-map-panel .sat-district-map { height: 270px; min-height: 270px; }
+  .nw.nw-unified-theme .wastewater-dashboard .ww-map-panel .map-color-legend { min-width: 51px !important; width: 51px; }
+  .ww-section-heading { flex-direction: column; gap: 9px; margin-top: 26px; }
+  .nw .wastewater-dashboard .ww-section-heading h2 { font-size: 18px; }
+  .nw.nw-unified-theme .wastewater-dashboard .ww-section-heading p { text-align: left; }
+  .ww-chart-grid { gap: 14px; }
+  .ww-chart-tooltip { max-width: 280px; }
+  .ww-chart-tooltip > div { flex-wrap: wrap; }
+  .ww-chart-tooltip > div > strong { margin-left: 16px !important; padding-left: 0 !important; }
+}

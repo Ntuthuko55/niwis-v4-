@@ -50,7 +50,7 @@ function MapLegend({ title, gradient, items }) {
     <strong style={{ color: '#e4f4fa', fontSize: 10 }}>{title}</strong>
     <div style={{ display: 'grid', gridTemplateColumns: '10px 1fr', gap: 6, minHeight: 126 }}>
       <i style={{ display: 'block', width: 10, minHeight: 126, borderRadius: 3, background: gradient, border: '1px solid rgba(255,255,255,.25)' }} aria-hidden="true" />
-      <ul style={{ display: 'grid', alignContent: 'space-between', margin: 0, padding: 0, listStyle: 'none' }}>{items.map(([range, meaning]) => <li key={range} style={{ display: 'grid', gap: 1 }}><b style={{ color: '#eef8fb', fontSize: 9 }}>{range}</b><span style={{ fontSize: 8 }}>{meaning}</span></li>)}</ul>
+      <ul style={{ display: 'grid', alignContent: 'space-between', margin: 0, padding: 0, listStyle: 'none' }}>{items.map(([range, meaning], index) => <li key={`${String(range)}-${index}`} style={{ display: 'grid', gap: 1 }}><b style={{ color: '#eef8fb', fontSize: 9 }}>{range}</b><span style={{ fontSize: 8 }}>{meaning}</span></li>)}</ul>
     </div>
   </div>
 }

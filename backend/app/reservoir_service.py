@@ -99,7 +99,7 @@ def _find_column(columns, aliases):
 def _snapshot_signature():
     base, key, _ = _settings()
     try:
-        epoch = int(monotonic() // max(60, int(os.getenv('NIWIS_SUPABASE_CACHE_TTL', '900'))))
+        epoch = int(monotonic() // max(60, int(os.getenv('NIWIS_SUPABASE_CACHE_TTL', '86400'))))
     except ValueError as exc:
         raise SupabaseSourceError('NIWIS_SUPABASE_CACHE_TTL must be a number of seconds.') from exc
     return base, key, _configured_table(), epoch

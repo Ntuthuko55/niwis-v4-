@@ -239,6 +239,8 @@ export const NAV = [
     ['rwqo', 'Resource Water Quality Objectives', '13', false],
     ['wrm', 'Water Resource Management', '14', false],
     ['water-quantity', 'Water Quantity Assessment', '15', false],
+    ['water-services', 'Water Services, Infrastructure Access and Supply Reliability', '16', false],
+    ['water-tariffs', 'Water Tariffs & Water Quality Costs', '17', false],
   ]],
   ['Platform', [
     ['admin', 'Administration', '', true],

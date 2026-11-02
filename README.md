@@ -159,24 +159,6 @@ The relation has no supply-system IDs, sampling requirements, process scores or
 Blue Drop risk ratings. Those indicators require an additional source. Override
 `NIWIS_SUPABASE_TABLE_DRINKING_WATER` only when the deployed relation name differs.
 
-Both water quality dashboards include the shared **Forecasting Studio** below
-their charts. Select **Open forecasting studio**, choose National or a district,
-then select a measurement, model and horizon (6 months, 1 year or 2 years).
-LSTM is the default model and exposes selectable measurement inputs. Forecasts
-use the latest ten calendar years of observed monthly source data, with the same
-24-hour source cache. Wastewater offers effluent, operations and weather targets;
-drinking water offers its 14 measurements and the reported compliance score.
-Flags and diagnostic counts are excluded from forecast targets.
-
-These studios retain monthly cadence for every model, including Auto, which
-compares four monthly baseline models using chronological holdout error.
-Missing measurements remain missing when registered; training reports a clear
-error for incomplete selected inputs or gaps in the monthly history.
-
-Focused drinking-water aggregation checks run from `backend` with
-`.\.venv\Scripts\python.exe -m unittest test_drinking_water_service -v`.
-Browser verification is `node verify-drinking-water-browser.mjs` from `frontend`.
-
 Resource Water Quality Objectives is dashboard 13, after drinking water, at
 `/resource-water-quality-objectives` (also `/rwqo`). It reads the three section 15
 Supabase relations: `15.1_ecological_variables_master`,
@@ -341,3 +323,100 @@ for measured timings and validation.
 Groundwater Level Monitoring Network uses cached monthly summaries and independent
 map/daily loading while preserving sparse observation dates. See
 [Groundwater loading improvements](output/dashboard-performance/Groundwater-Loading-Improvements.md).
+
+Water Services, Infrastructure Access and Supply Reliability is dashboard 16
+(section 18) at `/water-services`. It reads
+`18_1_water_access_and_coverage_master`,
+`18_2_infrastructure_operational_master`, and
+`18_3_sansa_eo_support_for_services_masters` from Supabase. The four sections
+cover access and household coverage, infrastructure operations, SANSA earth
+observation support, and supply reliability. They include region/category/year
+filters, indicator charts, regional comparisons, a 52-district SANSA map, CSV
+export, source-quality audits, and a 24-hour cache. Override
+`NIWIS_SUPABASE_TABLES_MODULE_18` with the three comma-separated relation names
+in the same order when needed.
+
+The source regions mix municipal and district boundaries, so cross-source joins
+and population-weighted national rates are not inferred. Access categories remain
+separate and are not reconciled when source household counts disagree. In the
+operations table, computed NRW is used because a legacy percentage field contains
+malformed values; the source computed field agrees with NRW-volume calculations
+within 0.01 percentage points for all 2,317 comparable rows. Recent production,
+loss and NRW measurements remain missing when the source omits them. The pressure
+column does not disambiguate kPa from bar. Supply reliability indices (WSA score,
+SIFI, WCI, ICI and DVI) are shown as unavailable until their defined inputs and
+methods are supplied. SANSA summaries do not include pipe or settlement geometry.
+The read-only database schema audit is in
+[`output/water-services-dashboard/schema-inspection.json`](output/water-services-dashboard/schema-inspection.json).
+Focused source aggregation checks run from `backend` with
+`.\.venv\Scripts\python.exe -m unittest test_water_services_service -v`;
+browser verification runs as `node verify-water-services-browser.mjs` from
+`frontend` with the backend and frontend listening on ports 8000 and 5173.
+
+Both water quality dashboards include the shared **Forecasting Studio** below
+their charts. Select **Open forecasting studio**, choose National or a district,
+then select a measurement, model and horizon (6 months, 1 year or 2 years).
+LSTM is the default model and exposes selectable measurement inputs. Forecasts
+use the latest ten calendar years of observed monthly source data, with the same
+24-hour source cache. Wastewater offers effluent, operations and weather targets;
+drinking water offers its 14 measurements and the reported compliance score.
+Flags and diagnostic counts are excluded from forecast targets.
+
+These studios retain monthly cadence for every model, including Auto, which
+compares four monthly baseline models using chronological holdout error.
+Missing measurements remain missing when registered; training reports a clear
+error for incomplete selected inputs or gaps in the monthly history.
+
+Focused drinking-water aggregation checks run from `backend` with
+`.\.venv\Scripts\python.exe -m unittest test_drinking_water_service -v`.
+Browser verification is `node verify-drinking-water-browser.mjs` from `frontend`.
+
+Water Tariffs & Water Quality Costs is dashboard 17 at
+`/water-tariffs-and-quality-costs`. It reads `19_1_raw_water_tariff_master`,
+`19_2_municipal_water_tariff_master`, and `19_3_water_quality_cost_master`.
+Choose one of the three source tables, a reporting year, and an indicator. The
+map colors use the selected source values and show the observed value ranges;
+they do not imply that a higher or lower tariff is better. The National row is
+shown separately from the municipality polygons. Null, malformed, non-finite,
+and invalid percentage values are omitted from that map. The map draws only
+municipalities with a usable value for the selected year, so municipalities
+outside the source coverage do not appear as blank polygons. Water-quality cost
+fields have no supplied units, so the dashboard does not infer them. The opening
+view is the 2026 municipal block tariff, which has 122 distinct values across
+the 123 source regions.
+
+The database rows contain municipality names but no municipality codes. The map
+uses the Municipal Demarcation Board's 2026 local-municipality boundaries and
+matches normalized names to official municipality polygons. The source name
+`Emalahleni` is mapped to the city municipality eMalahleni, Mpumalanga (MP312),
+and displayed with that place name. The Eastern Cape municipality with the same
+name is not assigned this source row. This is a documented city-name crosswalk,
+since the table itself has no province or municipality code. The official
+[Mpumalanga profile](https://www.mpg.gov.za/municipalities/emalahleni-local-municipality)
+identifies eMalahleni (MP312); the [Eastern Cape municipality profile](https://www.emalahlenilm.gov.za/)
+identifies a separate municipality serving Cacadu, Indwe and Dordrecht. Historic
+source values use the current boundaries because no
+boundary-version identifier is supplied. Boundary source:
+[MDB Local Municipalities 2026](https://spatialhub-mdb-sa.opendata.arcgis.com/datasets/82c7a6d178454ddcb4dc1ef6bf2a4303_0/explore).
+The backend reads the three relations using `NIWIS_SUPABASE_TABLES_MODULE_19`
+and caches successful source reads under the shared 24-hour dashboard cache.
+The dashboard shows an indicator snapshot for every field in the selected table,
+including the National source value, regional coverage and current range or
+category counts. It also shows separate year-by-year trend cards for each field,
+a detailed selected-indicator trend, and a current-year regional ranking or
+drought-category count chart. The National trend uses the table's National row
+directly. A year-by-indicator coverage matrix shows the share of source-region
+rows with valid values; selecting a year in the matrix updates the dashboard.
+Missing years remain gaps, source periods are available in trend tooltips, and
+the dashboard does not combine different charges into an inferred total.
+
+MapTiler's dark basemap is proxied by the backend so its key is not sent to the
+browser. The supplied key is stored in the git-ignored `backend/.env` as
+`MAPTILER_API_KEY` and the backend proxy has returned a valid raster tile. Keep
+it out of `frontend/.env` and all `VITE_*` variables. Since the key appeared in
+chat, rotate it and replace the backend value. Without a configured key, the
+database choropleth remains visible over the dark map background. The basemap
+uses MapTiler's Dataviz v4 Dark raster tiles; its
+[Maps API](https://docs.maptiler.com/cloud/api/maps/) documents raster tile
+requests, and MapTiler's [key guidance](https://docs.maptiler.com/guides/developer/credentials/api-key/)
+recommends replacing and revoking a compromised key.

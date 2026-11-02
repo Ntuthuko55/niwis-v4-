@@ -21,14 +21,14 @@ from app.supabase_source import SupabaseSourceError, _request_page, _settings
 router = APIRouter(prefix="/water-quantity", tags=["Water Quantity Assessment"])
 TABLES = ("17_1_water_quantity_assessment_transfers_master", "17_2_national_water_balance_master")
 TRANSFER_METRICS = (
-    ("katse_vaal", "Katse to Vaal transfer", "m³/day", "Katse_to_Vaal_Daily_Transfer_m3_day", "Transfer rates", "LHDA / DWS"),
-    ("tugela_vaal", "Tugela–Vaal transfer (source column)", "m³/day", "Tugela_Vaal_Daily_Transfer_m3_day", "Transfer rates", "DWS / Eskom"),
-    ("orange_transfer", "Orange River system transfer", "m³/day", "Orange_River_System_Transfer_m3_day", "Transfer rates", "DWS"),
-    ("thukela_vaal", "Thukela–Vaal emergency / regular (source column)", "m³/day", "Thukela_Vaal_Emergency_Regular_Transfer_m3_day", "Transfer rates", "DWS"),
-    ("transfer_loss", "Seepage & evaporation loss", "m³/day", "Transfer_Loss_Seepage_Evaporation_m3_day", "Transfer operations", "DWS"),
-    ("pumping_energy", "Transfer pumping energy intensity", "kWh/ML", "Transfer_Pumping_Energy_kWh_Ml", "Transfer operations", "DWS / Eskom"),
-    ("donor_storage", "Donor basin storage", "% FSC", "Donor_Basin_Storage_FSC_pct", "Basin conditions", "DWS"),
-    ("receiving_deficit", "Receiving system demand deficit", "m³/day", "Receiving_System_Demand_Deficit_m3_day", "Basin conditions", "DWS"),
+    ("katse_vaal", "Lesotho Highlands Water Project (Katse to Vaal)", "m³/day", "Katse_to_Vaal_Daily_Transfer_m3_day", "Transfer rates", "LHDA / DWS"),
+    ("tugela_vaal", "Tugela–Vaal transfer", "m³/day", "Tugela_Vaal_Daily_Transfer_m3_day", "Transfer rates", "DWS / Eskom"),
+    ("orange_transfer", "Orange–Vaal transfer (Orange River System)", "m³/day", "Orange_River_System_Transfer_m3_day", "Transfer rates", "DWS"),
+    ("thukela_vaal", "Thukela–Vaal transfer (Emergency / Regular)", "m³/day", "Thukela_Vaal_Emergency_Regular_Transfer_m3_day", "Transfer rates", "DWS"),
+    ("transfer_loss", "Water lost in transfer (seepage and evaporation)", "m³/day", "Transfer_Loss_Seepage_Evaporation_m3_day", "Transfer operations", "DWS"),
+    ("pumping_energy", "Energy used to pump water", "kWh/ML", "Transfer_Pumping_Energy_kWh_Ml", "Transfer operations", "DWS / Eskom"),
+    ("donor_storage", "Storage in the source basin", "% FSC", "Donor_Basin_Storage_FSC_pct", "Basin conditions", "DWS"),
+    ("receiving_deficit", "Water shortfall in the receiving system", "m³/day", "Receiving_System_Demand_Deficit_m3_day", "Basin conditions", "DWS"),
 )
 BALANCE_METRICS = (
     ("map_volume", "Precipitation (MAP)", "Mm³", "MAP_Mm3", "Source water components", "SAWS"),
@@ -245,9 +245,18 @@ def _section_value(section, region, start, end, transfers):
               "scope": region if transfers else "National", "missing_measurements": int(selected[keys].isna().sum().sum())}
     if transfers:
         map_period = str(window.period.max()) if not window.empty else None
-        current = window[window.period == map_period]
-        by_name = {row["district_name"]: row for row in _records(current[["district_name", "period", *keys]])}
-        result["map"] = [by_name.get(name, {"district_name": name, "period": None, **dict.fromkeys(keys)}) for name in sorted(frame.district_name.unique())]
+        map_history = {}
+        for period, period_rows in window.groupby("period", sort=True):
+            period_key = str(period)
+            by_name = {row["district_name"]: row for row in _records(period_rows[["district_name", "period", *keys]])}
+            map_history[period_key] = [by_name.get(name, {"district_name": name, "period": None, **dict.fromkeys(keys)})
+                                       for name in sorted(frame.district_name.unique())]
+        result["map_history"] = map_history
+        result["map_periods"] = list(map_history)
+        result["map"] = map_history.get(map_period, [
+            {"district_name": name, "period": None, **dict.fromkeys(keys)}
+            for name in sorted(frame.district_name.unique())
+        ])
         result["map_period"] = map_period
         result["selected_districts"] = int(selected.district_name.nunique())
         latest_rows = selected[selected.period == latest_period]

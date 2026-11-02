@@ -1,0 +1,29 @@
+.water-services-dashboard .rq-heading{align-items:flex-start}
+.water-services-dashboard .rq-heading>div{max-width:900px;min-width:0}
+.water-services-dashboard .rq-heading h1{font-size:clamp(23px,2vw,31px);max-width:880px}
+.water-services-dashboard .rq-tabs button{flex:1;justify-content:center}
+.water-services-dashboard .rq-kpi>strong{font-size:27px}
+.water-services-dashboard .rq-kpi>div{align-items:flex-end}
+.water-services-dashboard .rq-kpi small{display:inline-block;max-width:100%;overflow-wrap:anywhere}
+.water-services-dashboard .ws-filter-note{flex-basis:100%;margin:0;color:#91b4ca;font-size:10px}
+.water-services-dashboard .ws-summary-note{color:#9ab9cd;font-size:11px;margin:-10px 0 22px;line-height:1.7}
+.ws-overview-chart,.ws-comparison,.ws-register,.ws-pipe-panel{margin-bottom:22px}
+.ws-reliability-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:20px}
+.ws-reliability-card{position:relative;min-height:180px}
+.nw .ws-reliability-card h2{margin-top:12px!important}
+.ws-reliability-card p{color:#a9c1d2;font-size:11px;line-height:1.7}
+.ws-unavailable{color:#edcb8e;border:1px solid #6c6247;background:#36392e;padding:4px 8px;border-radius:5px;font-size:10px}
+.ws-unit{color:#93afc2;font-size:10px}
+.ws-comparison-controls{display:flex;gap:18px;flex-wrap:wrap}
+.ws-comparison-controls .rq-picker{flex:1;max-width:440px;min-width:180px}
+.water-services-dashboard input{width:100%;min-height:37px;border:1px solid #365c76;border-radius:6px;background:#0c263c;color:#dceef9;padding:9px 10px;font:inherit}
+.ws-pagination{display:flex;align-items:center;gap:12px;margin-top:15px;color:#93b3c9;font-size:10px}
+.ws-pagination>span:first-child{margin-right:auto}
+.ws-pagination button,.water-services-dashboard .rq-text-button,.water-services-dashboard .rq-source-notice button{padding:6px 10px;border:1px solid #365c76;border-radius:5px;background:#183f58;color:#cbe6f7}
+.ws-audit{padding:18px 20px;background:#0b243b;border:1px solid #294d69;border-radius:11px;color:#9fbdcf;font-size:11px;line-height:1.8}
+.ws-audit summary{cursor:pointer;color:#d4e8f5;font-size:12px;font-weight:600}
+.ws-audit li{margin-bottom:7px}
+.ws-source-name{overflow-wrap:anywhere;color:#bce0ed}
+.water-services-dashboard .rq-table-scroll{overscroll-behavior-x:contain}
+@media(max-width:1100px){.ws-reliability-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.water-services-dashboard .rq-heading{flex-wrap:wrap}.water-services-dashboard .rq-export{margin-left:72px}.water-services-dashboard .rq-tabs button{flex-basis:40%}}
+@media(max-width:680px){.water-services-dashboard .rq-heading-icon{display:none}.water-services-dashboard .rq-export{margin-left:0}.water-services-dashboard .rq-tabs button{flex-basis:100%;justify-content:flex-start}.water-services-dashboard .rq-region{min-width:0;width:100%}.ws-reliability-grid{grid-template-columns:1fr}.ws-pagination{flex-wrap:wrap}.ws-pagination>span:first-child{width:100%}.water-services-dashboard .rq-filters>label{min-width:0;flex:1 1 42%}.water-services-dashboard .rq-chart-controls{flex-wrap:wrap}.water-services-dashboard .rq-kpi>strong{font-size:23px}}

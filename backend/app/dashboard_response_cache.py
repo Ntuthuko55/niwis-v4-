@@ -15,7 +15,7 @@ from urllib.parse import parse_qsl
 
 PREFIXES = ('/climate/', '/vegetation/', '/rainfall/', '/runoff/', '/surface-water/',
             '/groundwater/', '/groundwater-reserve/', '/water-quality/', '/wastewater/', '/drinking-water/',
-            '/rwqo/', '/wrm/', '/water-quantity/', '/reservoirs/', '/drought-monitoring/', '/meteorological/', '/hydrology/', '/satellite/')
+            '/rwqo/', '/wrm/', '/water-quantity/', '/water-services/', '/municipal-tariffs/', '/reservoirs/', '/drought-monitoring/', '/meteorological/', '/hydrology/', '/satellite/')
 
 
 def _has_source_error(body):

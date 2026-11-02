@@ -31,6 +31,8 @@ from app.drinking_water_service import router as drinking_water_router
 from app.rwqo_service import router as rwqo_router
 from app.wrm_service import router as wrm_router
 from app.water_quantity_service import router as water_quantity_router
+from app.water_services_service import router as water_services_router
+from app.municipal_tariff_service import router as municipal_tariff_router
 from app.annual_forecasting import validate_annual_cadence
 from app.hydrology_dashboard import router as hydrology_dashboard_router
 from app.schemas import ModelTrainingRequest, TrainingJobResponse, UploadResponse, DashboardDatasetRequest
@@ -80,6 +82,8 @@ app.include_router(drinking_water_router)
 app.include_router(rwqo_router)
 app.include_router(wrm_router)
 app.include_router(water_quantity_router)
+app.include_router(water_services_router)
+app.include_router(municipal_tariff_router)
 app.include_router(hydrology_dashboard_router)
 
 # Shared provincial drought summaries used by the Drought Status route.

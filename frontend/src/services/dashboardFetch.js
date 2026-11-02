@@ -45,7 +45,7 @@ export async function dashboardFetch(url, options = {}) {
     return nativeFetch(url, options)
   }
   const key = requestKey(url)
-  const isMap = key.startsWith('/south_africa_adm2')
+  const isMap = key.startsWith('/south_africa_adm2') || key.startsWith('/sa_local_municipalities_2026')
   const ttl = isMap ? 24 * 60 * 60 * 1000 : /\/metadata(?:\?|$)/.test(key) ? 30_000 : 0
   const previous = cache.get(key)
   if (previous && previous.expires > Date.now() && options.cache !== 'reload') {

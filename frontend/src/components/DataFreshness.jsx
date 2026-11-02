@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const modules = { dams: 'reservoirs', surface: 'surface-water', overview: 'meteorological',
-  monitoring: 'drought-monitoring', 'groundwater-reserve': 'groundwater-reserve', 'water-quality': 'water-quality' }
+  monitoring: 'drought-monitoring', 'groundwater-reserve': 'groundwater-reserve', 'water-quality': 'water-quality', 'water-services': 'water-services' }
 
 export default function DataFreshness({ view }) {
   const [status, setStatus] = useState(null)

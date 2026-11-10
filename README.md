@@ -21,7 +21,7 @@ The startup script runs a read-only connectivity check against the three
 drought tables before it starts the API. Run it from a normal PowerShell
 session with outbound network access; if the check fails, it stops before the
 dashboard can fill with repeated Supabase socket errors. The development API
-listens on `127.0.0.1:8000`.
+listens on `127.0.0.1:8001`.
 
 If starting from the `backend` directory, use the same guarded startup script:
 
@@ -44,7 +44,7 @@ npm install
 npm run dev
 ```
 
-Open the local Vite URL displayed in the terminal. The frontend proxies API requests to `http://127.0.0.1:8000`. Restart the frontend after changing proxy settings.
+Open the local Vite URL displayed in the terminal. The frontend proxies API requests to `http://127.0.0.1:8001`. Restart the frontend after changing proxy settings.
 
 ## Project layout
 
@@ -106,6 +106,19 @@ remove entries sooner; source errors are not cached. Change the TTL settings in
 `backend/.env` and restart the backend to apply them. Climate queries still
 retrieve all pages, with daily reads using bounded windows and annual tables using
 exact pagination checks.
+
+### Dashboard analysis reports
+
+Each main monitoring dashboard can generate a source-grounded report PDF with
+graphs, source notes, measurement units, selected area and period, findings and
+limitations. Reports query the connected dashboard service and keep each graph
+to a single indicator; missing values remain blank. Google Gemini analysis is
+optional and runs only on the backend. To enable it, add `GEMINI_API_KEY` and
+`GEMINI_MODEL=gemini-3.5-flash` to `backend/.env`, then restart the API.
+Never add the Gemini key to the frontend or commit the private `backend/.env`
+file. When Gemini is not available, reports clearly identify statistical
+analysis based on source observations. PDF downloads are held in backend memory
+for up to 30 minutes and are not stored as user records.
 The dashboard shows available years and flags selections shorter than 30 years
 and records that do not span the 1981–2010 temperature baseline.
 
@@ -194,7 +207,7 @@ remains selectable as the shared studio's default.
 Run RWQO checks from `backend` with
 `.\.venv\Scripts\python.exe -m unittest test_rwqo_service -v` and the read-only live
 audit with `.\.venv\Scripts\python.exe verify_rwqo_database.py`. Run
-`node verify-rwqo-browser.mjs` from `frontend` with the backend on port 8000 and
+`node verify-rwqo-browser.mjs` from `frontend` with the backend on port 8001 and
 frontend on port 5173. These checks generate evidence in
 [`output/rwqo-dashboard/`](output/rwqo-dashboard/); the implementation report is
 [`RWQO-Implementation.md`](output/rwqo-dashboard/RWQO-Implementation.md).
@@ -351,7 +364,7 @@ The read-only database schema audit is in
 Focused source aggregation checks run from `backend` with
 `.\.venv\Scripts\python.exe -m unittest test_water_services_service -v`;
 browser verification runs as `node verify-water-services-browser.mjs` from
-`frontend` with the backend and frontend listening on ports 8000 and 5173.
+`frontend` with the backend and frontend listening on ports 8001 and 5173.
 
 Both water quality dashboards include the shared **Forecasting Studio** below
 their charts. Select **Open forecasting studio**, choose National or a district,

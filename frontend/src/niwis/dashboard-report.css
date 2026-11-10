@@ -1,0 +1,62 @@
+.nw-report { margin: 0 0 18px; overflow: hidden; border: 1px solid #1c5269; border-radius: 11px; color: #e7f3f7; background: linear-gradient(130deg, #092942, #071e31 74%); box-shadow: 0 8px 22px #03132220; }
+.nw-report-banner { display: flex; align-items: center; gap: 13px; min-height: 76px; padding: 12px 17px; }
+.nw-report-icon { flex: 0 0 40px; width: 40px; height: 40px; display: grid; place-items: center; color: #9be4d2; background: #123b50; border: 1px solid #24586b; border-radius: 8px; }
+.nw-report-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.nw-report-kicker { color: #8dcfc5; font-size: 8px; font-weight: 750; letter-spacing: .14em; }
+.nw-report-copy strong { font-size: 13px; font-weight: 650; color: #f0f7f9; }
+.nw-report-copy small { color: #9cb8c5; font-size: 10px; }
+.nw-report-open { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 37px; padding: 8px 13px; border: 1px solid #347381; border-radius: 6px; background: #10384a; color: #c6f2e6; font-size: 11px; font-weight: 650; }
+.nw-report-open:hover { background: #16485a; border-color: #65b3ae; }
+.nw-report-builder { border-top: 1px solid #1a475d; padding: 16px 18px 15px; }
+.nw-report-intro { max-width: 850px; color: #aac1cc; font-size: 11px; line-height: 1.75; margin: 0 0 14px; }
+.nw-report-form { display: grid; grid-template-columns: repeat(4, minmax(130px, 1fr)); gap: 12px; align-items: end; }
+.nw-report-form label { display: grid; gap: 6px; color: #d5e8ed; font-size: 10px; font-weight: 600; align-items: stretch; }
+.nw-report-form label small { color: #92abb7; font-size: 9px; font-weight: 400; line-height: 1.5; }
+.nw-report-form :is(input, select) { width: 100%; min-width: 0; min-height: 37px; padding: 8px 10px; border: 1px solid #34576a; border-radius: 5px; color: #ecf6f8; background: #0b2a40; font-size: 11px; }
+.nw-report-form :is(input, select)::placeholder { color: #90a9b6; }
+.nw-report-form :is(input, select):focus-visible { outline: 2px solid #66ceb9; outline-offset: 2px; }
+.nw-report-submit-wrap { display: flex; align-items: end; }
+.nw-report-submit { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; width: 100%; padding: 8px 13px; border: 1px solid #86d8c4; border-radius: 5px; background: #8adcc7; color: #07333a; font-size: 10px; font-weight: 750; }
+.nw-report-submit:hover:not(:disabled) { background: #a9edda; border-color: #a9edda; }
+.nw-report-submit:disabled { color: #8ca4af; background: #294657; border-color: #38576a; cursor: wait; }
+.nw-report-progress { display: flex; align-items: center; gap: 8px; color: #b2d2d5; font-size: 10px; margin: 12px 0 0; }
+.nw-report-spin { animation: nw-report-rotate 1.2s linear infinite; }
+@keyframes nw-report-rotate { to { transform: rotate(360deg); } }
+.nw-report-error { display: flex; align-items: center; gap: 10px; padding: 12px; margin-top: 12px; border: 1px solid #844f49; border-radius: 6px; color: #ffd1c4; background: #402623; font-size: 11px; }
+.nw-report-error > div { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.nw-report-error > div span { color: #e8b7aa; line-height: 1.5; }
+.nw-report-error button { min-height: 31px; padding: 5px 10px; border: 1px solid #a46b61; border-radius: 5px; color: #ffe4db; font-size: 10px; }
+.nw-report-result { margin-top: 14px; padding: 15px 16px 12px; border: 1px solid #2a5c63; border-radius: 7px; background: #0b2d3b; }
+.nw-report-result-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #99b9bf; font-size: 9px; }
+.nw-report-success { display: inline-flex; align-items: center; gap: 6px; color: #9be4c8; font-weight: 650; }
+.nw-report-result > h3 { color: #edf7f7; margin: 10px 0 5px; font-size: 15px; }
+.nw-report-summary { max-width: 890px; color: #b6cdd2; font-size: 11px; line-height: 1.75; }
+.nw-report-period { margin: 8px 0 0; color: #9fd7cc; font-size: 10px; line-height: 1.6; }
+.nw-report-ai, .nw-report-notice { display: flex; align-items: flex-start; gap: 7px; margin-top: 10px; color: #b3e4d3; font-size: 10px; line-height: 1.6; }
+.nw-report-notice { color: #ffddad; }
+.nw-report-findings { margin-top: 13px; color: #d9ecec; font-size: 10px; }
+.nw-report-findings ul, .nw-report-limits ul { display: grid; gap: 6px; margin: 7px 0 0; padding-left: 18px; color: #afc5cd; line-height: 1.6; }
+.nw-report-limits { margin-top: 11px; color: #b9ced3; font-size: 10px; }
+.nw-report-limits summary { cursor: pointer; color: #a2d9ce; }
+.nw-report-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #254e5c; margin-top: 13px; padding-top: 11px; color: #a8c0c7; font-size: 9px; }
+.nw-report-bottom button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 35px; padding: 7px 12px; border: 1px solid #80cbb9; border-radius: 5px; color: #d5f8ed; background: #10493f; font-size: 10px; font-weight: 650; }
+.nw-report-bottom button:hover:not(:disabled) { background: #176052; }
+.nw-report-bottom button:disabled { opacity: .7; cursor: wait; }
+.nw-report-download-error { color: #ffc2ad; font-size: 10px; margin: 9px 0 0; }
+.nw-report-privacy { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; color: #8eaab4; font-size: 9px; line-height: 1.6; }
+.nw-report-privacy svg { margin-top: 1px; color: #90bdb9; }
+@media (max-width: 900px) { .nw-report-form { grid-template-columns: repeat(2, minmax(125px, 1fr)); } }
+@media (max-width: 580px) {
+  .nw-report-banner { gap: 10px; padding-inline: 12px; }
+  .nw-report-icon { width: 35px; height: 35px; flex-basis: 35px; }
+  .nw-report-copy strong { font-size: 11px; }
+  .nw-report-copy small { font-size: 9px; line-height: 1.5; }
+  .nw-report-open { padding: 8px; font-size: 0; }
+  .nw-report-open svg { width: 17px; height: 17px; }
+  .nw-report-builder { padding: 14px 12px; }
+  .nw-report-form { grid-template-columns: 1fr; }
+  .nw-report-submit-wrap { grid-column: 1; }
+  .nw-report-bottom { align-items: flex-start; flex-direction: column; }
+  .nw-report-bottom button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .nw-report-spin { animation-duration: 2.4s; } }

@@ -320,6 +320,10 @@ body.nw-body{margin:0;background:#0C1A22}
 .nw-logo{width:160px;height:90px;object-fit:contain;border-radius:9px;background:#fff;flex:none}.nw-brand{gap:10px;flex:none}
 /* Department of Water and Sanitation wordmark: keep it large enough to read in the header. */
 .nw-logo-topbar{width:144px;height:82px;border-radius:6px;padding:2px}
+.nw .nw-brand-home{color:var(--text);text-decoration:none}
+.nw .nw-home-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;color:var(--text-dim);text-decoration:none;white-space:nowrap}
+.nw .nw-home-link:hover{color:var(--text);border-color:var(--river);background:var(--ink-3)}
+@media(max-width:760px){.nw .nw-home-link{width:44px;flex:none;padding:8px}.nw .nw-home-link span{display:none}}
 .nw-topbar{height:96px}
 .nw-nav{max-height:calc(100vh - 96px);top:96px}
 @media(max-width:760px){.nw-logo-topbar{width:108px;height:62px}.nw-topbar{height:78px;gap:10px;padding:0 12px}.nw-nav{max-height:calc(100vh - 78px);top:78px}}

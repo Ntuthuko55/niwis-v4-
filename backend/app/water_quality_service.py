@@ -277,11 +277,16 @@ def metadata():
 
 
 @router.get("/dashboard")
-def dashboard(region: str = "National", start: int = 2000, end: int = 2026):
+def dashboard(region: str = "National", start: int = 2000, end: int = 2026, include_map: bool = True):
     try:
         snapshot, meta = _snapshot(), _metadata(); monthly = _load_monthly(snapshot, start, end); start_year, end_year = _validate(monthly, region, start, end); metrics = list(METRICS); scoped = monthly if region == "National" else monthly[monthly.district_name.eq(region)]; selected = scoped[scoped.year.between(start_year, end_year)]
         if selected.empty: raise HTTPException(422, "No water-quality observations fall within this period.")
-        annual = _annual(selected, metrics); latest = annual.iloc[-1].to_dict(); map_period = monthly[monthly.year.eq(end_year)]; available = [key for key in metrics if key in map_period]; district_map = map_period.groupby(["district_name"], as_index=False)[available].mean()
+        annual = _annual(selected, metrics); latest = annual.iloc[-1].to_dict()
+        if include_map:
+            map_period = monthly[monthly.year.eq(end_year)]; available = [key for key in metrics if key in map_period]
+            district_map = map_period.groupby(["district_name"], as_index=False)[available].mean()
+        else:
+            district_map = pd.DataFrame(columns=["district_name", *metrics])
         warnings = ["The Supabase relations contain district-level monthly values, not station IDs, coordinates or a sampling-site inventory.", "The source rows do not include a network-type field separating surface water, groundwater and drinking water; the dashboard reports the supplied district aggregates.", "SANSA columns are remote-sensing proxies and are kept separate from laboratory and in-situ measurements.", "No SANS 241, ecological-status or DWS threshold classification is imposed because threshold metadata is not present in the source relations."]
         return _clean({"source": "Supabase", "source_tables": meta["source_tables"], "region": region, "start": start_year, "end": end_year, "series": annual.to_dict("records"), "latest": latest, "map": district_map.to_dict("records"), "warnings": warnings, "variables": metrics, "source_coverage": {"first_date": meta["first_date"], "last_date": meta["last_date"], "districts": len(meta["regions"])}, "quality": {"missing_values": int(selected[metrics].isna().sum().sum()), "rows": int(len(selected)), "map_year": end_year, "complete_rows": int(selected[metrics].notna().all(axis=1).sum())}})
     except HTTPException: raise

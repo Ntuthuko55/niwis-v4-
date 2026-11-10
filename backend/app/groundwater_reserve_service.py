@@ -350,12 +350,12 @@ def metadata():
 
 
 @router.get("/dashboard")
-def dashboard(region: str = "National", start: int = 2000, end: int = 2026):
+def dashboard(region: str = "National", start: int = 2000, end: int = 2026, include_map: bool = True):
     try:
         snapshot, meta = _snapshot(), _metadata(); monthly = _load_monthly(snapshot, start, end); start_year, end_year = _validate(monthly, region, start, end)
         scoped = monthly if region == "National" else monthly[monthly.district_name.eq(region)]; period = scoped[scoped.year.between(start_year, end_year)]
         if period.empty: raise HTTPException(422, "No groundwater reserve observations fall within this period.")
-        metrics = list(METRICS); annual = _annual(period, metrics); latest = annual.iloc[-1].to_dict(); maps = _map_rows(monthly, end_year)
+        metrics = list(METRICS); annual = _annual(period, metrics); latest = annual.iloc[-1].to_dict(); maps = _map_rows(monthly, end_year) if include_map else pd.DataFrame()
         warnings = ["Section 11 Supabase relations contain district-level monthly values, not borehole identifiers, coordinates or a station inventory.", "Static reserve and dynamic reserve are supplied indicators. The ecological reserve is not present as a source field.", "Change in storage is derived from month-to-month water-table depth, aquifer area and the supplied storage coefficient; the first observation for each district has no storage-change value."]
         return _clean({"source": "Supabase", "source_tables": meta["source_tables"], "region": region, "start": start_year, "end": end_year, "series": annual.to_dict("records"), "latest": latest, "map": maps.to_dict("records"), "warnings": warnings, "variables": metrics, "source_coverage": {"first_date": meta["first_date"], "last_date": meta["last_date"], "districts": len(meta["regions"])}, "quality": {"missing_values": int(period[metrics].isna().sum().sum()), "rows": int(len(period)), "map_year": end_year}})
     except HTTPException: raise

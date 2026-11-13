@@ -130,10 +130,9 @@ export default function WaterQuantityAssessment({ section = null }) {
   const [meta, setMeta] = useState(null), [result, setResult] = useState(null), [features, setFeatures] = useState([])
   const [draft, setDraft] = useState({ region: 'National', start: '', end: '' }), [applied, setApplied] = useState(null)
   const [loading, setLoading] = useState(true), [error, setError] = useState(''), [mapError, setMapError] = useState(''), [retry, setRetry] = useState(0)
-  const [mapKey, setMapKey] = useState('donor_storage'), [mapPeriod, setMapPeriod] = useState('')
+  const [mapKey, setMapKey] = useState('donor_storage'), [diagramPeriod, setDiagramPeriod] = useState('')
   const [mapSelectionNotice, setMapSelectionNotice] = useState('')
-  const [mapScope, setMapScope] = useState('transfers'), [balanceMapKey, setBalanceMapKey] = useState('reported_balance'), [balanceMapPeriod, setBalanceMapPeriod] = useState('')
-  useEffect(() => { if (section === 'transfers' || section === 'balance') setMapScope(section) }, [section])
+  const [balanceMapKey, setBalanceMapKey] = useState('reported_balance')
 
   useEffect(() => {
     const controller = new AbortController()
@@ -162,7 +161,7 @@ export default function WaterQuantityAssessment({ section = null }) {
 
   const mapMetric = meta?.transfer_indicators.find(item => item.key === mapKey)
   const mapPeriods = result?.transfers.map_periods || []
-  const activeMapPeriod = mapPeriods.includes(mapPeriod) ? mapPeriod : result?.transfers.map_period
+  const activeMapPeriod = result?.transfers.map_period
   const mapRows = result?.transfers.map_history?.[activeMapPeriod] || result?.transfers.map || []
   const mapValues = useMemo(() => Object.fromEntries(mapRows.map(row => [normaliseDistrictName(row.district_name), row])), [mapRows])
   const mapScale = useMemo(() => buildDistrictMapScale(mapRows, mapKey, mapMetric?.label, mapMetric?.unit, value => format(value), features.length), [mapRows, mapKey, mapMetric, features.length])
@@ -171,11 +170,12 @@ export default function WaterQuantityAssessment({ section = null }) {
     if (district) { setMapSelectionNotice(''); const next = { ...applied, region: district }; setDraft(next); setApplied(next) }
     else setMapSelectionNotice(`No transfer records are supplied for ${name}. Select a covered district to filter the charts.`)
   }
-  const transferAtMapPeriod = result?.transfers.monthly.find(row => row.period === activeMapPeriod) || result?.transfers.latest || {}
+  const activeDiagramPeriod = mapPeriods.includes(diagramPeriod) ? diagramPeriod : result?.transfers.map_period
+  const transferAtMapPeriod = result?.transfers.monthly.find(row => row.period === activeDiagramPeriod) || result?.transfers.latest || {}
   const latestBalance = result?.balance.latest || {}
+  const activeMapScope = section === 'balance' ? 'balance' : 'transfers'
   const balanceMapMetric = meta?.balance_indicators.find(item => item.key === balanceMapKey) || meta?.balance_indicators[0]
-  const balanceMapPeriods = (result?.balance.monthly || []).map(row => row.period)
-  const activeBalanceMapPeriod = balanceMapPeriods.includes(balanceMapPeriod) ? balanceMapPeriod : result?.balance.latest_period
+  const activeBalanceMapPeriod = result?.balance.latest_period
   const balanceMapObservation = result?.balance.monthly.find(row => row.period === activeBalanceMapPeriod) || {}
   const storageRows = (result?.balance.monthly || []).filter(row => valid(row.surface_storage))
   const previousStorage = storageRows.length > 1 ? storageRows[storageRows.length - 2] : null
@@ -214,13 +214,10 @@ export default function WaterQuantityAssessment({ section = null }) {
         })}</div>
       </section>}
 
-      <div className="rq-filters" aria-label="Water quantity geographic controls">
-        {!section && <label className="rq-region">Geographic source<select aria-label="Water quantity map source" value={mapScope} onChange={event => setMapScope(event.target.value)}><option value="transfers">Water transfers | reporting districts</option><option value="balance">National water balance</option></select></label>}
-        {mapScope === 'balance' && <label>Reporting month<select aria-label="National balance map reporting month" value={activeBalanceMapPeriod || ''} onChange={event => setBalanceMapPeriod(event.target.value)}>{balanceMapPeriods.map(period => <option key={period} value={period}>{periodLabel(period)}</option>)}</select></label>}
-      </div>
-      {mapScope === 'transfers' ? <Panel title="District source coverage map" subtitle={periodLabel(activeMapPeriod) + ' · selected transfer measure by reporting district'}>
-            <div className="rq-chart-controls wq-map-controls"><label className="rq-picker">District measure<select aria-label="District map measure" value={mapKey} onChange={event => setMapKey(event.target.value)}>{meta.transfer_indicators.map(item => <option key={item.key} value={item.key}>{item.label} ({item.unit})</option>)}</select></label><label className="rq-picker">Reporting month<select aria-label="District map reporting month" value={activeMapPeriod || ''} onChange={event => setMapPeriod(event.target.value)}>{mapPeriods.map(period => <option key={period} value={period}>{periodLabel(period)}</option>)}</select></label></div>
-            <DistrictMap districts={features.length ? features : undefined} values={mapValues} valueKey={mapKey} selected={result.region} onSelect={selectDistrict} colorFn={mapScale.color} legend={mapScale.legend} valueLabel={mapMetric.label} valueUnit={mapMetric.unit} formatValue={value => format(value)} />
+
+      {activeMapScope === 'transfers' ? <Panel title="District source coverage map" subtitle={periodLabel(activeMapPeriod) + ' · selected transfer measure by reporting district'}>
+
+            <DistrictMap districts={features.length ? features : undefined} values={mapValues} valueKey={mapKey} indicatorOptions={meta.transfer_indicators} indicatorValue={mapKey} onIndicatorChange={setMapKey} selected={result.region} onSelect={selectDistrict} colorFn={mapScale.color} legend={mapScale.legend} valueLabel={mapMetric.label} valueUnit={mapMetric.unit} formatValue={value => format(value)} />
             <p className="rq-note"><MapPin size={12} />Colors show four equal-width value bands for the selected measure. Grey districts have no matching source value. This is district coverage, separate from the named system schematic above.</p>
             {mapSelectionNotice && <p className="rq-note wq-map-selection" role="status">{mapSelectionNotice}</p>}
             {result.region !== 'National' && <button className="rq-text-button" onClick={() => { const next = { ...applied, region: 'National' }; setDraft(next); setApplied(next) }}>Return to national district mean</button>}
@@ -228,10 +225,10 @@ export default function WaterQuantityAssessment({ section = null }) {
 
       <div className="wq-overview-grid">
         {section !== 'balance' && <>
-        <Panel title="Transfer systems — sources to Vaal" subtitle={periodLabel(activeMapPeriod) + ' · schematic route view from the supplied transfer records'} className="wq-transfer-panel">
+        <Panel title="Transfer systems — sources to Vaal" subtitle={periodLabel(activeDiagramPeriod) + ' · schematic route view from the supplied transfer records'} className="wq-transfer-panel">
           <div className="wq-basin-grid">
             <div className="wq-map-block">
-              <div className="rq-chart-controls wq-period-controls"><label className="rq-picker">Reported month<select aria-label="Transfer-system reporting month" value={activeMapPeriod || ''} onChange={event => setMapPeriod(event.target.value)}>{mapPeriods.map(period => <option key={period} value={period}>{periodLabel(period)}</option>)}</select></label></div>
+              <div className="rq-chart-controls wq-period-controls"><label className="rq-picker">Reported month<select aria-label="Transfer-system reporting month" value={activeDiagramPeriod || ''} onChange={event => setDiagramPeriod(event.target.value)}>{mapPeriods.map(period => <option key={period} value={period}>{periodLabel(period)}</option>)}</select></label></div>
               <TransferSystemDiagram metrics={meta.transfer_indicators.slice(0, 4)} values={transferAtMapPeriod} />
               <p className="rq-note"><MapPin size={12} />Schematic, not to geographic scale. Arrows show the named source-to-Vaal routes; colors identify each system and do not encode volume. Values come from the selected month’s database records.</p>
             </div>

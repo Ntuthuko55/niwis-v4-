@@ -1,10 +1,9 @@
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { useEffect, useMemo, useState } from 'react'
-import { Leaf, Sprout, HeartPulse, Droplets, Thermometer, CloudRain, Download, RefreshCw, MapPin, Info, ArrowUpRight, SlidersHorizontal } from 'lucide-react'
+import { Leaf, Sprout, HeartPulse, Droplets, Thermometer, CloudRain, Download, RefreshCw, MapPin, Info, ArrowUpRight } from 'lucide-react'
 import { ResponsiveContainer, ComposedChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, Cell } from 'recharts'
 import { DistrictMap, normaliseDistrictName, buildStandardizedIndexScale } from './DistrictMap'
 import LoadingProgress from './LoadingProgress'
-import MonitoringMapPanel from './MonitoringMapPanel'
 import { chartColor } from '../lib/chartTheme'
 import '../niwis/climate-dashboard.css'
 import '../niwis/vegetation-condition.css'
@@ -13,7 +12,6 @@ const NDVI = 'NDVI_10day_composite'
 const format = (value, digits = 2) => value == null || !Number.isFinite(value) ? '—' : value.toLocaleString('en-ZA', { minimumFractionDigits: digits, maximumFractionDigits: digits })
 const monthLabel = month => new Date(`${month}-15T12:00:00`).toLocaleDateString('en-ZA', { month: 'short', year: '2-digit' })
 const signed = value => value == null ? 'Unavailable' : `${value > 0 ? '+' : ''}${format(value)}`
-const DERIVED_MAP_PRODUCTS = { health_classification: 'National vegetation health classification', agricultural_early_warning: 'Agricultural drought early warning', land_degradation: 'Land degradation', rangeland: 'Rangeland and pasture condition', cover_change: 'Vegetation cover change' }
 const GROUPS = ['Greenness', 'Condition', 'Water content', 'Thermal', 'Moisture', 'Weather']
 const kpis = [[NDVI, 'Mean NDVI', Leaf, 'green'], ['VHI_percent', 'Vegetation health', HeartPulse, 'green'], ['VCI_percent', 'Vegetation condition', Sprout, 'mint'], ['ASI_percent', 'Agricultural stress', Leaf, 'amber'], ['NDWI', 'Canopy water index', Droplets, 'blue'], ['LST_Land_Surface_Temperature_C', 'Surface temperature', Thermometer, 'rose']]
 const METRIC_PRESENTATION = {
@@ -81,7 +79,7 @@ function metricScale(key) {
   return { min: -1, max: 1, colors: ['#abafa8', '#d7c387', '#e4cf65', '#8dbd54', '#198c4f'], unit: 'index' }
 }
 
-function VegMap({ features, values, metric, selected, onSelect }) {
+function VegMap({ features, values, metric, selected, onSelect, indicatorOptions, onMetricChange }) {
   const observations = Object.values(values).map(row => row?.[metric.key]).filter(value => typeof value === 'number' && Number.isFinite(value))
   const scale = metricScale(metric.key)
   if (metric.category === 'Weather') {
@@ -93,7 +91,7 @@ function VegMap({ features, values, metric, selected, onSelect }) {
   const standardized = /^(SPI_|SPEI_)/.test(metric.key) ? buildStandardizedIndexScale(metric.label) : null
   const color = standardized?.color || (v => scale.colors[Math.min(4, Math.max(0, Math.floor((v - scale.min) / (scale.max - scale.min) * 5)))])
   const items = Array.from({ length: 5 }, (_, i) => [format(scale.max - (scale.max - scale.min) * i / 4, scale.max > 3 ? 0 : 2), i === 0 ? 'Higher values' : i === 4 ? 'Lower values' : ''])
-  return <div className="vg-map"><DistrictMap districts={features} values={values} valueKey={metric.key} valueLabel={metric.label} valueUnit={metric.unit} colorFn={color} selected={selected} onSelect={onSelect} mapId="vegetation-main" legend={standardized?.legend || { title: `${metric.label} (${metric.unit})`, gradient: `linear-gradient(180deg, ${[...scale.colors].reverse().join(',')})`, items }} /></div>
+  return <div className="vg-map"><DistrictMap districts={features} values={values} valueKey={metric.key} valueLabel={metric.label} valueUnit={metric.unit} indicatorOptions={indicatorOptions} indicatorValue={metric.key} onIndicatorChange={onMetricChange} colorFn={color} selected={selected} onSelect={onSelect} mapId="vegetation-main" legend={standardized?.legend || { title: `${metric.label} (${metric.unit})`, gradient: `linear-gradient(180deg, ${[...scale.colors].reverse().join(',')})`, items }} /></div>
 }
 
 export default function VegetationCondition({ section = null }) {
@@ -103,14 +101,13 @@ export default function VegetationCondition({ section = null }) {
   const [features, setFeatures] = useState([]), [mapError, setMapError] = useState('')
   const [periodMapLoading, setPeriodMapLoading] = useState(false), [periodMapError, setPeriodMapError] = useState('')
   const [monthResult, setMonthResult] = useState(null), [monthLoading, setMonthLoading] = useState(false), [monthError, setMonthError] = useState(''), [mapRetry, setMapRetry] = useState(0)
-  const [mapProduct, setMapProduct] = useState('observations')
   const [metricKey, setMetricKey] = useState(NDVI), [compare, setCompare] = useState(true)
   const [waterKey, setWaterKey] = useState('NDWI'), [weatherKey, setWeatherKey] = useState('Monthly_Rainfall_mm')
   const [rankOrder, setRankOrder] = useState('highest'), [register, setRegister] = useState('Greenness')
   const [weatherMapResult, setWeatherMapResult] = useState(null), [weatherMapLoading, setWeatherMapLoading] = useState(false), [weatherMapError, setWeatherMapError] = useState('')
   const scopedMetrics = (meta?.metrics || []).filter(item => section === 'satellite' ? item.category !== 'Weather' : section === 'meteorological' ? item.category === 'Weather' : section === 'derived' ? item.category === 'Condition' : true)
   const activeMetricKey = scopedMetrics.some(item => item.key === metricKey) ? metricKey : scopedMetrics[0]?.key || metricKey
-  const weatherMapIndicator = mapProduct === 'observations' && meta?.metrics.find(item => item.key === activeMetricKey)?.category === 'Weather' ? activeMetricKey : ''
+  const weatherMapIndicator = meta?.metrics.find(item => item.key === activeMetricKey)?.category === 'Weather' ? activeMetricKey : ''
   useEffect(() => {
     const sections = {
       satellite: { metric: NDVI, register: 'All satellite' },
@@ -118,10 +115,9 @@ export default function VegetationCondition({ section = null }) {
       derived: { metric: 'VCI_percent', register: 'Condition' },
     }
     const selection = sections[section]
-    if (!selection) { setMetricKey(NDVI); setRegister('Greenness'); setMapProduct('observations'); return }
+    if (!selection) { setMetricKey(NDVI); setRegister('Greenness'); return }
     setMetricKey(selection.metric)
     setRegister(selection.register)
-    setMapProduct('observations')
   }, [section])
   useEffect(() => {
     const controller = new AbortController(); setLoading(true); setError('')
@@ -192,7 +188,7 @@ export default function VegetationCondition({ section = null }) {
   const mapPeriod = effectiveMapMonth ? monthLabel(effectiveMapMonth) : applied ? `${monthLabel(applied.start)} – ${monthLabel(applied.end)}` : ''
   const mapStatus = mapError || mapDataError
   const mapPanel = <Panel title={`${section === 'meteorological' ? 'SAWS driver map' : section === 'derived' ? 'Vegetation condition map' : 'Vegetation across South Africa'}`} note={`${effectiveMapMonth ? 'Monthly' : 'Selected-period'} district means`} className="vg-main-map">
-    <div className="vg-map-layout"><div className="vg-layer-picker"><h3><SlidersHorizontal size={12} /> Map layers</h3><label>Map period<select aria-label="Vegetation map month" value={effectiveMapMonth} onChange={event => setMapMonth(event.target.value)}><option value="">Selected period</option>{(meta?.months || []).filter(month => month >= applied?.start && month <= applied?.end).map(month => <option key={month}>{month}</option>)}</select></label>{!section && <label>Map product<select aria-label="Vegetation map product" value={mapProduct} onChange={event => setMapProduct(event.target.value)}><option value="observations">Monitoring indicators</option><optgroup label="Derived products · unavailable">{Object.entries(DERIVED_MAP_PRODUCTS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</optgroup></select></label>}<label>{section === 'meteorological' ? 'SAWS driver' : section === 'derived' ? 'Condition indicator' : 'Vegetation indicator'}<select aria-label="Vegetation map indicator" value={activeMetricKey} disabled={mapProduct !== 'observations'} onChange={event => { setMetricKey(event.target.value); if (meta?.metrics.find(item => item.key === event.target.value)?.category === 'Weather') setWeatherKey(event.target.value) }}>{GROUPS.map(group => { const items = scopedMetrics.filter(item => item.category === group); return items.length ? <optgroup key={group} label={group}>{items.map(item => <option key={item.key} value={item.key}>{item.label} ({item.unit})</option>)}</optgroup> : null })}</select></label><small>{section ? 'District-level observations for this section' : 'District aggregates · select one indicator layer'}</small></div><div className="vg-map-body"><div className="vg-map-title"><strong>{mapProduct === 'observations' ? metric.label : DERIVED_MAP_PRODUCTS[mapProduct]}</strong><span>{mapProduct === 'observations' ? metric.description : 'Geographic product unavailable'} · {mapPeriod}</span></div>{mapStatus && <div className="vg-error" role="alert">{mapStatus}{mapDataError && <button onClick={() => setMapRetry(value => value + 1)}>Retry map</button>}</div>}{mapLoading && <LoadingProgress message="Loading national vegetation map" />}{mapProduct === 'observations' ? <VegMap features={features} values={mapStatus || mapLoading ? {} : values} metric={metric} selected={applied?.region} onSelect={selectRegion} /> : <MonitoringMapPanel title={DERIVED_MAP_PRODUCTS[mapProduct]} description="Vegetation monitoring derived products" features={features} period={mapPeriod} geographyAvailable={false} noDataReason="This derived geographic product is unavailable in the connected vegetation sources. District boundaries remain available for reference; source vegetation indices are available under Monitoring indicators. No classification or land-cover change has been inferred." />}<p className="vg-map-caption"><MapPin size={12} /> Click a district to update all charts</p></div></div>
+    <div className="vg-map-layout"><div className="vg-map-body"><div className="vg-map-title"><strong>{metric.label}</strong><span>{metric.description} · {mapPeriod}</span></div>{mapStatus && <div className="vg-error" role="alert">{mapStatus}{mapDataError && <button onClick={() => setMapRetry(value => value + 1)}>Retry map</button>}</div>}{mapLoading && <LoadingProgress message="Loading national vegetation map" />}<VegMap features={features} values={mapStatus || mapLoading ? {} : values} metric={metric} indicatorOptions={scopedMetrics} onMetricChange={key => { setMetricKey(key); if (catalogue[key]?.category === 'Weather') setWeatherKey(key) }} selected={applied?.region} onSelect={selectRegion} /><p className="vg-map-caption"><MapPin size={12} /> Click a district to update all charts</p></div></div>
   </Panel>
   if (section) return <div className="vegetation-dashboard vegetation-section-dashboard">
     <div className="vg-heading"><div className="vg-heading-mark"><Leaf size={30} /></div><div><span className="vg-eyebrow">NIWIS / EARTH OBSERVATION</span><h1>Vegetation Condition Monitoring</h1><p>{section === 'satellite' ? 'Primary Satellite Vegetation' : section === 'meteorological' ? 'Meteorological Drivers (SAWS)' : 'Vegetation Monitoring Derived Products'}</p></div><button className="vg-download" onClick={download} disabled={!result || loading}><Download size={15} /> Download data</button></div>
@@ -237,7 +233,7 @@ export default function VegetationCondition({ section = null }) {
       <div className="vg-kpis">{kpis.map(([key, label, Icon, theme]) => <div className={`vg-kpi ${theme}`} key={key}><div className="vg-kpi-top"><span className="vg-kpi-icon"><Icon size={23} /></span><div><span>{label}</span><strong>{format(result.summary[key], key === NDVI || key === 'NDWI' ? 2 : 1)}<small>{catalogue[key].unit === 'index' ? '' : catalogue[key].unit}</small></strong></div></div><div className="vg-kpi-change">{compare ? <><b>{signed(result.deltas[key].difference)} {catalogue[key].unit === '%' ? 'pp' : catalogue[key].unit === 'index' ? '' : catalogue[key].unit}</b><span>vs same months last year · {result.deltas[key].paired_months} pairs</span></> : <span>Selected-period mean</span>}</div><Plot data={series} lines={[{ key, label, color: theme === 'amber' ? '#d59a43' : theme === 'rose' ? '#e28a78' : theme === 'blue' ? '#419ec0' : '#30a16b' }]} height={36} spark /></div>)}</div>
       <div className="vg-top-grid">
         {mapPanel}
-        <div className="vg-chart-stack"><Panel title="Vegetation index trends" note={period}><div className="vg-tabs" role="group" aria-label="Vegetation trend indicator">{[NDVI, 'VCI_percent', 'VHI_percent', 'SAVI', 'EVI'].map(key => <button key={key} aria-pressed={key === metricKey} onClick={() => { setMetricKey(key); setMapProduct('observations') }}>{catalogue[key].label}</button>)}</div><p className="vg-chart-caption">{metric.description} · {metric.unit}</p><Plot data={series} unit={metric.unit} height={185} band={metricKey === NDVI} lines={[{ key: metricKey, label: `${metric.label} current`, color: '#17845e' }, ...(compare ? [{ key: `${metricKey}_previous`, label: 'Same month previous year', color: '#75b582', dash: '4 3' }] : []), ...(metricKey === NDVI ? [{ key: 'ndvi_baseline', label: 'Prior 5-year mean', color: '#799986', dash: '2 4' }] : [])]} /></Panel><Panel title="NDVI departure from seasonal history" note="Same calendar month · previous 5 years"><Plot data={series} bars unit="%" height={165} lines={[{ key: 'ndvi_anomaly_percent', label: 'NDVI anomaly (%)', color: '#32a67a' }]} /><p className="vg-footnote">At least 3 complete historical months required. Band above is historical min–max, not forecast uncertainty.</p></Panel></div>
+        <div className="vg-chart-stack"><Panel title="Vegetation index trends" note={period}><div className="vg-tabs" role="group" aria-label="Vegetation trend indicator">{[NDVI, 'VCI_percent', 'VHI_percent', 'SAVI', 'EVI'].map(key => <button key={key} aria-pressed={key === metricKey} onClick={() => setMetricKey(key)}>{catalogue[key].label}</button>)}</div><p className="vg-chart-caption">{metric.description} · {metric.unit}</p><Plot data={series} unit={metric.unit} height={185} band={metricKey === NDVI} lines={[{ key: metricKey, label: `${metric.label} current`, color: '#17845e' }, ...(compare ? [{ key: `${metricKey}_previous`, label: 'Same month previous year', color: '#75b582', dash: '4 3' }] : []), ...(metricKey === NDVI ? [{ key: 'ndvi_baseline', label: 'Prior 5-year mean', color: '#799986', dash: '2 4' }] : [])]} /></Panel><Panel title="NDVI departure from seasonal history" note="Same calendar month · previous 5 years"><Plot data={series} bars unit="%" height={165} lines={[{ key: 'ndvi_anomaly_percent', label: 'NDVI anomaly (%)', color: '#32a67a' }]} /><p className="vg-footnote">At least 3 complete historical months required. Band above is historical min–max, not forecast uncertainty.</p></Panel></div>
         <div className="vg-chart-stack"><Panel title="District vegetation health" note="Ranked by period-mean VHI"><div className="vg-tabs"><button aria-pressed={rankOrder === 'highest'} onClick={() => setRankOrder('highest')}>Highest five</button><button aria-pressed={rankOrder === 'lowest'} onClick={() => setRankOrder('lowest')}>Lowest five</button></div><div className="vg-ranking">{periodMapLoading && <p role="status">Loading district ranking...</p>}{periodMapError && <p role="alert">{periodMapError}</p>}{ranking.map((row, index) => <button key={row.District_Name} onClick={() => selectRegion(row.District_Name)}><span className="vg-rank-number">{index + 1}</span><span className="vg-rank-name">{row.District_Name}<i><b style={{ width: `${Math.max(0, Math.min(100, row.VHI_percent))}%` }} /></i></span><strong>{format(row.VHI_percent, 1)}<small>VHI</small></strong></button>)}</div></Panel><Panel title="What the observations show" className="vg-insight"><ArrowUpRight size={20} /><strong>{format(result.ndvi_anomaly_percent, 1)}%</strong><p>Mean monthly NDVI departure from its preceding five-year seasonal reference, across {result.anomaly_months} eligible months.</p><div><Info size={14} /><span>VCI/VHI percentages are index values, not the percentage of South Africa’s land that is healthy.</span></div></Panel></div>
       </div>
       <div className="vg-bottom-grid">

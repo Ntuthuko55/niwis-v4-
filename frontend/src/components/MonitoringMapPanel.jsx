@@ -20,9 +20,8 @@ export default function MonitoringMapPanel({
   const changeIndicator = key => { setLocalIndicator(key); onIndicatorChange?.(key) }
   return <section className="monitoring-map-panel" aria-label={title}>
     <header><div><span className="monitoring-map-eyebrow"><MapPin size={13} /> Geographic monitoring</span><h2>{title}</h2>{description && <p>{description}</p>}</div>{period && <span className="monitoring-map-period">{period}</span>}</header>
-    {indicators.length > 0 && <label className="monitoring-map-indicator">Map indicator<select aria-label={`${title} indicator`} value={metric.key} onChange={event => changeIndicator(event.target.value)}>{indicators.map(item => <option key={item.key} value={item.key}>{item.label}{item.unit ? ` (${item.unit})` : ''}</option>)}</select></label>}
     {noDataReason && <p className="monitoring-map-source-state" role="status">{noDataReason}</p>}
-    <DistrictMap districts={features} values={values} valueKey={metric.key} valueLabel={metric.label} valueUnit={metric.unit} colorFn={scale.color} legend={scale.legend} selected={geographyAvailable && onSelect ? selected : inspected} onSelect={name => { setInspected(name); if (geographyAvailable) onSelect?.(name) }} mapId={title} />
+    <DistrictMap districts={features} values={values} valueKey={metric.key} valueLabel={metric.label} valueUnit={metric.unit} indicatorOptions={indicators} indicatorValue={metric.key} onIndicatorChange={changeIndicator} colorFn={scale.color} legend={scale.legend} selected={geographyAvailable && onSelect ? selected : inspected} onSelect={name => { setInspected(name); if (geographyAvailable) onSelect?.(name) }} mapId={title} />
     {!geographyAvailable && <p className="monitoring-map-note">Boundaries provide geographic reference only. Selecting a district inspects its boundary; the source filters above control the available observations. No regional measurements have been inferred.</p>}
   </section>
 }

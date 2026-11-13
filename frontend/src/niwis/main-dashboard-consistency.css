@@ -1,0 +1,110 @@
+/*
+ * Keep the module overview pages visually predictable as people move between
+ * dashboards. Topic views are marked separately by NIWISPortal and never
+ * receive these presentation rules.
+ */
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] > :is(
+  .rainfall-dashboard[data-section="all"],
+  .climate-dashboard:not(.cl-section-dashboard),
+  .vegetation-dashboard:not(.vegetation-section-dashboard),
+  .dm-dashboard,
+  .rwqo-dashboard,
+  .municipal-tariffs-dashboard
+) {
+  width: 100%;
+  max-width: 2000px;
+  min-width: 0;
+  margin-inline: auto;
+}
+
+/* Rainfall Status is the reference for the shared overview heading scale. */
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+  .rf-heading, .cl-heading, .vg-heading, .dm-heading, .rq-heading, .mt-heading
+) {
+  min-width: 0;
+  margin-bottom: 18px;
+}
+
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+  .rf-heading h1, .cl-heading h1, .vg-heading h1,
+  .dm-heading h1, .rq-heading h1, .mt-heading h1
+) {
+  font-size: clamp(23px, 2vw, 28px);
+  line-height: 1.3;
+  letter-spacing: -0.55px;
+}
+
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+  .rf-heading-icon, .cl-title-icon, .vg-heading-mark, .rq-heading-icon
+) {
+  width: 53px;
+  height: 53px;
+  flex: 0 0 53px;
+  border-radius: 14px;
+}
+
+/* Filter rows use one shared size and surface while retaining their controls. */
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+  .rf-filters, .cl-filters, .vg-filters, .dm-controls, .rq-filters, .mt-controls
+) {
+  gap: 12px;
+  padding: 13px 15px;
+  margin-bottom: 14px;
+  border: 1px solid var(--dashboard-border);
+  border-radius: 9px;
+  background: var(--dashboard-surface);
+  color: var(--dashboard-text);
+}
+
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+  .rf-filters, .cl-filters, .vg-filters, .dm-controls, .rq-filters, .mt-controls
+) :is(select, input:not([type="checkbox"]), button) {
+  min-height: 35px;
+}
+
+/* Panels share the same frame; chart and map heights remain dashboard-owned. */
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+  .rf-panel, .cl-panel, .vg-panel, .dm-panel, .rq-panel, .mt-panel,
+  .ww-panel, .dw-panel
+) {
+  min-width: 0;
+  border-color: var(--dashboard-border);
+  border-radius: 10px;
+  box-shadow: var(--shadow, 0 4px 18px rgba(0, 0, 0, 0.12));
+}
+
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+  .rf-kpi, .cl-kpi, .vg-kpi, .dm-metric, .rq-kpi, .mt-kpi, .ww-kpi, .dw-kpi
+) {
+  min-width: 0;
+  border-color: var(--dashboard-border);
+  border-radius: 9px;
+}
+
+/* Shared spacing keeps each dashboard's information hierarchy easy to scan. */
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+  .rf-primary-grid, .rf-three-grid, .rf-daily-grid, .rf-analysis-grid,
+  .cl-primary-grid, .cl-detail-grid, .cl-bottom-grid,
+  .vg-top-grid, .vg-bottom-grid, .vg-weather-grid,
+  .dm-grid, .rq-primary-grid, .rq-three-grid, .rq-daily-grid
+) {
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+  button, input, select, textarea, [tabindex]
+):focus-visible {
+  outline: 3px solid #65acd0;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nw.nw-unified-theme .nw-dashboard-content[data-dashboard-scope="main"] :is(
+    .rf-panel, .cl-panel, .vg-panel, .dm-panel, .rq-panel, .mt-panel,
+    .ww-panel, .dw-panel, .rf-kpi, .cl-kpi, .vg-kpi, .dm-metric,
+    .rq-kpi, .mt-kpi, .ww-kpi, .dw-kpi
+  ) {
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
+}

@@ -9,7 +9,7 @@
 .municipal-tariffs-dashboard .mt-tabs{display:flex;gap:8px;overflow-x:auto;margin:0 0 13px;padding:3px 1px 8px}
 .municipal-tariffs-dashboard .mt-tabs button{flex:1;min-width:max-content;border:1px solid var(--mt-border);border-radius:7px;background:#0d293f;color:#afc9d9;padding:10px 14px;font:inherit;font-size:11px;cursor:pointer}
 .municipal-tariffs-dashboard .mt-tabs button[aria-pressed=true]{border-color:#47a997;background:#154b58;color:#e6fff8;box-shadow:inset 0 0 0 1px rgba(92,211,186,.15)}
-.municipal-tariffs-dashboard .mt-controls{display:grid;grid-template-columns:minmax(140px,.35fr) minmax(260px,.8fr) minmax(220px,1.2fr);align-items:end;gap:13px;margin:0 0 16px;padding:14px 16px;border:1px solid var(--mt-border);border-radius:10px;background:#0d293f}
+.municipal-tariffs-dashboard .mt-controls{display:grid;grid-template-columns:minmax(160px,.35fr) minmax(220px,1.2fr);align-items:end;gap:13px;margin:0 0 16px;padding:14px 16px;border:1px solid var(--mt-border);border-radius:10px;background:#0d293f}
 .municipal-tariffs-dashboard .mt-controls label,.municipal-tariffs-dashboard .mt-search{display:grid;gap:6px;color:#a8c4d5;font-size:10px}
 .municipal-tariffs-dashboard .mt-controls select,.municipal-tariffs-dashboard .mt-search input{width:100%;min-height:37px;border:1px solid #365b75;border-radius:6px;background:#0a2236;color:#e5f2fa;padding:8px 10px;font:inherit;font-size:11px}
 .municipal-tariffs-dashboard .mt-control-note{align-self:center;color:#91afc3;font-size:10px;line-height:1.6}

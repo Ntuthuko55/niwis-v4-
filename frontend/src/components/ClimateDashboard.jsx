@@ -177,12 +177,15 @@ export default function ClimateDashboard({ section = null }) {
     ['CDD_Days', 'Consecutive dry days', CalendarDays, 'sky'], ['Daily_ET0_mm', 'Reference ET₀', Wind, 'green'],
     ['Irrigation_Water_Demand_mm', 'Irrigation demand', Leaf, 'gold'], ['MAR_m3_year', 'Mean annual runoff', Waves, 'purple'],
   ]
+  const climateMapIndicators = section
+    ? (metadata?.metrics || []).filter(item => item.section === section)
+    : ['Tavg_C', 'MAP_mm', 'CDD_Days', 'Daily_ET0_mm', 'Irrigation_Water_Demand_mm', 'MAR_m3_year', 'LST_Day_C'].map(key => catalogue[key]).filter(Boolean)
 
   const mapContent = <>
     {mapError && <p className="cl-empty" role="status">The dashboard boundary request failed. The map will retry its shared boundary source.</p>}
     {mapDataError && <div className="cl-empty" role="alert">{mapDataError}<button type="button" onClick={() => setMapRetry(value => value + 1)}>Retry map</button></div>}
     {mapLoading && <LoadingProgress message="Loading the national climate map" />}
-    <DistrictMap districts={districts} values={mapDataError || mapLoading ? {} : mapValues} valueKey={mapKey} valueLabel={catalogue[mapKey]?.label || mapKey} valueUnit={catalogue[mapKey]?.unit} colorFn={mapScale.color} selected={applied?.region || result?.region} onSelect={selectDistrict} legend={mapScale.legend} />
+    <DistrictMap districts={districts} values={mapDataError || mapLoading ? {} : mapValues} valueKey={mapKey} valueLabel={catalogue[mapKey]?.label || mapKey} valueUnit={catalogue[mapKey]?.unit} indicatorOptions={climateMapIndicators} indicatorValue={mapKey} onIndicatorChange={selectMapMetric} colorFn={mapScale.color} selected={applied?.region || result?.region} onSelect={selectDistrict} legend={mapScale.legend} />
   </>
 
   return <div className={`climate-dashboard ${section ? 'cl-section-dashboard' : ''}`}>
@@ -219,10 +222,7 @@ export default function ClimateDashboard({ section = null }) {
     </div>}
     {result && <>
       {section && <ClimateSectionCharts section={section} catalogue={catalogue} result={result} monthlyResult={monthlyResult} map={<>
-        <div className="cl-map-controls">
-          <select aria-label="Climate map indicator" className="cl-map-selector" value={mapKey} onChange={e => selectMapMetric(e.target.value)}>{metadata.metrics.filter(m => m.section === section).map(m => <option key={m.key} value={m.key}>{m.label} ({m.unit})</option>)}</select>
-          <label>Map month<select aria-label="Climate map month" value={mapMonth} onChange={e => setMapMonth(e.target.value)}>{((metadata?.daily_months?.length ? metadata.daily_months : (metadata?.months?.length ? metadata.months : monthlyResult?.months)) || []).filter(value => value >= applied.start && value <= applied.end).map(value => <option key={value}>{value}</option>)}</select></label>
-        </div>
+
         {mapContent}
         <div className="cl-map-note">{monthlyMetric ? (dateMetric ? `Map shows source observations for ${mapResult?.map_date || mapResult?.map_month || mapMonth}.` : `Annual source values matched to source year ${String(mapResult?.map_month || mapMonth).slice(0, 4)}.`) : 'This indicator is unavailable in the source-date map.'} Use the region filter or select a district on the map.</div>
       </>} />}
@@ -232,10 +232,7 @@ export default function ClimateDashboard({ section = null }) {
       <div className="cl-kpis">{kpis.map(([key, label, Icon, theme]) => <div className={`cl-kpi ${theme}`} key={key}><Icon size={27} /><div><span>{label}</span><strong>{key === 'MAR_m3_year' && displaySummary[key] != null ? fmt(displaySummary[key] / 1e9, 2) : fmt(displaySummary[key])}<small>{key === 'MAR_m3_year' ? 'bn m³/yr' : catalogue[key].unit}</small></strong><p>{['MAP_mm', 'CDD_Days', 'MAR_m3_year'].includes(key) ? 'Annual source · period mean' : trendUsesMonthly ? 'Observed monthly mean' : result.season === 'Annual' ? 'Observed annual · period mean' : `${result.season} · period mean`}</p></div></div>)}</div>
       <div className="cl-primary-grid">
         <Panel title="Climate overview" subtitle="District patterns · selected source month" className="cl-map-panel">
-          <div className="cl-map-controls">
-            <select aria-label="Climate map indicator" className="cl-map-selector" value={mapKey} onChange={e => selectMapMetric(e.target.value)}>{['Tavg_C', 'MAP_mm', 'CDD_Days', 'Daily_ET0_mm', 'Irrigation_Water_Demand_mm', 'MAR_m3_year', 'LST_Day_C'].map(key => <option value={key} key={key}>{catalogue[key].label} ({catalogue[key].unit})</option>)}</select>
-          <label>Map month<select aria-label="Climate map month" value={mapMonth} onChange={e => setMapMonth(e.target.value)}>{((metadata?.daily_months?.length ? metadata.daily_months : (metadata?.months?.length ? metadata.months : monthlyResult?.months)) || []).filter(value => value >= applied.start && value <= applied.end).map(value => <option key={value}>{value}</option>)}</select></label>
-          </div>
+
           {mapContent}
           <div className="cl-map-note"><MapPin size={13} /> {monthlyMetric ? (dateMetric ? `Source observations for ${mapResult?.map_date || mapResult?.map_month || mapMonth}.` : `Annual source values matched to source year ${String(mapResult?.map_month || mapMonth).slice(0, 4)}.`) : 'This indicator is unavailable in the source-date map.'} Select a district to explore its climate <span>52 district boundaries</span></div>
         </Panel>

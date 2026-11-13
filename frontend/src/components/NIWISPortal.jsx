@@ -17,6 +17,7 @@ import '../niwis/dashboard-theme.css'
 import '../niwis/light-theme.css'
 import '../niwis/map-theme.css'
 import '../niwis/chart-theme.css'
+import '../niwis/main-dashboard-consistency.css'
 
 const DroughtMonitoring = lazy(() => import('./DroughtMonitoring'))
 const ClimateDashboard = lazy(() => import('./ClimateDashboard'))
@@ -504,6 +505,7 @@ export default function NIWISPortal() {
     : climateSubtopic ? 'climate' : ['hydrology', 'satellite'].includes(view) ? view : null
   const forecastSection = moduleSection?.sectionKey || (climateSubtopic ? view.slice(8) : null)
   const forecastSectionLabel = moduleSection?.label || (climateSubtopic ? NAV.flatMap(([, items]) => items).find(([id]) => id === 'climate')?.[4]?.find(([id]) => id === view)?.[1] : null)
+  const isSubtopicDashboard = Boolean(moduleSection) || climateSubtopic || ['hydrology', 'satellite'].includes(view)
   const shellClasses = {
     monitoring: 'dm-shell', climate: 'climate-shell', vegetation: 'climate-shell vegetation-shell',
     rainfall: 'climate-shell rainfall-shell', runoff: 'climate-shell runoff-shell',
@@ -549,7 +551,9 @@ export default function NIWISPortal() {
         <DataFreshness view={moduleView} />
         {moduleSection && <section className="nw-module-section-context" aria-label="Selected dashboard section"><span>{NAV.flatMap(([, items]) => items).find(([parentView]) => parentView === moduleSection.parentView)?.[1]} / {moduleSection.label}</span><strong>{moduleSection.label}</strong><small>Maps, graphs, and forecast variables are limited to this topic and its available observations.</small></section>}
         {!moduleSection && <DashboardReport key={moduleView} view={moduleView} />}
-        <Suspense fallback={<LoadingProgress message="Loading dashboard" />}>{content}</Suspense>
+        <div className="nw-dashboard-content" data-dashboard-scope={isSubtopicDashboard ? 'subtopic' : 'main'}>
+          <Suspense fallback={<LoadingProgress message="Loading dashboard" />}>{content}</Suspense>
+        </div>
         {forecastDashboard && <DeferredPanel key={'deferred-' + forecastDashboard + '-' + (forecastSection || 'all')}><DashboardForecastStudio key={'forecast-' + forecastDashboard + '-' + (forecastSection || 'all')} dashboard={forecastDashboard} section={forecastSection} sectionLabel={forecastSectionLabel} /></DeferredPanel>}
       </main>
     </div>

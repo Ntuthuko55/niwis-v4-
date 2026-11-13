@@ -52,7 +52,7 @@ body.nw-body { background: #061a2c; }
   .cl-section-kpi > span, .cl-kpi span, .cl-title p, .cl-data-date,
   .cl-map-note, .cl-index-scale, .cl-footer,
   .vg-context, .vg-context > span:first-child, .vg-panel-head > span,
-  .vg-kpi-top > div > span, .vg-layer-picker label, .vg-layer-picker h3,
+  .vg-kpi-top > div > span,
   .vg-map-title span, .vg-map-caption, .vg-chart-caption, .vg-footer,
   .vg-rank-name, .vg-correlations, .vg-lag,
   .rf-context, .rf-context > span:first-child, .rf-panel-heading > span,

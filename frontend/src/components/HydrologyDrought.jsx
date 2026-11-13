@@ -575,12 +575,9 @@ export default function HydrologyDrought() {
 
 
   const mapPanel = <section className="hydro-panel hydro-map-panel">
-          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">DISTRICT INDICATOR MAP</span><h2 className="hydro-panel-title">{selectedMapMetric.label}</h2><p>Choose an indicator and date; select a district to update the dashboard below.</p></div><MapPin size={18} className="hydro-map-icon" /></div>
-          <div className="hydro-map-controls">
-            <label><span>Map indicator</span><select aria-label="Hydrological map indicator" value={mapMetric} onChange={event => setMapMetric(event.target.value)}>{HYDRO_MAP_OPTIONS.map(option => <option value={option.key} key={option.key}>{option.label}</option>)}</select></label>
-            <label><span>Map date</span><select aria-label="Hydrological map date" value={mapDate} onChange={event => setMapDate(event.target.value)} disabled={!mapDates.length}>{mapDates.map(date => <option value={date} key={date}>{date}</option>)}</select></label>
-          </div>
-          {mapError && <div className="hydro-map-message" role="alert">{mapError}</div>}{mapLoading && <LoadingProgress className="hydro-map-loading" message="Loading district indicator values" />}<div className="hydro-map-wrap"><DistrictMap districts={districtsGeoJson} values={mapError || mapLoading ? {} : mapValues} valueKey={mapMetric} valueLabel={selectedMapMetric.label} valueUnit={selectedMapMetric.unit} colorFn={mapStyle.color} selected={selectedDistrict} onSelect={selectMapDistrict} legend={mapStyle.legend} /></div>
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">DISTRICT INDICATOR MAP</span><h2 className="hydro-panel-title">{selectedMapMetric.label}</h2><p>Use the map controls to choose an indicator, map view and district.</p></div><MapPin size={18} className="hydro-map-icon" /></div>
+
+          {mapError && <div className="hydro-map-message" role="alert">{mapError}</div>}{mapLoading && <LoadingProgress className="hydro-map-loading" message="Loading district indicator values" />}<div className="hydro-map-wrap"><DistrictMap districts={districtsGeoJson} values={mapError || mapLoading ? {} : mapValues} valueKey={mapMetric} valueLabel={selectedMapMetric.label} valueUnit={selectedMapMetric.unit} indicatorOptions={HYDRO_MAP_OPTIONS} indicatorValue={mapMetric} onIndicatorChange={setMapMetric} colorFn={mapStyle.color} selected={selectedDistrict} onSelect={selectMapDistrict} legend={mapStyle.legend} /></div>
           <p className="hydro-map-caption">{mapError || mapLoading ? 0 : mapStations.length} districts with observations on {mapDate || 'the latest available date'} - {districtName}, {provinceName} selected.</p>
         </section>
 

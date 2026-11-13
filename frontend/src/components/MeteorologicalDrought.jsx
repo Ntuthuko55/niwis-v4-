@@ -86,9 +86,9 @@ export default function MeteorologicalDrought({ renderForecast }) {
     {!!rows.length && <>
       <div className="nw-overview-grid">
         <section className="nw-panel"><div className="nw-phead"><h3>Regional {label[1]}</h3><span className="src">Observations for {mapDate || rows[0]?.date}</span></div>
-          <label>Map indicator <select aria-label="Meteorological map indicator" value={metric} onChange={event => setMetric(event.target.value)}>{metrics.map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select></label>
-          <label>Map date <select aria-label="Meteorological map date" value={mapDate} onChange={event => setMapDate(event.target.value)}>{(mapDates.length ? mapDates : [mapDate]).filter(Boolean).map(date => <option key={date}>{date}</option>)}</select></label>
-          {mapError && <p className="nw-error" role="alert">{mapError}</p>}{mapLoading && <LoadingProgress className="nw-map-loading" message="Loading map observations" />}<DistrictMap districts={districts} values={mapError || mapLoading ? {} : values} valueKey={metric} valueLabel={label[1]} valueUnit={label[2]} colorFn={mapScale.color} legend={mapScale.legend} selected={selected} onSelect={setSelected} />
+
+
+          {mapError && <p className="nw-error" role="alert">{mapError}</p>}{mapLoading && <LoadingProgress className="nw-map-loading" message="Loading map observations" />}<DistrictMap districts={districts} values={mapError || mapLoading ? {} : values} valueKey={metric} valueLabel={label[1]} valueUnit={label[2]} indicatorOptions={metrics.map(([key, title, unit]) => ({ key, label: title, unit }))} indicatorValue={metric} onIndicatorChange={setMetric} colorFn={mapScale.color} legend={mapScale.legend} selected={selected} onSelect={setSelected} />
           <p className="nw-note">Grey regions have no observation for the selected date.</p>
         </section>
         <section className="nw-panel"><div className="nw-phead"><h3>Region details</h3></div>

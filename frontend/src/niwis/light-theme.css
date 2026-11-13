@@ -184,7 +184,7 @@ html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
   .cl-context, .cl-chart-meta, .cl-axis-caption, .cl-panel-heading > span,
   .cl-chart-legend button, .cl-footer, .cl-map-note, .cl-kpi span,
   .vg-context, .vg-panel-head > span, .vg-kpi-top > div > span,
-  .vg-map-title span, .vg-kpi-change span, .vg-layer-picker label,
+  .vg-map-title span, .vg-kpi-change span,
   .vg-rank-name, .vg-lag, .vg-correlations, .vg-footer,
   .rf-context, .rf-panel-heading > span, .rf-kpi span, .rf-map-footer,
   .rf-index-strip small, .rf-index-strip > button > span, .rf-footer,

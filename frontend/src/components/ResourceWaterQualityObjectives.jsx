@@ -137,8 +137,8 @@ export default function ResourceWaterQualityObjectives({ navigationSection = nul
       <div className="rq-tabs" role="group" aria-label="RWQO section">{meta.sections.map(item => <button key={item.key} aria-pressed={sectionKey === item.key} onClick={() => changeSection(item.key)} style={{ '--rq-accent': chartColor(COLORS[item.key]) }}>{item.key === 'ecological' ? <Leaf size={15} /> : item.key === 'hydrological' ? <Waves size={15} /> : <Activity size={15} />}{item.label}<span>{item.indicators.length} measurements</span></button>)}</div>
       <div className="rq-primary-grid">
         <Panel title="District observation map" subtitle={`${period(selected.map_period)} · ${mapMetric.label}`} className="rq-map-panel">
-          <label className="rq-picker">Map indicator<select aria-label="RWQO map indicator" value={mapMetric.key} onChange={event => setMapKey(event.target.value)}>{section.indicators.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
-          <DistrictMap districts={features.length ? features : undefined} values={mapValues} valueKey={mapMetric.key} selected={result.region} onSelect={selectDistrict} colorFn={mapScale.color} legend={mapScale.legend} valueLabel={mapMetric.label} valueUnit={mapMetric.unit} formatValue={format} />
+
+          <DistrictMap districts={features.length ? features : undefined} values={mapValues} valueKey={mapMetric.key} indicatorOptions={section.indicators} indicatorValue={mapMetric.key} onIndicatorChange={setMapKey} selected={result.region} onSelect={selectDistrict} colorFn={mapScale.color} legend={mapScale.legend} valueLabel={mapMetric.label} valueUnit={mapMetric.unit} formatValue={format} />
           <p className="rq-note"><MapPin size={12} />Select a district to update the charts. The map keeps national coverage. Colour shows measurement magnitude.</p>
           {result.region !== 'National' && <button className="rq-text-button" onClick={() => { const next = { ...applied, region: 'National' }; setDraft(next); setApplied(next) }}>Return to National</button>}
         </Panel>

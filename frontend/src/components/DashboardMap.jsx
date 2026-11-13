@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { RefreshCw } from 'lucide-react'
 import { loadBasemapConfig } from '../services/basemapConfig'
 import { mapViews, saveMapView } from '../services/dashboardMapState'
@@ -12,7 +13,7 @@ const defaultLabel = feature => feature?.properties?.shapeName || feature?.prope
 export default function DashboardMap({
   original, features = EMPTY, featureStyle, featureLabel = defaultLabel,
   onFeatureSelect, onFeatureHover, selectedFeature, markers = EMPTY,
-  mapLabel = 'Dashboard map', mapId, height = 430, onViewChange, className = '', fixedView,
+  mapLabel = 'Dashboard map', mapId, height = 430, onViewChange, className = '', fixedView, toolbarTarget,
 }) {
   const stateKey = `${window.location.pathname}:${mapId || mapLabel}`
   const [view, setView] = useState(() => fixedView || mapViews.get(stateKey)?.view || 'boundaries')
@@ -41,21 +42,22 @@ export default function DashboardMap({
     saveMapView(stateKey, { view: event.target.value })
     onViewChange?.(event.target.value)
   }
+  const toolbar = !fixedView && <div className="dashboard-map-toolbar">
+    <label className="dashboard-map-choice"><span>Map view</span><select aria-label="Map view" value={view} onChange={changeView}>
+      <option value="existing">Standard map</option>
+      <option value="satellite" disabled={!config?.configured}>Satellite</option>
+      <option value="streets">Street map</option>
+      <option value="boundaries">Interactive boundaries</option>
+    </select></label>
+    {!config?.configured && <span className="dashboard-map-availability">{configError ? 'Background service unavailable' : config ? 'Satellite unavailable' : 'Checking backgrounds…'}</span>}
+    {configError && <button type="button" className="dashboard-map-config-retry" onClick={() => setConfigRetry(value => value + 1)} aria-label="Retry map background options"><RefreshCw size={13} /> Retry</button>}
+  </div>
   return <div className={`dashboard-map dashboard-map--${activeView} ${className}`.trim()} style={{ '--dashboard-map-height': typeof height === 'number' ? `${height}px` : height }}>
-    {!fixedView && <div className="dashboard-map-toolbar">
-      <label className="dashboard-map-choice"><span>Map view</span><select aria-label="Map view" value={view} onChange={changeView}>
-        <option value="existing">Standard map</option>
-        <option value="satellite" disabled={!config?.configured}>Satellite</option>
-        <option value="streets">Street map</option>
-        <option value="boundaries">Interactive boundaries</option>
-      </select></label>
-      {!config?.configured && <span className="dashboard-map-availability">{configError ? 'Background service unavailable' : config ? 'Satellite unavailable' : 'Checking backgrounds…'}</span>}
-      {configError && <button type="button" className="dashboard-map-config-retry" onClick={() => setConfigRetry(value => value + 1)} aria-label="Retry map background options"><RefreshCw size={13} /> Retry</button>}
-    </div>}
     {activeView === 'existing' ? <div className="dashboard-map-original">{original}</div> : <Suspense fallback={<div className="dashboard-map-loading" role="status">Loading interactive map...</div>}><InteractiveDashboardMap
       view={activeView} config={config} features={features} featureStyle={featureStyle} featureLabel={featureLabel}
       onFeatureSelect={onFeatureSelect} onFeatureHover={onFeatureHover} selectedFeature={selectedFeature}
       markers={markers} mapLabel={mapLabel} stateKey={stateKey}
     /></Suspense>}
+    {toolbar && (toolbarTarget ? createPortal(toolbar, toolbarTarget) : toolbar)}
   </div>
 }

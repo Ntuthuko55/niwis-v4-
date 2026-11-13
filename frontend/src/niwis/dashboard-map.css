@@ -10,7 +10,7 @@
 .dashboard-map-loading{display:grid;place-items:center;flex:1;min-height:320px;border:1px solid var(--dashboard-border,#17537a);border-radius:8px;color:var(--dashboard-muted,#85a9c2);font-size:12px}
 .dashboard-map-original>svg,.dashboard-map-original>.nw-map{width:100%;min-width:0}
 .sat-district-map .dashboard-map-original>svg{display:block;height:100%;max-height:100%;min-height:0}
-.sat-district-map.dashboard-map-frame{height:clamp(360px,33vw,480px)!important;min-height:clamp(360px,33vw,480px)!important}
+.sat-district-map.dashboard-map-frame{height:clamp(420px,30vw,500px)!important;min-height:clamp(420px,30vw,500px)!important}
 .dashboard-map.dashboard-map-province{height:520px;min-height:520px}
 .dashboard-map-province .dashboard-map-original>.nw-map{height:100%;display:flex;align-items:stretch}
 .dashboard-map-province .dashboard-map-original>.nw-map>svg{height:100%;max-height:none}

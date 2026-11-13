@@ -38,10 +38,9 @@ export default function InteractiveDashboardMap(props) {
     let map
     let frame = 0
     try {
-      // Raster basemaps use integer XYZ zoom levels. Fractional zooms trigger
-      // repeated tile replacement and can expose empty areas while the next
-      // batch loads, so keep the viewport aligned with the source tile levels.
-      map = L.map(host.current, { zoomControl: false, attributionControl: true, minZoom: 4, maxZoom: 18, zoomSnap: 1, zoomDelta: 1, zoomAnimation: false, scrollWheelZoom: true, maxBounds: SOUTH_AFRICA_BOUNDS, maxBoundsViscosity: 0.8 })
+      // Keep the current raster tiles visible during the zoom transition. The
+      // replacement zoom level is requested after the animation completes.
+      map = L.map(host.current, { zoomControl: false, attributionControl: true, minZoom: 4, maxZoom: 18, zoomSnap: 1, zoomDelta: 1, zoomAnimation: true, scrollWheelZoom: true, maxBounds: SOUTH_AFRICA_BOUNDS, maxBoundsViscosity: 0.8 })
       const savedState = mapViews.get(props.stateKey)
       const savedViewport = savedState?.viewport
       map.setView(savedViewport?.center || [-29, 25], savedViewport?.zoom ?? 5)
@@ -116,7 +115,10 @@ export default function InteractiveDashboardMap(props) {
     const tiles = L.tileLayer(definition.url, {
       attribution: definition.attribution,
       maxZoom: Math.min(definition.maxZoom, map.getMaxZoom()),
-      keepBuffer: 4,
+      // Leaflet's standard two-tile buffer supports panning without making an
+      // oversized burst of provider requests that can delay the zoomed view.
+      keepBuffer: 2,
+      updateWhenIdle: true,
       updateWhenZooming: false,
     })
     const beginTileBatch = () => {

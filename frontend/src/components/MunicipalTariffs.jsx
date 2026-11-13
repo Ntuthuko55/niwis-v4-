@@ -4,6 +4,7 @@ import { AlertTriangle, Database, MapPinned, RefreshCw } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { PROVINCES } from './ProvinceMapLabels'
 import DashboardMap from './DashboardMap'
+import '../niwis/monitoring-map.css'
 import MonitoringMapPanel from './MonitoringMapPanel'
 import { chartColor } from '../lib/chartTheme'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
@@ -238,6 +239,7 @@ export default function MunicipalTariffs({ section: navigationSection = null }) 
   const [mapTileRetry, setMapTileRetry] = useState(0)
   const [retry, setRetry] = useState(0)
   const [mapElement, setMapElement] = useState(null)
+  const [mapToolbarTarget, setMapToolbarTarget] = useState(null)
   const mapRef = useRef(null)
   const layerRef = useRef(null)
   const tileLayerRef = useRef(null)
@@ -283,6 +285,11 @@ export default function MunicipalTariffs({ section: navigationSection = null }) 
     if (row?.region) setTrendRegion(row.region)
   }, [mapMatches])
   const selectedMapFeature = useMemo(() => renderedFeatures.find(feature => mapMatches.byCode.get(feature.properties?.CAT_B)?.region === activeTrendRegion) || null, [renderedFeatures, mapMatches, activeTrendRegion])
+  const districtOptions = useMemo(() => [...new Set(renderedFeatures.map(feature => mapMatches.displayNameByCode.get(feature.properties?.CAT_B) || feature.properties?.MUNICNAME).filter(Boolean))].sort((a, b) => a.localeCompare(b)), [renderedFeatures, mapMatches])
+  const selectMapDistrict = name => {
+    const feature = renderedFeatures.find(item => (mapMatches.displayNameByCode.get(item.properties?.CAT_B) || item.properties?.MUNICNAME) === name)
+    if (feature) selectMapFeature(feature)
+  }
   const legend = useMemo(() => legendItems(metric, mappedSourceRows, scale), [metric, mappedSourceRows, scale])
   const mappedValues = useMemo(() => new Set([...mapMatches.byCode.values()].filter(row => {
     const value = row.values?.[metric?.key]
@@ -572,9 +579,8 @@ export default function MunicipalTariffs({ section: navigationSection = null }) 
         {datasetTabs.map(([key, item]) => <button type="button" key={key} aria-pressed={datasetKey === key} onClick={() => selectDataset(key)}>{item.label}</button>)}
       </nav>
 
-      <section className="mt-controls" aria-label="Map filters">
+      <section className="mt-controls" aria-label="Dataset filters">
         <label>Reporting year<select value={year} onChange={event => setYear(event.target.value)}>{(summary?.years || []).slice().reverse().map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-        <label>What should the map show?<select aria-label="Map indicator" value={metric?.key || ''} onChange={event => setMetricKey(event.target.value)}>{metrics.map(item => <option key={item.key} value={item.key} disabled={Boolean(hasCurrentResult && !result.coverage.usable_by_metric[item.key])}>{item.label} · {item.unit}{hasCurrentResult && !result.coverage.usable_by_metric[item.key] ? ' · no values for this year' : ''}</option>)}</select></label>
         <div className="mt-control-note">{summary?.description}</div>
       </section>
 
@@ -598,6 +604,11 @@ export default function MunicipalTariffs({ section: navigationSection = null }) 
               <div><h2>{summary?.label} by municipality</h2><p>Click a municipality to update regional charts · {metric.label} · {result.year} · {metric.unit}</p></div>
               <span className="mt-map-count"><MapPinned size={14} /> {renderedFeatures.length} polygons shaded · {mapMatches.matchedSourceRegionCount} source regions</span>
             </header>
+            <div className="district-map-controls">
+              <label className="district-map-control"><span>Map indicator</span><select aria-label="Map indicator" value={metric?.key || ''} onChange={event => setMetricKey(event.target.value)}>{metrics.map(item => <option key={item.key} value={item.key} disabled={Boolean(hasCurrentResult && !result.coverage.usable_by_metric[item.key])}>{item.label}{item.unit ? ` (${item.unit})` : ''}{hasCurrentResult && !result.coverage.usable_by_metric[item.key] ? ' · no values for this year' : ''}</option>)}</select></label>
+              <div className="district-map-view-slot" ref={setMapToolbarTarget} />
+              <label className="district-map-control"><span>District</span><select aria-label="Map district" value={selectedMapFeature ? (mapMatches.displayNameByCode.get(selectedMapFeature.properties?.CAT_B) || selectedMapFeature.properties?.MUNICNAME || '') : ''} onChange={event => selectMapDistrict(event.target.value)}><option value="">Select a district</option>{districtOptions.map(name => <option key={name}>{name}</option>)}</select></label>
+            </div>
             <div className="mt-map-layout">
               <DashboardMap
                 original={<div ref={setMapElement} className="mt-map" style={{ width: '100%' }} aria-label={`${metric.label} municipality choropleth for ${result.year}`} />}
@@ -608,6 +619,7 @@ export default function MunicipalTariffs({ section: navigationSection = null }) 
                 selectedFeature={selectedMapFeature}
                 mapLabel={`${metric.label} municipality map for ${result.year}`}
                 height={600}
+                toolbarTarget={mapToolbarTarget}
               />
               <aside className="mt-legend" aria-label={`${metric.label} map legend`}>
                 <h3>What the colors mean</h3>

@@ -1,5 +1,5 @@
 // Label anchors are geographic coordinates, so they follow each map's projection.
-const PROVINCES = [
+export const PROVINCES = [
   ['Western Cape', 20.6, -33.3],
   ['Northern Cape', 21.0, -29.2],
   ['Eastern Cape', 26.8, -32.0],

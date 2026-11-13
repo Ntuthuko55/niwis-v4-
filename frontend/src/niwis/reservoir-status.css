@@ -42,3 +42,18 @@
 @media(max-width:620px){.rs-command-strip{grid-template-columns:1fr}.rs-command-card{min-height:0}}
 @media(max-width:760px){.rs-audit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.rs-audit-grid{grid-template-columns:1fr}}
+.reservoir-dashboard[data-section]:not([data-section="all"]) .rs-command-strip,
+.reservoir-dashboard[data-section]:not([data-section="all"]) .rs-integrity-note,
+.reservoir-dashboard[data-section]:not([data-section="all"]) .rs-audit-panel,
+.reservoir-dashboard[data-section]:not([data-section="all"]) .rf-kpis { display: none; }
+.reservoir-dashboard[data-section="operational"] .reservoir-topic-panels > :not(:first-child),
+.reservoir-dashboard[data-section="operational"] .rs-derived-panel,
+.reservoir-dashboard[data-section="operational"] .rs-priority-dams,
+.reservoir-dashboard[data-section="derived"] .reservoir-topic-panels > :first-child,
+.reservoir-dashboard[data-section="derived"] .rs-alert-panel,
+.reservoir-dashboard[data-section="derived"] .rs-priority-dams,
+.reservoir-dashboard[data-section="derived"] .rs-main-chart .rf-tabs,
+.reservoir-dashboard[data-section="national-dams"] .rs-primary-grid > :not(:first-child),
+.reservoir-dashboard[data-section="national-dams"] .reservoir-topic-panels,
+.reservoir-dashboard[data-section="national-dams"] .rs-derived-panel,
+.reservoir-dashboard[data-section="national-dams"] .rs-alert-panel { display: none; }

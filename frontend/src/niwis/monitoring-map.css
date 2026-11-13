@@ -1,0 +1,17 @@
+.monitoring-map-panel{min-width:0;margin:16px 0;padding:18px;border:1px solid var(--dashboard-border,#17537a);border-radius:10px;background:var(--dashboard-surface,#08233c);color:var(--dashboard-text,#e6f3ff)}
+.monitoring-map-panel>header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+.monitoring-map-panel h2{margin:6px 0;font-size:16px;color:var(--dashboard-text,#e6f3ff)}
+.monitoring-map-panel p{font-size:12px;line-height:1.6;color:var(--dashboard-muted,#85a9c2)}
+.monitoring-map-eyebrow{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:var(--dashboard-muted,#85a9c2)}
+.monitoring-map-period{font-size:12px;white-space:nowrap;color:var(--dashboard-text,#e6f3ff)}
+.monitoring-map-indicator,.district-map-filters label{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--dashboard-text,#e6f3ff)}
+.monitoring-map-indicator{margin-bottom:12px}
+.monitoring-map-indicator select,.district-map-filters select{max-width:100%;min-height:32px;padding:6px 28px 6px 9px;border:1px solid var(--dashboard-border,#17537a);border-radius:5px;background:var(--dashboard-control,#09243b);color:var(--dashboard-text,#e6f3ff);font:inherit}
+.monitoring-map-source-state{padding:10px 12px;border-left:3px solid #ae782c;border-radius:4px;background:var(--dashboard-control,#09243b)}
+.district-map-filters{display:flex;flex-wrap:wrap;gap:9px 18px;padding:4px 0 12px}
+.district-map-filters select{max-width:220px}
+.district-map-observation-state{margin:8px 0;font-size:11px;line-height:1.5;color:var(--dashboard-muted,#85a9c2)}
+.district-map-observation-state button{margin-left:8px;color:inherit;background:transparent;border:1px solid currentColor;border-radius:4px;cursor:pointer}
+.district-map-legend-missing{display:flex;align-items:center;gap:5px;font-size:9px;color:inherit}
+.district-map-legend-missing i{height:9px;width:9px;border:1px solid #a7b7c5;border-radius:2px;background:#647582}
+@media(max-width:600px){.monitoring-map-panel{padding:12px}.monitoring-map-panel>header{flex-wrap:wrap}.district-map-filters{gap:9px}.district-map-filters label{flex:1 1 130px}.district-map-filters select{width:100%}}

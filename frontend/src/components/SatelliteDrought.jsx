@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import { LineChart } from '../niwis/svgCharts'
 import LoadingProgress from './LoadingProgress'
+import MonitoringMapPanel from './MonitoringMapPanel'
 
 const fields = [
   ['NDVI', 'NDVI', '', 2], ['VCI', 'VCI', '%', 1], ['VHI', 'VHI', '%', 1],
@@ -14,7 +15,7 @@ const fields = [
 const valid = (value) => value != null && Number.isFinite(Number(value))
 const display = (value, precision = 2) => valid(value) ? Number(value).toFixed(precision) : 'No data'
 const colors = {
-  NDVI: (v) => v < .28 ? '#f04444' : v < .36 ? '#fa8c25' : v < .43 ? '#f4dc45' : '#64c968',
+  NDVI: (v) => v < .2 ? '#f04444' : v < .4 ? '#fa8c25' : v < .6 ? '#f4dc45' : v < .8 ? '#80cf8c' : '#64c968',
   moisture: (v) => v < .08 ? '#f6ad3c' : v < .13 ? '#75d36a' : v < .19 ? '#4dc7c7' : '#2d97c7',
   water: (v) => v < 10 ? '#1d3441' : v < 45 ? '#226f92' : v < 120 ? '#25aac9' : '#7be3ed',
   grace: (v) => v < -4 ? '#e9474e' : v < -1 ? '#fa9037' : v < 2 ? '#f5df4b' : v < 5 ? '#62c977' : '#3fa6d5',
@@ -57,7 +58,7 @@ export default function SatelliteDrought() {
     return () => controller.abort()
   }, [])
   const values = useMemo(() => Object.fromEntries(mapStations.map((row) => [normaliseDistrictName(row.name), row])), [mapStations])
-  const actual = values[normaliseDistrictName(selected)] || {}
+  const actual = mapError || mapLoading ? {} : values[normaliseDistrictName(selected)] || {}
   const mapDates = useMemo(() => [...new Set(history.map(row => String(row.date || '').slice(0, 10)))].filter(Boolean).sort(), [history])
   useEffect(() => {
     if (!mapDate) return undefined
@@ -85,15 +86,18 @@ export default function SatelliteDrought() {
   const numeric = history.map((row) => row.NDVI).filter(valid).map(Number)
   const mean = numeric.length ? numeric.reduce((a, b) => a + b, 0) / numeric.length : null
   const chartPoints = points.filter((row) => valid(row.NDVI))
-  const map = (field, color) => <DistrictMap districts={districts} values={values} valueKey={field} colorFn={color} selected={selected} onSelect={setSelected} />
+  const map = (field, color, mapId = 'satellite', standard = false) => { const definition = fields.find(([key]) => key === field); return <DistrictMap districts={districts} values={mapError || mapLoading ? {} : values} valueKey={field} valueLabel={definition?.[1]} valueUnit={definition?.[2]} colorFn={color} selected={selected} onSelect={setSelected} mapId={mapId} showRegionFilters={!standard} fixedView={standard ? 'existing' : undefined} /> }
   return <>
     <div className="nw-crumb">Situation / Satellite &amp; Remote Sensing Drought</div>
     <h1 className="page">Satellite &amp; Remote Sensing Drought</h1>
     <p className="nw-lede">Regional vegetation, soil moisture and water storage observations from Supabase.</p>
-    {loading ? <LoadingProgress className="nw-forecast-loading" message="Loading satellite observations from the database" /> : error ? <div className="nw-error" role="alert">{error}</div> : !stations.length ? <p>No satellite observations are available in the database.</p> : <>
+    {loading && <LoadingProgress className="nw-forecast-loading" message="Loading satellite observations from the database" />}
+    {error && <div className="nw-error" role="alert">{error}</div>}
+    {(loading || error || !stations.length) && <MonitoringMapPanel title="Satellite monitoring map" indicators={fields.map(([key, label, unit]) => ({ key, label, unit }))} features={districts} geographyAvailable={false} noDataReason={error || (loading ? 'Satellite observations are loading.' : 'No satellite observations are available in the database.')} description="District boundaries provide reference. GRACE measurements retain their source resolution and are not borehole observations." />}
+    {!loading && !error && !!stations.length && <>
       <section className="sat-kpi-strip">{fields.map(([key, label, unit, precision]) => <article className="sat-kpi" key={key}><div><small>{label}</small><strong>{display(actual[key], precision)} {valid(actual[key]) ? unit : ''}</strong><em>{actual.date || 'No observation for this region'}</em></div></article>)}</section>
       <div className="sat-top-grid">
-        <Panel title="Current NDVI"><p className="sat-caption">Select a district to view its database observations.</p><label>Map date <select aria-label="Satellite map date" value={mapDate} onChange={event => setMapDate(event.target.value)}>{(mapDates.length ? mapDates : [mapDate]).filter(Boolean).map(date => <option key={date}>{date}</option>)}</select></label><div className="sat-map-wrap">{mapError ? <p className="nw-error" role="alert">{mapError}</p> : mapLoading ? <LoadingProgress className="nw-map-loading" message="Loading map observations" /> : map('NDVI', colors.NDVI)}</div></Panel>
+        <Panel title="Current NDVI"><p className="sat-caption">Select a district to view its database observations.</p><label>Map date <select aria-label="Satellite map date" value={mapDate} onChange={event => setMapDate(event.target.value)}>{(mapDates.length ? mapDates : [mapDate]).filter(Boolean).map(date => <option key={date}>{date}</option>)}</select></label><div className="sat-map-wrap">{mapError && <p className="nw-error" role="alert">{mapError}</p>}{mapLoading && <LoadingProgress className="nw-map-loading" message="Loading map observations" />}{map('NDVI', colors.NDVI)}</div></Panel>
         <Panel title={`District Details – ${selected}`}><label>Region <select aria-label="Satellite region" value={actual.name || ''} onChange={(e) => setSelected(e.target.value)}><option value="" disabled>{selected}</option>{stations.map((row) => <option key={row.name} value={row.name}>{row.name}</option>)}</select></label><div className="sat-detail-grid">{fields.map(([key, label, unit, precision]) => <article className="sat-detail" key={key}><div><small>{label}</small><strong>{display(actual[key], precision)} {valid(actual[key]) ? unit : ''}</strong><b>Latest observation</b></div></article>)}</div></Panel>
         <Panel title={`Time Series – ${selected}`}><div className="sat-chart-tabs">{[3, 6, 12, 24].map((count) => <button key={count} className={months === count ? 'sel' : ''} onClick={() => setMonths(count)}>{count}M</button>)}</div>
           {historyLoading ? <LoadingProgress className="nw-map-loading" message="Loading district history" /> : historyError ? <p className="nw-error" role="alert">{historyError}</p> : !chartPoints.length ? <p>No NDVI history available for this region.</p> : <div className="sat-chart"><LineChart sets={[{ n: 'NDVI', data: chartPoints.map((row) => row.NDVI), c: '#7cd957', w: 2.5 }, { n: 'Historical mean', data: chartPoints.map(() => mean), c: '#78b5cf', dash: '4 4' }]} labels={chartPoints.map((row) => row.date.slice(0, 7))} min={-1} max={1} h={185} dec={1} /></div>}
@@ -101,10 +105,10 @@ export default function SatelliteDrought() {
         </Panel>
       </div>
       <div className="sat-bottom-grid">
-        <Panel title="Satellite Indices – South Africa"><div className="sat-small-map">{map('NDVI', colors.NDVI)}</div></Panel>
-        <Panel title="Soil Moisture & Water Content"><div className="sat-dual-map"><div><small>Surface soil moisture</small>{map('surface_soil_moisture', colors.moisture)}</div><div><small>Root-zone soil moisture</small>{map('rootzone_soil_moisture', colors.moisture)}</div></div></Panel>
-        <Panel title="Surface Water Extent"><div className="sat-water-map">{map('surface_water_extent_km2', colors.water)}</div></Panel>
-        <Panel title="GRACE Water Storage Anomaly"><div className="sat-small-map">{map('GRACE_TWS', colors.grace)}</div></Panel>
+        <Panel title="Satellite Indices – South Africa"><div className="sat-small-map">{map('NDVI', colors.NDVI, 'satellite-indices', true)}</div></Panel>
+        <Panel title="Soil Moisture & Water Content"><div className="sat-dual-map"><div><small>Surface soil moisture</small>{map('surface_soil_moisture', colors.moisture, 'surface-soil-moisture', true)}</div><div><small>Root-zone soil moisture</small>{map('rootzone_soil_moisture', colors.moisture, 'rootzone-soil-moisture', true)}</div></div></Panel>
+        <Panel title="Surface Water Extent"><div className="sat-water-map">{map('surface_water_extent_km2', colors.water, 'surface-water-extent', true)}</div></Panel>
+        <Panel title="GRACE Water Storage Anomaly"><div className="sat-small-map">{map('GRACE_TWS', colors.grace, 'grace-water-storage', true)}</div><p className="sat-note">GRACE values are supplied as district records; the native satellite footprint is not documented. Do not interpret these values as borehole-level observations.</p></Panel>
       </div>
       <p className="nw-note">Source: Supabase satellite_remote_sensing · Latest observation: {actual.date || 'No data'}</p>
     </>}

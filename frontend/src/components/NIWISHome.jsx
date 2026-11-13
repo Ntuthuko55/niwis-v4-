@@ -62,7 +62,7 @@ export default function NIWISHome() {
     <header className="nh-header" ref={header}>
       <div className="nh-container nh-header-inner">
         <a className="nh-brand" href="/" aria-label="NIWIS home">
-          <img src="/Water-and-Sanitation.png" width="756" height="426" alt="Department of Water and Sanitation, Republic of South Africa" />
+          <img src="/dws-logo.svg" width="450" height="154" alt="Department of Water and Sanitation, Republic of South Africa" />
           <span className="nh-brand-divider" aria-hidden="true" />
           <span className="nh-wordmark"><strong>NIWIS<span>.</span></strong><small>National Integrated Water<br />Information System</small></span>
         </a>

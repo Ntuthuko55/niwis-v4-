@@ -335,14 +335,14 @@ def forecast_source(region: str = "National", start: int | None = None, end: int
         # Each table has a validated unique district-month key. Keep an outer
         # union of months; an absent measurement must remain a missing input.
         frames, metrics = [], []
-        for section in data.values():
+        for section_key, section in data.items():
             selected = section["frame"]
             selected = selected[selected.year.between(start, end)]
             if region != "National":
                 selected = selected[selected.district_name == region]
             available = [item for item in section["indicators"] if selected[item["key"]].notna().any()]
             keys = [item["key"] for item in available]
-            metrics.extend(available)
+            metrics.extend({**item, "section": section_key} for item in available)
             frames.append(selected.groupby("period")[keys].mean())
         series = pd.concat(frames, axis=1).sort_index()
         series = series.reindex(pd.period_range(series.index.min(), series.index.max(), freq="M").astype(str)).rename_axis("period")

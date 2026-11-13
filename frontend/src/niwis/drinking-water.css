@@ -167,3 +167,12 @@
   .drinking-water-dashboard .ww-chart-tooltip > div { flex-wrap: wrap; }
   .drinking-water-dashboard .ww-chart-tooltip > div > strong { margin-left: 16px !important; padding-left: 0 !important; }
 }
+.drinking-water-dashboard[data-section="blue-drop"] .dw-context,
+.drinking-water-dashboard[data-section="blue-drop"] .dw-kpi-grid,
+.drinking-water-dashboard[data-section="blue-drop"] .dw-chart-grid,
+.drinking-water-dashboard[data-section="blue-drop"] .dw-section-heading,
+.drinking-water-dashboard[data-section="blue-drop"] .dw-monthly-matrix,
+.drinking-water-dashboard[data-section="blue-drop"] .dw-alert-panel,
+.drinking-water-dashboard[data-section="blue-drop"] .dw-methods,
+.drinking-water-dashboard[data-section="blue-drop"] .dw-footer,
+.drinking-water-dashboard[data-section="blue-drop"] .dw-primary-grid > :not(.dw-map-panel) { display: none; }

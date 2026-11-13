@@ -1,0 +1,422 @@
+/* Light appearance is opt-in; the existing Navy palette remains the default. */
+html[data-niwis-theme="light"] { --app-loading-bg: #f4f7fb; --app-loading-text: #16334b; color-scheme: light; background: #f3f6f9; }
+html[data-niwis-theme="light"] body.nw-body { background: #f3f6f9; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme {
+  --dashboard-background: #f3f6f9;
+  --dashboard-surface: #ffffff;
+  --dashboard-control: #ffffff;
+  --dashboard-border: #c9d8e3;
+  --dashboard-text: #16334b;
+  --dashboard-muted: #52697c;
+  --chart-grid: #dce6ee;
+  --chart-text: #526b80;
+  --ink: #f3f6f9;
+  --ink-2: #ffffff;
+  --ink-3: #eaf1f6;
+  --rule: #c9d8e3;
+  --rule-soft: #dde6ed;
+  --text: #16334b;
+  --text-dim: #425e73;
+  --text-faint: #52697c;
+  --river: #066a99;
+  --river-deep: #07517b;
+  --ok: #087552;
+  --violet: #6b46a6;
+  --shadow: 0 10px 30px #16334b12;
+  color-scheme: light;
+  color: var(--dashboard-text);
+}
+
+html[data-niwis-theme="light"] .nw.nw-unified-theme :is(
+  .dm-dashboard, .wastewater-dashboard, .drinking-water-dashboard,
+  .rwqo-dashboard, .municipal-tariffs-dashboard, .hydro-container
+) {
+  --dm-cyan: #066a99;
+  --dm-rule: #c9d8e3;
+  --dm-muted: #52697c;
+  --ww-text: #16334b;
+  --ww-muted: #52697c;
+  --ww-border: #c9d8e3;
+  --ww-teal: #08756b;
+  --ww-control: #ffffff;
+  --dw-text: #16334b;
+  --dw-muted: #52697c;
+  --dw-blue: #066a99;
+  --dw-border: #c9d8e3;
+  --rq-text: #16334b;
+  --rq-muted: #52697c;
+  --rq-border: #c9d8e3;
+  --mt-bg: #f3f6f9;
+  --mt-panel: #ffffff;
+  --mt-border: #c9d8e3;
+  --mt-text: #16334b;
+  --mt-muted: #52697c;
+  --mt-accent: #08756b;
+  color: var(--dashboard-text);
+}
+
+/* Portal chrome and navigation. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-app > .nw-topbar {
+  background: #ffffff;
+  border-color: #c9d8e3;
+  color: #16334b;
+}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-app > .nw-nav {
+  background: #f9fbfd;
+  border-color: #c9d8e3;
+}
+html[data-niwis-theme="light"] .nw.nw-unified-theme :is(.nw-brand, .nw-home-link) { color: #16334b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme :is(.nw-sstat em, .nw-navgroup, .nw-nid, .nw-crumb, .nw-phead .src) { color: #52697c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-navitem { color: #35536a; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-navitem:hover { background: #e5eff7; color: #123b5b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-navitem.sel { background: #086caa; border-color: #086caa; color: #ffffff; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-navitem.sel :is(.nw-nid, .nw-nav-label) { color: #ffffff; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-navitem .nw-live { background: #dff2e9; color: #086345; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-navitem .nw-flag { background: #fee9e6; color: #a8322e; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-nav-brand-card { background: #eaf2f7; border-color: #c9d8e3; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-brand-tagline { color: #425e73; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-brand-tagline strong { color: #16334b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-brand-tagline em { color: #066a99; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-iconbtn { background: #eff5fa; color: #35536a; border-color: #c9d8e3; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-pill.live { background: #e5f5ec; color: #076446; border-color: #a5cfba; }
+
+/* Shared surfaces, including dashboards whose original styles predate themes. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-panel, .dm-controls, .dm-metric, .dm-forecast, .dm-method,
+  .cl-panel, .cl-filters, .cl-sources, .cl-section-kpi, .cl-kpi,
+  .vg-panel, .vg-filters, .vg-kpi, .vg-register, .vg-methods,
+  .rf-panel, .rf-filters, .rf-kpi, .rf-index-strip, .rf-register, .rf-methods,
+  .nw-panel, .nw-kpi, .nw-side-card, .nw-summary-panel,
+  .ww-panel, .ww-kpi, .ww-methods, .wastewater-filters,
+  .dw-panel, .dw-kpi, .dw-methods, .drinking-water-filters,
+  .rq-panel, .rq-filters, .rq-kpi, .rq-methods,
+  .mt-panel, .mt-controls, .mt-summary-grid article, .mt-methods,
+  .mt-legend, .mt-snapshot-card, .mt-indicator-card,
+  .hydro-header, .hydro-card, .hydro-header-bar, .hydro-district-card,
+  .hydro-kpi-cell, .hydro-panel, .hydro-status-banner,
+  .dashboard-forecast-studio, .nw-report
+) {
+  background: #ffffff;
+  color: #16334b;
+  border-color: #c9d8e3;
+  box-shadow: 0 2px 10px #183c5710;
+}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .gw-source-strip, .gr-source-strip, .wq-source-strip, .sw-source-strip,
+  .ro-water-path, .wq-calculation-grid article, .wq-indicator-card,
+  .wq-reading-guide, .wq-system-route, .ws-audit,
+  .wr-area-card, .wr-selected-profile, .rs-command-card, .rs-integrity-note,
+  .rs-audit-grid > div, .ww-source-grid > div, .dw-coverage-grid > div,
+  .rq-source-grid article, .mt-quality-grid article, .mt-category-timeline > div,
+  .mt-mini-category > div, .nw-overview-toolbar, .nw-overview-chip,
+  .nw-insights-bar article, .nw-mini-alert, .nw-traj,
+  .nw-dash-forecast-chart, .nw-dash-odds, .nw-forecast-meta div,
+  .hydro-chart-stats-row, .hydro-meta-item, .hydro-latest-date,
+  .hydro-footer-strip, .nw-report-result, .sat-kpi-strip, .sat-kpi,
+  .sat-detail, .sat-note, .sat-small-map, .sat-dual-map > div, .sat-water-map,
+  .nw-forecast-placeholder, .nw-row-label, .nw-fstep, .nw-code, .nw-banner,
+  .nw-toast, .nw-forecast-chart
+) { background: #f5f9fc; color: #35536a; border-color: #cedde8; box-shadow: none; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .mt-summary-grid .mt-national-card, .mt-snapshot-card.is-selected,
+  .wq-system-receiving, .gw-warning, .gr-definition, .wq-definition,
+  .cl-notes, .sw-data-note, .nw-report-notice
+) { background: #edf6fa; color: #31596f; border-color: #bdd7e5; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.wr-area-card.selected, .mt-indicator-card.is-selected) { background: #eaf7f3; border-color: #318d7a; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.nw-chip.sel, .nw-spi-row.sel, .nw-model-row-line.sel, .nw-spi-row:hover, .nw-insights-bar article.cta) { background: #e6f1f8; color: #075b87; border-color: #a9cada; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .nw-bar { background: #dce7ee; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .nw-forecast-unavailable { background: #f5f9fc; color: #425e73; border-color: #cedde8; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .nw-forecast-meta em { color: #8b4e12; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .nw-dash-odds strong { color: #0879ae; }
+
+/* General reading text; semantic messages below retain their own foreground. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(h1, h2, h3, h4) { color: #16334b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(p, small, label, em, summary) { color: #52697c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(a, .nw-link, .rs-group-link, .dw-text-button, .dw-alert-table button) { color: #066a99; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-data-freshness { color: #52697c !important; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-eyebrow, .cl-eyebrow, .vg-eyebrow, .rf-eyebrow, .rq-eyebrow,
+  .mt-eyebrow, .dashboard-forecast-eyebrow, .hydro-eyebrow,
+  .hydro-panel-kicker, .ww-section-heading > div > span,
+  .dw-section-heading > div > span, .rq-section-title span,
+  .wq-overview-heading > div > span, .wq-subheading > div > span,
+  .nw-report-kicker
+) { color: #087591; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-source-dates strong, .dm-metric strong, .dm-comparison > strong,
+  .dm-signal > strong, .dm-signal > span, .dm-signal-count > strong,
+  .cl-kpi strong, .cl-stat-strip strong, .cl-context strong,
+  .vg-kpi strong, .vg-map-title strong, .vg-ranking strong, .vg-insight > strong,
+  .rf-kpi strong, .rf-stats strong, .rf-ranking b, .rf-insight strong,
+  .rf-index-strip > div strong, .gw-source-strip strong, .gr-source-strip strong,
+  .wq-source-strip strong, .sw-source-strip strong, .ro-water-path strong,
+  .gw-aquifer-grid strong, .gr-fact-grid strong, .wq-quality strong,
+  .sw-profile-grid strong, .sw-rating-values strong, .sw-rating-prompt > strong,
+  .ro-profile strong, .ro-source-stat strong, .rs-source-group > strong,
+  .rs-command-card > strong, .rs-audit-grid strong, .rs-indicators strong,
+  .ww-context strong, .ww-kpi-value strong, .ww-source-grid strong,
+  .dw-context strong, .dw-kpi-value strong, .dw-lead-summary > div > strong,
+  .dw-readout > div > strong, .dw-coverage-grid strong, .dw-alert-table strong,
+  .rq-context strong, .rq-kpi > strong, .rq-readout strong, .rq-source-grid strong,
+  .wq-calculation-grid strong, .wq-indicator-card > strong, .wq-system-source,
+  .wq-system-route > strong, .wq-system-receiving > strong, .wq-demand-donut strong,
+  .wr-selected-profile strong, .mt-summary-grid article > strong,
+  .mt-register-row > strong, .mt-quality-grid b, .mt-snapshot-card > strong,
+  .mt-snapshot-card > span, .mt-indicator-card-title > span,
+  .mt-indicator-card-title > strong, .mt-mini-category b,
+  .hydro-title-text h2, .hydro-meta-item .meta-val, .hydro-kpi-val,
+  .hydro-stat-col strong, .hydro-gauge-text .gauge-val, .hydro-info-row strong,
+  .hydro-status-index strong, .hydro-status-trend strong, .hydro-latest-date strong,
+  .hydro-footer-links strong, .dashboard-forecast-result strong,
+  .nw-insights-bar article b, .nw-report-copy strong, .nw-report-result > h3,
+  .sat-kpi strong, .sat-detail strong, .sat-chart-stats strong,
+  .cl-section-kpi > strong, .vg-correlations b, .ro-coverage strong,
+  .sw-coverage > strong, .sw-quality-item > b, .gw-quality strong,
+  .gr-monthly-status strong, .wq-monthly-status strong
+) { color: #16334b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-region span, .dm-panel > header p, .dm-metric > div > span,
+  .dm-map-selector, .dm-map-footer, .dm-map-footer span, .dm-footer,
+  .dm-footer > span:first-child, .dm-footer b, .dm-signal-count > span,
+  .dm-signal-count strong small, .dm-comparison > span, .dm-comparison p,
+  .dm-signal small, .dm-forecast-badge, .nw-legend, .nw-chart-stat,
+  .sat-caption, .sat-note, .sat-detail small, .sat-chart-stats small,
+  .cl-context, .cl-chart-meta, .cl-axis-caption, .cl-panel-heading > span,
+  .cl-chart-legend button, .cl-footer, .cl-map-note, .cl-kpi span,
+  .vg-context, .vg-panel-head > span, .vg-kpi-top > div > span,
+  .vg-map-title span, .vg-kpi-change span, .vg-layer-picker label,
+  .vg-rank-name, .vg-lag, .vg-correlations, .vg-footer,
+  .rf-context, .rf-panel-heading > span, .rf-kpi span, .rf-map-footer,
+  .rf-index-strip small, .rf-index-strip > button > span, .rf-footer,
+  .ro-source-stat, .ro-year-status, .ro-profile > div, .ro-coverage > span,
+  .sw-profile-grid, .sw-quality-item, .sw-coverage, .sw-rating-values,
+  .gw-quality, .gw-aquifer-grid span, .gw-monthly-status,
+  .gr-fact-grid span, .gr-monthly-status, .wq-monthly-status,
+  .ww-context, .ww-kpi-title, .ww-kpi-year, .ww-change, .ww-change > span,
+  .ww-readout > div > span, .ww-footer, .ww-footer > span:first-child,
+  .dw-context, .dw-kpi-label, .dw-kpi-bottom, .dw-source-badge,
+  .dw-matrix-title, .dw-matrix-label, .dw-matrix-month, .dw-matrix-legend,
+  .dw-lead-summary > div > span, .dw-readout > div > span,
+  .dw-footer, .dw-footer > span:first-child, .rq-context, .rq-cache,
+  .rq-kpi > span, .rq-kpi > div, .rq-readout > div > span,
+  .rq-note, .wq-indicator-label, .wq-indicator-history,
+  .wq-system-route-name, .wq-system-receiving > span,
+  .wq-demand-row, .wq-demand-donut span, .ws-filter-note, .ws-summary-note,
+  .ws-unit, .ws-pagination, .ws-source-name, .wr-area-card > span,
+  .wr-area-card b, .mt-control-note, .mt-map-count,
+  .mt-summary-grid article > span, .mt-register-head, .mt-register-row > span,
+  .mt-chart-meta, .mt-category-timeline span, .mt-snapshot-card > footer,
+  .mt-gallery-region, .mt-coverage-legend, .mt-indicator-card > footer,
+  .mt-attribution, .mt-mini-category span, .hydro-title-sub,
+  .hydro-title-sub span, .hydro-district-sub, .hydro-kpi-title,
+  .hydro-kpi-unit, .hydro-kpi-note, .hydro-chart-unit,
+  .hydro-status-label, .hydro-status-index span, .hydro-status-trend span,
+  .hydro-status-trend small, .hydro-footer-strip, .hydro-footer-links span,
+  .hydro-map-caption, .hydro-map-message, .hydro-alert-level,
+  .nw-report-intro, .nw-report-progress, .nw-report-result-head,
+  .nw-report-summary, .nw-report-findings, .nw-report-limits,
+  .nw-report-bottom, .nw-report-privacy
+) { color: #52697c; }
+
+/* Small icon wells and supporting notes. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-metric-icon, .cl-title-icon, .vg-heading-mark, .vg-kpi-icon,
+  .rf-heading-icon, .groundwater-icon, .reserve-icon, .quality-icon,
+  .rq-heading-icon, .ww-panel-icon, .dw-heading-icon, .dw-panel-icon,
+  .nw-chip-icon, .nw-report-icon
+) { background: #e7f2f8; color: #066a99; border-color: #bdd7e5; box-shadow: none; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .dm-source-pill { background: #e7f6ed; color: #076446; border-color: #a5cfba; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-map-footer, .dm-comparison, .dm-signal-count, .dm-insight,
+  .dm-footer, .dashboard-forecast-result, .cl-stat-strip,
+  .hydro-chart-stats-row, .nw-report-bottom
+) { border-color: #d4e0e9; }
+
+/* Controls use the same readable palette in every dashboard. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  select, input[type=month], input[type=date], input[type=number],
+  input[type=text], input[type=search], textarea
+) { background: #ffffff; color: #16334b; border-color: #afc5d4; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(select option, textarea) { background: #ffffff; color: #16334b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main input::placeholder { color: #63798b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(input[type=checkbox], input[type=radio]) { accent-color: #0873ad; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.dm-refresh, .nw-text-button, .rq-text-button, .ws-pagination button) { background: #eef5fa; color: #075b87; border-color: #b6cddd; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-tabs, .cl-tabs, .vg-tabs, .rf-tabs, .cl-chart-toolbar,
+  .ww-chart-switch, .dw-switch, .rq-cadence
+) { background: #edf3f8; border-color: #c9d8e3; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-tabs button, .cl-tabs button, .vg-tabs button, .rf-tabs button,
+  .ww-chart-switch button, .dw-switch button, .rq-cadence button,
+  .rq-tabs button, .mt-tabs button, .sat-chart-tabs button,
+  .sat-mini-tabs button, .ww-series-controls button, .hydro-badge-toggle,
+  .nw-report-open
+) { background: #f4f8fc; color: #35536a; border-color: #b8cddd; box-shadow: none; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-tabs button.active, .cl-tabs button[aria-pressed=true],
+  .vg-tabs button[aria-pressed=true], .rf-tabs button[aria-pressed=true],
+  .ww-chart-switch button[aria-pressed=true], .dw-switch button[aria-pressed=true],
+  .rq-cadence button[aria-pressed=true], .rq-tabs button[aria-pressed=true],
+  .mt-tabs button[aria-pressed=true], .sat-chart-tabs button.sel,
+  .sat-mini-tabs button.sel, .hydro-badge-toggle.active,
+  .rf-index-strip > button.active
+) { background: #086caa; color: #ffffff; border-color: #086caa; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-tabs button, .cl-tabs button, .vg-tabs button, .rf-tabs button,
+  .ww-chart-switch button, .dw-switch button, .rq-tabs button,
+  .mt-tabs button, .rq-cadence button, .nw-report-open
+):hover:not(.active):not([aria-pressed=true]) { background: #e0edf6; color: #123b5b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .cl-apply, .cl-export, .vg-apply, .vg-download, .rf-apply, .rf-export,
+  .rq-export, .rq-apply, .dashboard-forecast-run, .nw-run-forecast,
+  .hydro-btn-report, .ro-daily-export, .sw-daily-export, .nw-report-submit
+) { background: #086caa; color: #ffffff; border-color: #086caa; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.nw-report-bottom button, .nw-report-submit:hover:not(:disabled)) { background: #08735f; color: #ffffff; border-color: #08735f; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .cl-tabs button, .vg-tabs button, .rf-tabs button, .ww-chart-switch button,
+  .dw-switch button, .rq-tabs button, .mt-tabs button
+)[aria-pressed=true] > span { color: inherit; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main button:disabled { opacity: .55; cursor: not-allowed; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :focus-visible { outline-color: #076da5; }
+
+/* Tables and source metadata retain clear row and column structure. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main th { background: #ecf3f8; color: #35536a; border-color: #c9d8e3; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main td { color: #35536a; border-color: #dce6ee; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main tr:hover td { background: #f0f6fa; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.dm-table-wrap td:nth-child(2), .cl-register td:nth-child(2), .wq-component-table tbody th, .wr-variable-table tbody th) { color: #16334b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(code, .rq-source-grid code, .dw-source-table code, .mt-quality-grid code, .wq-calculation-grid code) { color: #126475; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .mt-coverage-table :is(thead th, th:first-child) { background: #edf3f8; color: #35536a; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .mt-coverage-table td { background: #ffffff; }
+
+/* Loading and empty states remain visible without looking like a dark panel. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-loading, .cl-loading, .vg-loading, .rf-loading, .rq-loading,
+  .mt-loading, .dashboard-forecast-loading, .nw-forecast-loading, .nw-forecast-empty
+) { background: #edf5fb; color: #355c75; border-color: #b6cedf; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-empty, .cl-empty, .vg-empty, .rf-empty, .rq-empty, .mt-chart-empty,
+  .mt-indicator-no-data, .ww-chart-empty, .dw-empty, .dw-empty-message,
+  .gw-map-empty, .wq-map-empty, .hydro-nodata, .hydro-nodata-text
+) { color: #52697c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .loading-progress-header strong { color: #066a99; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .loading-progress-track { background: #dae8ee; }
+
+/* Separate semantic colors prevent warning, success and failure information
+   from losing its meaning when the surface changes to white. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-warning, .rf-warning, .gw-warning, .gr-warning, .wq-warning,
+  .rq-source-notice, .rq-target, .dw-target, .ws-unavailable,
+  .mt-map-notice, .dashboard-forecast-error, .nw-report-notice,
+  .hydro-insight-item.warning, .hydro-tag-pill.warning,
+  .rs-alert-level, .rs-alert-level.level-2, .hydro-status-chip.mild,
+  .hydro-status-chip.moderate
+) { background: #fff7e7; color: #7b4d0c; border-color: #d8b36b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .dm-warning, .rf-warning, .gw-warning, .gr-warning, .wq-warning,
+  .rq-source-notice, .rq-target, .dw-target, .ws-unavailable,
+  .mt-map-notice, .dashboard-forecast-error, .nw-report-notice,
+  .hydro-insight-item.warning
+) :is(p, small, strong, span, svg) { color: #7b4d0c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .cl-error, .vg-error, .rf-error, .rq-error, .mt-error, .nw-error,
+  .nw-report-error, .hydro-insight-item.danger, .hydro-tag-pill.danger,
+  .hydro-status-banner.severe, .hydro-status-banner.extreme,
+  .rs-command-card.alert, .rs-alert-level.level-3, .hydro-error-card,
+  .hydro-status-chip.severe, .hydro-status-chip.extreme
+) { background: #fff0ee; color: #a23536; border-color: #dfa5a0; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .cl-error, .vg-error, .rf-error, .rq-error, .mt-error, .nw-error,
+  .nw-report-error, .hydro-insight-item.danger, .rs-command-card.alert,
+  .hydro-error-card
+) :is(p, small, strong, span, svg) { color: #a23536; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .cl-error button, .vg-error button, .rf-error button, .rq-error button,
+  .mt-error button, .nw-report-error button
+) { background: #ffffff; color: #a23536; border-color: #ce8f8b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .mt-map-notice button { background: #ffffff; color: #7b4d0c; border-color: #c99f52; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .rq-check.passed, .dw-matrix-cell.passed, .hydro-tag-pill.success,
+  .hydro-kpi-badge.up-success
+) { background: #e2f4e9; color: #076446; border-color: #83bba0; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.rq-check.failed, .dw-matrix-cell.failed, .hydro-kpi-badge.down-danger) { background: #ffe9e8; color: #a1323e; border-color: #d89ca7; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.rq-check.mixed, .dw-matrix-cell.mixed) { background: #fff2d9; color: #7b4d0c; border-color: #cfad6b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.rq-check.missing, .dw-matrix-cell.missing) { background: #e9eff4; color: #52697c; border-color: #b8c7d4; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .hydro-status-chip:not(.mild, .moderate, .severe, .extreme, .unknown) { background: #e2f4e9; color: #076446; border-color: #83bba0; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .hydro-status-chip.unknown { background: #e9eff4; color: #52697c; border-color: #b8c7d4; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.nw-up, .rs-command-card.normal > strong, .hydro-system-online, .nw-report-success, .nw-report-ai) { color: #08704f; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.nw-down, .hydro-info-row strong.worsening, .nw-report-download-error) { color: #ad3640; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .sat-danger { color: #ad3640 !important; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.hydro-insight-item.info, .hydro-tag-pill.info, .hydro-recom-item) { background: #eaf4fa; color: #225b7a; border-color: #bdd7e5; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .t-ok { background: #e2f4e9; color: #076446; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .t-d0 { background: #fff8dd; color: #755a12; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .t-d1 { background: #fff1cf; color: #8a5108; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .t-d2 { background: #ffeadb; color: #984118; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .t-d3 { background: #ffe9e6; color: #a13232; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .t-d4 { background: #f6e1eb; color: #7d234c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .t-info { background: #e6f2fa; color: #075e8c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .t-mute { background: #e9eff4; color: #52697c; }
+
+/* Chart and map palettes are applied separately; these are HTML tooltip shells. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.cl-chart-tooltip, .mt-chart-tooltip, .ww-chart-tooltip, .dw-chart-tooltip, .rq-chart-tooltip) {
+  background: #ffffff;
+  color: #16334b;
+  border-color: #adc7d8;
+  box-shadow: 0 8px 22px #16334b20;
+}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.cl-chart-tooltip, .mt-chart-tooltip, .ww-chart-tooltip, .dw-chart-tooltip, .rq-chart-tooltip) :is(strong, b, span) { color: #16334b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.cl-chart-tooltip, .mt-chart-tooltip, .ww-chart-tooltip, .dw-chart-tooltip, .rq-chart-tooltip) small { color: #52697c; }
+
+/* Secondary ranking labels and period-status captions have their own source
+   colors, so give these small labels the same readable light foreground. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .vg-rank-number, .vg-quality > div, .vg-insight > div:last-child,
+  .rf-ranking > button > span, .rf-season-status b, .ro-year-status b,
+  .cl-index-scale, .cl-stat-strip, .sw-attribute-bars > div,
+  .sw-quality-item > span, .gw-aquifer-grid > div > span,
+  .gr-fact-grid > div > span
+) { color: #52697c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .cl-coverage b { color: #08704f; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .rf-index-strip > button > strong { color: #075e8c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .rf-index-strip > button > strong.negative { color: #974a1b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .rf-index-strip > button.active :is(span, strong, small) { color: #ffffff; }
+
+/* Compact metadata inside nested components supplies its own colors instead
+   of inheriting the surrounding card's foreground. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .cl-map-note > span, .cl-stat-strip > span, .cl-footer > strong > span,
+  .vg-kpi-change b, .vg-insight > div:last-child > span,
+  .vg-correlations > div, .vg-quality > div > span,
+  .vg-footer > strong > span, .rf-footer > strong > span,
+  .ro-water-path > i, .sw-attribute-bars > div > span, .wq-quality > span,
+  .rs-snapshot, .rs-source-group > span, .rs-command-card > span,
+  .rs-indicators > div > span, .rs-unavailable,
+  .ww-picker > span, .ww-source-grid span, .dw-picker > span,
+  .dw-microbial-summary > div > span, .dw-coverage-grid span,
+  .rq-tabs button > span, .wq-flow-group > span,
+  .wq-flow-term > span, .wq-flow-result > span,
+  .wq-storage-readout > span, .wq-storage-change > span,
+  .mt-legend li, .mt-quality-grid span
+) { color: #52697c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .cl-footer > strong, .vg-footer > strong, .rf-footer > strong,
+  .rs-integrity-note strong, .wq-reading-guide > strong,
+  .wq-reading-guide p b, .wq-demand-row > strong,
+  .hydro-footer-strip strong
+) { color: #16334b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .rq-tabs button[aria-pressed=true] > span { color: #ffffff; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .rs-alert-summary { color: #875710; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(
+  .wq-flow-term, .wq-check-list article, .mt-indicator-snapshot .mt-panel-heading code,
+  .mt-gallery-region
+) { background: #f0f6fa; color: #35536a; border-color: #c6d9e6; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .wq-flow-result { background: #e9f5ef; color: #16334b; border-color: #9cc8b4; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.wq-flow-term > strong, .wq-storage-change.positive > strong) { color: #08704f; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.wq-flow-term.deduction > strong, .wq-storage-change.negative > strong) { color: #a1323e; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .wq-flow-result > strong { color: #7b4d0c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .wq-flow-arrow { color: #08756b; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .wq-storage-readout > strong { color: #075e8c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .wq-demand-donut::before { background: #ffffff; border-color: #d1e0e9; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .wq-demand-donut > div { width: calc(100% - 32px); height: calc(100% - 32px); align-content: center; border-radius: 50%; background: #ffffff; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main :is(.rs-audit-grid span, .wq-check-list article > span) { color: #52697c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .wq-check-list strong { color: #7b4d0c; }
+html[data-niwis-theme="light"] .nw.nw-unified-theme .nw-main .sat-detail b { background: #e5f5ec; color: #076446; }

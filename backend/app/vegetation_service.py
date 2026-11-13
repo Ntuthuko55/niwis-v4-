@@ -504,14 +504,25 @@ def _monthly_range(snapshot: dict, start: str, end: str, region: str | None, inc
     return combined[combined.month.between(start, end)].sort_values(["District_Name", "month"]).reset_index(drop=True)
 
 
-def _map_summary(snapshot: dict, meta: dict, start: str, end: str) -> dict:
-    monthly = _monthly_range(snapshot, start, end, None, include_drivers=False)
-    keys = snapshot["sat_keys"]
+def _map_summary(snapshot: dict, meta: dict, start: str, end: str, indicator: str | None = None) -> dict:
+    weather = indicator in snapshot["driver_keys"]
+    if weather:
+        # Driver maps share the existing monthly source cache and never load
+        # the national daily satellite history just to change a weather layer.
+        years = range(pd.Period(start, freq="M").year, pd.Period(end, freq="M").year + 1)
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            frames = list(executor.map(lambda year: _monthly_year(snapshot, year, None, "drivers"), years))
+        monthly = pd.concat(frames, ignore_index=True)
+        keys = snapshot["driver_keys"]
+        monthly = pd.DataFrame(columns=["District_Name", "month", *keys]) if monthly.empty else monthly[monthly.month.between(start, end)]
+    else:
+        monthly = _monthly_range(snapshot, start, end, None, include_drivers=False)
+        keys = snapshot["sat_keys"]
     maps = monthly.groupby("District_Name")[keys].mean().reset_index()
     maps["months"] = monthly.groupby("District_Name").month.nunique().reindex(maps.District_Name).to_numpy()
     # Retain the national frame, including explicit nulls for missing districts.
     maps = pd.DataFrame({"District_Name": meta["regions"]}).merge(maps, on="District_Name", how="left")
-    rank_keys = [key for key in ("District_Name", "VHI_percent", keys[0], "VCI_percent") if key in maps]
+    rank_keys = list(dict.fromkeys(key for key in ("District_Name", "VHI_percent", keys[0], "VCI_percent") if key in maps))
     rank = maps.dropna(subset=["VHI_percent"]).sort_values("VHI_percent", ascending=False) if "VHI_percent" in maps else maps
     return {"map": maps.to_dict("records"), "ranking": rank[rank_keys].to_dict("records")}
 
@@ -696,6 +707,8 @@ def map_data(region: str = "National", start: str | None = None, end: str | None
             raise HTTPException(422, "Choose an indicator reported by the vegetation metadata endpoint.")
         return _clean({"source": "Supabase", "source_tables": meta["source_tables"], "region": region,
                        "start": start, "end": end, "indicator": indicator, "latest_daily_date": meta["latest_daily_date"],
-                       **_map_summary(snapshot, meta, start, end)})
+                       **cached_call("vegetation-map-layer", _source_version(snapshot), start, end,
+                                     "weather" if indicator in snapshot["driver_keys"] else "satellite",
+                                     loader=lambda: _map_summary(snapshot, meta, start, end, indicator))})
     except SupabaseSourceError as exc:
         raise HTTPException(502, detail=str(exc)) from exc

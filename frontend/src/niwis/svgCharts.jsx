@@ -1,4 +1,7 @@
 import { DCLASS, GEO, LABELPOS, LESOTHO } from './demoData'
+import { useMemo } from 'react'
+import DashboardMap from '../components/DashboardMap'
+import { chartColor } from '../lib/chartTheme'
 
 function projX(lon) { return ((lon - 16.2) / 17) * 680 }
 function projY(lat) { return ((-22.0 - lat) / 13) * 560 }
@@ -27,32 +30,32 @@ export function LineChart({ sets, labels = [], min, max, h = 190, dec = 0, split
           const y = Y(v)
           return (
             <g key={t}>
-              <line x1={P.l} y1={y} x2={W - P.r} y2={y} stroke="#1B3A49" />
-              <text x={P.l - 6} y={y + 3.5} textAnchor="end" fontSize="9.5" fill="#6A8896">{v.toFixed(dec)}</text>
+              <line x1={P.l} y1={y} x2={W - P.r} y2={y} stroke="var(--chart-grid, #1B3A49)" />
+              <text x={P.l - 6} y={y + 3.5} textAnchor="end" fontSize="9.5" fill="var(--chart-text, #6A8896)">{v.toFixed(dec)}</text>
             </g>
           )
         })}
         {split !== undefined && (
           <>
-            <rect x={X(split)} y={P.t} width={W - P.r - X(split)} height={H - P.t - P.b} fill="#8C7BE0" opacity=".07" />
-            <line x1={X(split)} y1={P.t} x2={X(split)} y2={H - P.b} stroke="#8C7BE0" strokeDasharray="3 3" />
+            <rect x={X(split)} y={P.t} width={W - P.r - X(split)} height={H - P.t - P.b} fill={chartColor('#8C7BE0')} opacity=".07" />
+            <line x1={X(split)} y1={P.t} x2={X(split)} y2={H - P.b} stroke={chartColor('#8C7BE0')} strokeDasharray="3 3" />
           </>
         )}
         {sets.map((s) => {
           const d = s.data.map((v, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ')
           return (
             <g key={s.n}>
-              {s.area && <path d={`${d} L${X(n - 1)},${Y(lo)} L${X(0)},${Y(lo)} Z`} fill={s.c} opacity=".12" />}
-              <path d={d} fill="none" stroke={s.c} strokeWidth={s.w || 2} strokeDasharray={s.dash || undefined} strokeLinejoin="round" />
+              {s.area && <path d={`${d} L${X(n - 1)},${Y(lo)} L${X(0)},${Y(lo)} Z`} fill={chartColor(s.c)} opacity=".12" />}
+              <path d={d} fill="none" stroke={chartColor(s.c)} strokeWidth={s.w || 2} strokeDasharray={s.dash || undefined} strokeLinejoin="round" />
             </g>
           )
         })}
         {labels.map((l, i) => (n > 8 && i % 2 ? null : (
-          <text key={l + i} x={X(i)} y={H - 8} textAnchor="middle" fontSize="9" fill="#6A8896">{l}</text>
+          <text key={l + i} x={X(i)} y={H - 8} textAnchor="middle" fontSize="9" fill="var(--chart-text, #6A8896)">{l}</text>
         )))}
       </svg>
       {sets.length > 1 && (
-        <div className="nw-legend">{sets.map((s) => <span key={s.n}><i style={{ background: s.c }} />{s.n}</span>)}</div>
+        <div className="nw-legend">{sets.map((s) => <span key={s.n}><i style={{ background: chartColor(s.c) }} />{s.n}</span>)}</div>
       )}
     </>
   )
@@ -70,8 +73,8 @@ export function BarChart({ labels, vals, color = 'var(--river)', h = 190, max })
         const y = P.t + (1 - t / 3) * (H - P.t - P.b)
         return (
           <g key={t}>
-            <line x1={P.l} y1={y} x2={W - P.r} y2={y} stroke="#1B3A49" />
-            <text x={P.l - 6} y={y + 3.5} textAnchor="end" fontSize="9.5" fill="#6A8896">{(hi * t / 3).toFixed(0)}</text>
+            <line x1={P.l} y1={y} x2={W - P.r} y2={y} stroke="var(--chart-grid, #1B3A49)" />
+            <text x={P.l - 6} y={y + 3.5} textAnchor="end" fontSize="9.5" fill="var(--chart-text, #6A8896)">{(hi * t / 3).toFixed(0)}</text>
           </g>
         )
       })}
@@ -82,8 +85,8 @@ export function BarChart({ labels, vals, color = 'var(--river)', h = 190, max })
         const c = typeof color === 'function' ? color(v, i) : color
         return (
           <g key={labels[i]}>
-            <rect x={x} y={y} width={bw * 0.64} height={height} rx="2" fill={c} />
-            <text x={P.l + i * bw + bw / 2} y={H - 12} textAnchor="middle" fontSize="9" fill="#6A8896">{labels[i]}</text>
+            <rect x={x} y={y} width={bw * 0.64} height={height} rx="2" fill={chartColor(c)} />
+            <text x={P.l + i * bw + bw / 2} y={H - 12} textAnchor="middle" fontSize="9" fill="var(--chart-text, #6A8896)">{labels[i]}</text>
           </g>
         )
       })}
@@ -96,7 +99,14 @@ export function BarEl({ v, color, max = 100 }) {
 }
 
 export function MapSVG({ provinces, selected, onSelect, colorFn, points, valueFn }) {
-  return (
+  const geographicFeatures = useMemo(() => provinces.filter(province => GEO[province.id]?.length >= 3).map(province => {
+    const ring = GEO[province.id]
+    const first = ring[0], last = ring[ring.length - 1]
+    const closedRing = first[0] === last[0] && first[1] === last[1] ? ring : [...ring, first]
+    return { type: 'Feature', id: province.id, properties: { provinceCode: province.id, provinceName: province.name, province, boundary_precision: 'Generalized province display boundary' }, geometry: { type: 'Polygon', coordinates: [closedRing] } }
+  }), [provinces])
+  const markers = (points || []).filter(point => point.lon != null && point.lat != null && Number.isFinite(Number(point.lon)) && Number.isFinite(Number(point.lat))).map((point, index) => ({ id: `${point.t}-${index}`, longitude: Number(point.lon), latitude: Number(point.lat), color: point.c, radius: 5, label: point.t }))
+  const originalMap = (
     <div className="nw-map">
       <svg viewBox="0 0 680 590">
         <polygon points={poly(LESOTHO)} fill="#0A1720" stroke="#2A4E5E" strokeDasharray="3 3" />
@@ -135,6 +145,7 @@ export function MapSVG({ provinces, selected, onSelect, colorFn, points, valueFn
       </svg>
     </div>
   )
+  return <DashboardMap className="dashboard-map-province" height={520} original={originalMap} features={geographicFeatures} featureStyle={feature => ({ fillColor: colorFn(feature.properties.province), fillOpacity: 0.65, color: selected === feature.properties.provinceCode ? '#ffffff' : '#2a4e5e', weight: selected === feature.properties.provinceCode ? 2.4 : 1 })} featureLabel={feature => `${feature.properties.provinceName}${valueFn ? ` · ${valueFn(feature.properties.province)}` : ''} · Generalized province display boundary`} onFeatureSelect={feature => onSelect?.(feature.properties.provinceCode)} selectedFeature={geographicFeatures.find(feature => feature.properties.provinceCode === selected)} markers={markers} mapLabel="Provincial dashboard map" />
 }
 
 export function DTag({ d }) {

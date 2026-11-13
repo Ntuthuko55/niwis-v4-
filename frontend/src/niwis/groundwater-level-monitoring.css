@@ -12,3 +12,12 @@
 .gw-daily-controls{display:flex;align-items:flex-end;gap:10px;justify-content:space-between;margin-bottom:8px}.gw-daily-controls label{flex:1}.gw-register-scroll{max-height:300px;overflow:auto}.gw-register-scroll table{width:100%;border-collapse:collapse;font-size:9px;color:#7f98a7}.gw-register-scroll th{text-align:left;color:#54788b;font-weight:600;border-bottom:1px solid #dfe9ee;padding:7px 5px;position:sticky;top:0;background:#fff}.gw-register-scroll td{border-bottom:1px solid #edf2f5;padding:7px 5px}.groundwater-dashboard .rf-methods{margin-top:12px}
 @media(max-width:1100px){.gw-source-strip{gap:12px}.gw-source-strip small{flex-basis:100%;margin:0}}
 @media(max-width:760px){.groundwater-dashboard .rf-heading h1{font-size:22px}.gw-source-strip{padding:12px;gap:9px}.gw-source-strip>span{flex-basis:100%}.gw-chart-selects{grid-template-columns:1fr}.gw-daily-controls{align-items:stretch;flex-direction:column}.gw-aquifer-grid{gap:12px 8px}.gw-aquifer-grid strong{font-size:12px}}
+.groundwater-dashboard[data-section]:not([data-section="all"]) .rf-kpis { display: none; }
+.groundwater-dashboard[data-section="boreholes"] .groundwater-topic-panels > :not(:nth-child(2)),
+.groundwater-dashboard[data-section="recharge"] .groundwater-topic-panels > :not(:first-child),
+.groundwater-dashboard[data-section="recharge"] .rf-daily-grid > :first-child,
+.groundwater-dashboard[data-section="grace"] .rf-context,
+.groundwater-dashboard[data-section="grace"] .rf-three-grid,
+.groundwater-dashboard[data-section="grace"] .rf-daily-grid,
+.groundwater-dashboard[data-section="grace"] .rf-methods,
+.groundwater-dashboard[data-section="grace"] .rf-primary-grid > :not(:first-child) { display: none; }

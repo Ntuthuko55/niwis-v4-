@@ -11,5 +11,13 @@
 .gr-fact-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px 12px;margin:18px 0}.gr-fact-grid span{font-size:9px;color:#91a7a0}.gr-fact-grid strong{display:block;color:#58877c;font-size:15px;font-weight:500;margin-top:4px}.gr-fact-grid small{font-size:9px;color:#8da59d;font-weight:400}
 .gr-monthly-status{display:flex;align-items:baseline;gap:7px;min-height:25px;color:#8aa198;font-size:9px}.gr-monthly-status strong{font-size:18px;color:#4f8877;font-weight:500}.gr-monthly-status span[role=alert]{color:#b36d61}
 .groundwater-reserve-dashboard .rf-methods{margin-top:12px}
+.groundwater-reserve-dashboard .gw-register-scroll{width:100%;max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain;box-sizing:border-box}
+.groundwater-reserve-dashboard .gw-register-scroll table{width:max-content;min-width:100%;max-width:none}
 @media(max-width:1100px){.gr-source-strip{gap:12px}.gr-source-strip small{flex-basis:100%;margin:0}}
 @media(max-width:760px){.groundwater-reserve-dashboard .rf-heading h1{font-size:22px}.gr-source-strip{padding:12px;gap:9px}.gr-source-strip>span{flex-basis:100%}.gr-definition{grid-template-columns:1fr;gap:4px}.gr-definition b{white-space:normal}.gr-fact-grid{gap:12px 8px}.gr-fact-grid strong{font-size:12px}.gr-chart-select{justify-content:stretch}.gr-chart-select label{width:100%}.gr-chart-select select{width:100%}}
+.groundwater-reserve-dashboard[data-section]:not([data-section="all"]) .rf-kpis { display: none; }
+.groundwater-reserve-dashboard[data-section="hydrogeology"] .reserve-topic-panels > :not(:nth-child(2)),
+.groundwater-reserve-dashboard[data-section="recharge-discharge"] .reserve-topic-panels > :not(:first-child),
+.groundwater-reserve-dashboard[data-section="sustainability"] .reserve-topic-panels > :not(:nth-child(3)),
+.groundwater-reserve-dashboard[data-section="hydrogeology"] .rf-daily-grid > :first-child,
+.groundwater-reserve-dashboard[data-section="recharge-discharge"] .rf-daily-grid > :first-child { display: none; }

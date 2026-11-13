@@ -11,6 +11,7 @@ import {
 } from '../lib/modelOptions'
 import { getTrainingJob, registerDashboardDataset, startTraining } from '../services/api'
 import LoadingProgress from './LoadingProgress'
+import { useTheme } from '../contexts/ThemeContext'
 import '../niwis/niwis-portal.css'
 
 // All dashboards use the same registration and /models/train path as the
@@ -35,6 +36,81 @@ const CONFIGS = {
   hydrology: { label: 'Hydrological drought', meta: '/api/hydrology/metadata', data: '/api/hydrology/forecast-source', dateKey: 'date', frequency: 'monthly', preferred: ['ssi_dimensionless', 'river_discharge_m3_s', 'sgi_dimensionless'] },
 }
 
+// These section keys match the portal navigation. A section may use source
+// metadata categories or its own source table; keys with no time-series source
+// stay unavailable instead of being forecast from a neighbouring topic.
+const NON_FORECASTABLE_SECTIONS = {
+  surface: new Set(['catchments']),
+  groundwater: new Set(['grace']),
+  reservoirs: new Set(['derived']),
+  'drinking-water': new Set(['blue-drop']),
+}
+
+function metricText(metric = {}) {
+  return [metric.key, metric.label, metric.category, metric.section, metric.group, metric.source, metric.table]
+    .filter(Boolean).join(' ').toLowerCase()
+}
+
+function matchesSectionMetric(metric, dashboard, section) {
+  const key = String(metric?.key || '').toLowerCase()
+  const category = String(metric?.category || '').toLowerCase()
+  const group = String(metric?.group || '').toLowerCase()
+  const sectionName = String(metric?.section || '').toLowerCase()
+  const text = metricText(metric)
+  const isCategory = (...values) => values.includes(category) || values.includes(group)
+  if (dashboard === 'climate') return sectionName === section
+  if (dashboard === 'vegetation') {
+    if (section === 'satellite') return category !== 'weather' && group !== 'weather'
+    if (section === 'meteorological') return category === 'weather' || group === 'weather'
+    if (section === 'derived') return category === 'condition' || group === 'condition'
+  }
+  if (dashboard === 'rainfall') return section === 'indices' ? /(^|_)(spi|spei)/i.test(key) : !/(^|_)(spi|spei)/i.test(key)
+  if (dashboard === 'runoff') return section === 'derived'
+    ? /^(anomaly|reported_trend|ssi|flood_)/.test(key)
+    : !/^(anomaly|reported_trend|ssi|flood_)/.test(key)
+  if (dashboard === 'surface') {
+    if (section === 'stations') return isCategory('hydrology', 'sediment')
+    if (section === 'sansa') return /earth observation|satellite|sansa/.test(text)
+    if (section === 'catchments') return false
+  }
+  if (dashboard === 'groundwater') {
+    if (section === 'boreholes') return isCategory('level', 'aquifer')
+    if (section === 'recharge') return /recharge|abstraction/.test(category || group)
+    if (section === 'grace') return /grace|satellite/.test(text)
+  }
+  if (dashboard === 'groundwater-reserve') {
+    if (section === 'hydrogeology') return isCategory('hydrogeology', 'reserve')
+    if (section === 'recharge-discharge') return isCategory('recharge', 'discharge')
+    if (section === 'sustainability') return isCategory('sustainability', 'derived balance') || /derived balance/.test(text)
+  }
+  if (dashboard === 'water-quality') {
+    if (section === 'physical') return category === 'physical'
+    if (section === 'chemical') return ['chemical', 'nutrients', 'metals', 'organic', 'inorganic'].includes(category)
+    if (section === 'biological') return category === 'biological'
+    if (section === 'sansa') return /sansa|satellite|remote sensing|earth observation/.test(text)
+  }
+  if (dashboard === 'reservoirs') {
+    if (section === 'operational') return ['storage', 'inflow', 'outflow', 'evaporation', 'seepage', 'catchment'].includes(category)
+    if (section === 'national-dams') return category === 'storage'
+    if (section === 'derived') return /derived|change|trend|anomaly/.test(text)
+  }
+  if (dashboard === 'wastewater') {
+    if (section === 'effluent') return ['physical', 'chemical', 'nutrients', 'metals', 'biological'].includes(category)
+    if (section === 'operations') return category === 'operations'
+    if (section === 'weather') return category === 'meteorological'
+  }
+  if (dashboard === 'drinking-water') {
+    if (section === 'sans241') return ['physical', 'chemical', 'microbiological'].includes(category)
+    if (section === 'blue-drop') return false
+  }
+  if (dashboard === 'rwqo') return sectionName === section
+    || sectionName.replaceAll('_', '-') === section
+    || sectionName.replaceAll('-', '_') === section
+  // WRM and water quantity return metrics already restricted by their selected
+  // source region. Drought routes each have a separate source endpoint.
+  return null
+}
+
 function getJSON(url, signal) {
   return fetch(url, { signal }).then(async (response) => {
     const content = await response.text()
@@ -49,9 +125,19 @@ function getJSON(url, signal) {
   })
 }
 
-function regionOptions(meta, dashboard) {
+function regionOptions(meta, dashboard, section) {
   if (dashboard === 'hydrology') return ['National', ...new Set(meta?.districts || [])]
   if (dashboard === 'satellite') return ['National', ...new Set((meta?.stations || []).map((station) => station.name).filter(Boolean))]
+  if (dashboard === 'reservoirs' && section === 'national-dams') return ['National']
+  if (dashboard === 'water-quantity') {
+    const transfers = (meta?.regions || []).filter((region) => String(region).startsWith('Transfers: '))
+    return section === 'transfers' ? [...new Set(transfers)] : ['National']
+  }
+  if (dashboard === 'wrm') {
+    const regions = meta?.regions || []
+    const sourceAreas = regions.filter((region) => String(region).startsWith('SWSA: '))
+    return section === 'source-areas' ? [...new Set(sourceAreas)] : [...new Set(regions.filter((region) => !String(region).startsWith('SWSA: ')))]
+  }
   if (Array.isArray(meta?.regions)) {
     const values = meta.regions.map((region) => typeof region === 'string' ? region : region.district_name || region.name).filter(Boolean)
     return ['National', ...new Set(values.filter((value) => value !== 'National'))]
@@ -120,9 +206,16 @@ function numericValue(value) {
   return Number.isFinite(number) ? number : null
 }
 
-function metricKeys(metadata, dashboard, section, config) {
-  if (dashboard === 'climate' && section) return new Set((metadata?.metrics || []).filter((item) => item.section === section).map((item) => item.key))
-  return config?.limitTargetsToMetrics ? new Set((metadata?.metrics || []).map((item) => item.key)) : null
+function metricKeys(metrics, dashboard, section) {
+  if (!section) return null
+  if (['water-quantity', 'wrm'].includes(dashboard)) return null
+  const sectionConfig = NON_FORECASTABLE_SECTIONS[dashboard]
+  if (sectionConfig?.has(section)) return new Set()
+  const items = (metrics || []).filter((item) => item?.key)
+  const classified = items.map((item) => ({ item, match: matchesSectionMetric(item, dashboard, section) }))
+  const decisions = classified.filter(({ match }) => match !== null)
+  if (!decisions.length) return new Set()
+  return new Set(decisions.filter(({ match }) => match).map(({ item }) => item.key))
 }
 
 function numericKeys(rows, preferred = [], allowed = null) {
@@ -169,10 +262,12 @@ function spiClass(value) {
   return 'D4'
 }
 
-export default function DashboardForecastStudio({ dashboard, section = null }) {
+export default function DashboardForecastStudio({ dashboard, section = null, sectionLabel = null }) {
   const config = CONFIGS[dashboard]
+  const { theme } = useTheme()
   const [meta, setMeta] = useState(null)
   const [sourceRows, setSourceRows] = useState([])
+  const [sourceMetrics, setSourceMetrics] = useState([])
   const [sourceMode, setSourceMode] = useState('')
   const [dataset, setDataset] = useState(null)
   const [region, setRegion] = useState('National')
@@ -190,10 +285,10 @@ export default function DashboardForecastStudio({ dashboard, section = null }) {
   const requestKey = useRef('')
   const sourceVersion = useRef(0)
 
-  const options = regionOptions(meta, dashboard)
+  const options = regionOptions(meta, dashboard, section)
   const availableModelGroups = config?.allowedModels ? modelGroups.map(group => ({ ...group, items: group.items.filter(item => config.allowedModels.includes(item)) })).filter(group => group.items.length) : modelGroups
-  const catalogue = useMemo(() => Object.fromEntries((meta?.metrics || []).map((item) => [item.key, item])), [meta])
-  const allowedKeys = useMemo(() => metricKeys(meta, dashboard, section, config), [dashboard, section, meta, config])
+  const catalogue = useMemo(() => Object.fromEntries((sourceMetrics.length ? sourceMetrics : meta?.metrics || []).map((item) => [item.key, item])), [meta, sourceMetrics])
+  const allowedKeys = useMemo(() => metricKeys(sourceMetrics.length ? sourceMetrics : meta?.metrics, dashboard, section), [dashboard, section, meta, sourceMetrics])
   const numericColumns = useMemo(() => numericKeys(sourceRows, config?.preferred || [], allowedKeys), [sourceRows, allowedKeys, config])
   const dateColumn = dataset?.index_column || 'date'
   const multiFeatureModel = config?.limitTargetsToMetrics
@@ -207,31 +302,39 @@ export default function DashboardForecastStudio({ dashboard, section = null }) {
     const sourceConfig = annualClimateSection
       ? { ...config, data: '/api/climate/dashboard', dateKey: 'Year', frequency: 'annual', monthlyRange: false }
       : config
-    const sourceAllowedKeys = metricKeys(metadata, dashboard, section, config)
-    let rows = []
+    let body
     if (dashboard === 'hydrology') {
       const params = new URLSearchParams({ region: selectedRegion })
-      const body = await getJSON(`${config.data}?${params}`, signal)
+      body = await getJSON(`${config.data}?${params}`, signal)
       if (!signal.aborted) setSourceMode(body.source_mode || '')
-      rows = responseRows(body)
     } else {
       const params = sourceParams(sourceConfig, metadata, selectedRegion)
       if (dashboard === 'climate') {
         params.include_map = 'false'
         if (section) params.section = section
       }
-      const body = await getJSON(`${sourceConfig.data}?${new URLSearchParams(params)}`, signal)
+      body = await getJSON(`${sourceConfig.data}?${new URLSearchParams(params)}`, signal)
       if (!signal.aborted) setSourceMode(body.source_mode || '')
-      rows = responseRows(body)
     }
-    const normalised = normaliseRows(rows, sourceConfig)
+    const metrics = Array.isArray(body?.metrics) ? body.metrics : metadata?.metrics || []
+    const sectionKeys = metricKeys(metrics, dashboard, section)
+    const sourceAllowedKeys = sectionKeys || (config.limitTargetsToMetrics ? new Set(metrics.map((item) => item.key).filter(Boolean)) : null)
+    const selectedMetrics = sourceAllowedKeys ? metrics.filter((item) => sourceAllowedKeys.has(item.key)) : metrics
+    const rows = responseRows(body)
+    const normalisedSource = normaliseRows(rows, sourceConfig)
+    const normalised = sourceAllowedKeys
+      ? normalisedSource.map((row) => Object.fromEntries([['date', row.date], ...Object.entries(row).filter(([key]) => sourceAllowedKeys.has(key))]))
+      : normalisedSource
     const numeric = numericKeys(normalised, config.preferred, sourceAllowedKeys)
-    if (!numeric.length) throw new Error(`No numeric ${config.label.toLowerCase()} variables are available for ${selectedRegion}.`)
+    if (!numeric.length) throw new Error(section
+      ? `No numeric time-series variables are available for ${sectionLabel || section} in ${selectedRegion}.`
+      : `No numeric ${config.label.toLowerCase()} variables are available for ${selectedRegion}.`)
     if (signal.aborted) return
     const registered = await registerDashboardDataset({ dashboard, region: selectedRegion, date_column: 'date', rows: normalised })
     if (signal.aborted) return
     requestKey.current = `${dashboard}:${section || ''}:${selectedRegion}`
     setSourceRows(normalised)
+    setSourceMetrics(selectedMetrics)
     setDataset(registered)
     const selectedTarget = numeric.includes(target) ? target : numeric[0] || preferredForecastTarget(numeric)
     setTarget(selectedTarget)
@@ -243,15 +346,15 @@ export default function DashboardForecastStudio({ dashboard, section = null }) {
   }
 
   useEffect(() => {
-    if (!config) return undefined
+    if (!config || NON_FORECASTABLE_SECTIONS[dashboard]?.has(section)) return undefined
     const controller = new AbortController()
     sourceVersion.current += 1
-    setLoading(true); setError(''); setMeta(null); setDataset(null); setSourceRows([]); setJob(null); setSubmitting(false); autoStarted.current = null; requestKey.current = ''
+    setLoading(true); setError(''); setMeta(null); setDataset(null); setSourceRows([]); setSourceMetrics([]); setJob(null); setSubmitting(false); autoStarted.current = null; requestKey.current = ''
     getJSON(config.meta, controller.signal).then(async (metadata) => {
       if (controller.signal.aborted) return
       setMeta(metadata)
-      const available = regionOptions(metadata, dashboard)
-      const initial = metadata.default_region || available[0] || 'National'
+      const available = regionOptions(metadata, dashboard, section)
+      const initial = available.includes(metadata.default_region) ? metadata.default_region : available[0] || 'National'
       setRegion(initial)
       // Mark the initial request before awaiting it so the region effect does
       // not issue the same source read a second time during this render.
@@ -265,7 +368,7 @@ export default function DashboardForecastStudio({ dashboard, section = null }) {
     if (!meta || !config || !region || requestKey.current === `${dashboard}:${section || ''}:${region}`) return undefined
     const controller = new AbortController()
     sourceVersion.current += 1
-    setLoading(true); setError(''); setDataset(null); setSourceRows([]); setJob(null); setSubmitting(false); autoStarted.current = null
+    setLoading(true); setError(''); setDataset(null); setSourceRows([]); setSourceMetrics([]); setJob(null); setSubmitting(false); autoStarted.current = null
     loadSource(meta, region, controller.signal).catch((err) => { if (!controller.signal.aborted && err.name !== 'AbortError') setError(err.response?.data?.detail || err.message) }).finally(() => { if (!controller.signal.aborted) setLoading(false) })
     return () => { controller.abort(); sourceVersion.current += 1 }
   }, [region])
@@ -311,37 +414,47 @@ export default function DashboardForecastStudio({ dashboard, section = null }) {
     train()
   }, [dataset?.dataset_id, target])
 
-  if (!config) return null
-  const observed = (result?.history_dates?.length && result?.history_values?.length
+  if (!config) return <section className="nw-panel nw-overview-forecast" aria-label={`${sectionLabel || 'Dashboard section'} forecasting studio`}><div className="nw-panel-header"><span>Forecasting studio · {sectionLabel || 'Selected topic'}</span><span className="nw-panel-link">Source unavailable</span></div><p className="nw-forecast-unavailable">A time-series forecasting source is not connected to this topic yet.</p></section>
+  if (NON_FORECASTABLE_SECTIONS[dashboard]?.has(section)) return <section className="nw-panel nw-overview-forecast" aria-label={`${sectionLabel || section} forecasting studio`}><div className="nw-panel-header"><span>Forecasting studio · {sectionLabel || section}</span><span className="nw-panel-link">No time-series metrics</span></div><p className="nw-forecast-unavailable">This topic contains static or supporting values, so there is no observed time series to train a forecast on.</p></section>
+  const resultHistory = (Array.isArray(result?.history_dates) && Array.isArray(result?.history_values)
     ? result.history_dates.map((date, index) => ({ date, value: numericValue(result.history_values[index]) }))
-    : sourceRows.map((row) => ({ date: row.date, value: numericValue(row[target]) })))
-    .filter((point) => point.date).slice(-18)
+    : []).filter((point) => point.date && point.value != null)
+  const sourceHistory = sourceRows
+    .map((row) => ({ date: row.date, value: numericValue(row[target]) }))
+    .filter((point) => point.date && point.value != null)
+  const observed = (resultHistory.length ? resultHistory : sourceHistory).slice(-18)
   const observedDates = observed.map((point) => point.date)
   const observedValues = observed.map((point) => point.value)
   const targetMetric = catalogue[target]
   const targetLabel = targetMetric?.label || target || 'Selected variable'
   const targetAxis = targetMetric?.unit ? `${targetLabel} (${targetMetric.unit})` : targetLabel
-  const forecastDates = result?.forecast_dates || []
-  const forecastValues = result?.forecast_values || []
-  const lowerBound = result?.lower_bound || []
-  const upperBound = result?.upper_bound || []
+  const forecastPoints = (Array.isArray(result?.forecast_dates) && Array.isArray(result?.forecast_values)
+    ? result.forecast_dates.map((date, index) => ({ date, value: numericValue(result.forecast_values[index]), index }))
+    : []).filter((point) => point.date && point.value != null)
+  const forecastDates = forecastPoints.map((point) => point.date)
+  const forecastValues = forecastPoints.map((point) => point.value)
+  const lowerBound = forecastPoints.map((point) => numericValue(result?.lower_bound?.[point.index]))
+  const upperBound = forecastPoints.map((point) => numericValue(result?.upper_bound?.[point.index]))
   const cards = config.annualForecast
     ? [0, 1, 2].map(index => ({ label: forecastDates[index] ? String(forecastDates[index]).slice(0, 4) : `+${index + 1}y`, value: forecastValues[index] ?? null }))
     : [1, 2, 3].map((month) => monthPoint(forecastDates, forecastValues, month))
   const droughtIndex = /(^|_)(spi|spei)/i.test(target)
   const droughtOdds = forecastValues.length ? Math.round((forecastValues.filter((value) => Number(value) <= -1.3).length / forecastValues.length) * 100) : null
+  const chartColors = theme === 'light'
+    ? { historical: '#587387', forecast: '#0879ae', range: 'rgba(8,108,170,.16)', grid: '#dce6ee', text: '#425e73', plot: '#f5f9fc', zero: '#b6c8d6' }
+    : { historical: '#7aa0b0', forecast: '#5ac6e3', range: 'rgba(47,168,201,.22)', grid: '#1B3A49', text: '#93AEBB', plot: '#0d2029', zero: '#2A4E5E' }
   const chartData = [
-    { x: observedDates, y: observedValues, type: 'scatter', mode: 'lines', name: 'Historical', line: { color: '#7aa0b0', width: 2 } },
-    ...(lowerBound.length && upperBound.length ? [
+    { x: observedDates, y: observedValues, type: 'scatter', mode: 'lines', name: 'Historical', line: { color: chartColors.historical, width: 2 } },
+    ...(lowerBound.some((value) => value != null) && upperBound.some((value) => value != null) ? [
       { x: forecastDates, y: lowerBound, type: 'scatter', mode: 'lines', name: 'Lower bound', line: { color: 'rgba(47,168,201,0)', width: 0 }, hoverinfo: 'skip', showlegend: false },
-      { x: forecastDates, y: upperBound, type: 'scatter', mode: 'lines', name: 'Confidence range', fill: 'tonexty', fillcolor: 'rgba(47,168,201,.22)', line: { color: 'rgba(90,198,227,.45)', width: 1 } },
+      { x: forecastDates, y: upperBound, type: 'scatter', mode: 'lines', name: 'Confidence range', fill: 'tonexty', fillcolor: chartColors.range, line: { color: chartColors.forecast, width: 1 } },
     ] : []),
-    { x: forecastDates, y: forecastValues, type: 'scatter', mode: 'lines', name: `Forecast · ${String(result?.selected_model || model).toUpperCase()}`, line: { color: '#5ac6e3', width: 2.6 } },
+    { x: forecastDates, y: forecastValues, type: 'scatter', mode: 'lines', name: `Forecast · ${String(result?.selected_model || model).toUpperCase()}`, line: { color: chartColors.forecast, width: 2.6 } },
   ]
 
   return (
-    <section className="nw-panel nw-overview-forecast" aria-label={`${config.label} forecasting studio`}>
-      <div className="nw-panel-header"><span>Forecasting studio · {region}</span><span className="nw-panel-link">{config.annualForecast ? 'Annual observations / year-based horizons' : 'LSTM default · selectable models, targets and horizon'}</span></div>
+    <section className="nw-panel nw-overview-forecast" aria-label={`${sectionLabel || config.label} forecasting studio`}>
+      <div className="nw-panel-header"><span>Forecasting studio · {sectionLabel || config.label} · {region}</span><span className="nw-panel-link">{config.annualForecast ? 'Annual observations / year-based horizons' : 'LSTM default · selectable models, targets and horizon'}</span></div>
       <div className="nw-dash-forecast">
         {sourceMode === 'local_csv_fallback' && <p className="nw-note">Using packaged observations because the configured database source is unavailable.</p>}
         {loading && !dataset ? <LoadingProgress className="nw-forecast-loading" message={`Loading ${config.label.toLowerCase()} history for the forecast`} /> : error && !dataset ? <div className="nw-error" role="alert">{error}<button type="button" className="nw-btn" onClick={() => setRetry((value) => value + 1)}>Retry forecast source</button></div> : <>
@@ -355,9 +468,10 @@ export default function DashboardForecastStudio({ dashboard, section = null }) {
           {multiFeatureModel && <div className="nw-dash-features"><button type="button" className="nw-panel-link" onClick={() => setShowFeatures((open) => !open)}>{showFeatures ? 'Hide' : 'Show'} {model} inputs</button>{showFeatures && <div className="nw-dash-feature-grid">{numericColumns.filter((column) => column !== target).map((column) => <label key={column}><input type="checkbox" checked={features.includes(column)} disabled={training} onChange={() => setFeatures((values) => values.includes(column) ? values.filter((item) => item !== column) : [...values, column])} />{catalogue[column]?.label || column}</label>)}</div>}</div>}
           {error && dataset && <div className="nw-error" role="alert">{error}</div>}
           {job?.status === 'completed' && <p className="nw-note">Forecast complete · {forecastValues.length} future observations</p>}
+          {job?.status === 'completed' && !forecastValues.length && <p className="nw-forecast-unavailable" role="status">The model returned no usable forecast values. The chart still shows the available history.</p>}
           {result?.warnings?.map((warning) => <p className="nw-note" key={warning}>{warning}</p>)}
           {training && <p className="nw-note">{job?.message || `Fitting ${model} to ${target}…`}</p>}
-          <div className="nw-dash-forecast-chart">{observedValues.length || forecastValues.length ? <Plot data={chartData} layout={{ paper_bgcolor: 'transparent', plot_bgcolor: '#0d2029', font: { color: '#93AEBB', family: 'IBM Plex Sans', size: 11 }, margin: { l: 58, r: 12, t: 28, b: 36 }, height: 250, hovermode: 'x unified', legend: { orientation: 'h', y: 1.18, font: { size: 10 } }, xaxis: { gridcolor: '#1B3A49', tickfont: { size: 10 } }, yaxis: { gridcolor: '#1B3A49', title: { text: targetAxis, standoff: 10 }, automargin: true, zeroline: true, zerolinecolor: '#2A4E5E' }, shapes: forecastDates[0] ? [{ type: 'line', x0: forecastDates[0], x1: forecastDates[0], y0: 0, y1: 1, yref: 'paper', line: { color: '#8C7BE0', width: 1, dash: 'dot' } }] : [], annotations: forecastDates[0] ? [{ x: forecastDates[0], y: 1, yref: 'paper', text: 'Forecast start', showarrow: false, font: { size: 10, color: '#8C7BE0' }, xanchor: 'left' }] : [] }} config={{ displayModeBar: false, responsive: true }} useResizeHandler style={{ width: '100%' }} /> : <div className="nw-forecast-empty">The selected dashboard history will appear here once its source series is loaded.</div>}</div>
+          <div className="nw-dash-forecast-chart">{observedValues.length || forecastValues.length ? <Plot data={chartData} layout={{ paper_bgcolor: 'transparent', plot_bgcolor: chartColors.plot, autosize: true, font: { color: chartColors.text, family: 'IBM Plex Sans', size: 11 }, margin: { l: 58, r: 12, t: 28, b: 36 }, height: 250, hovermode: 'x unified', legend: { orientation: 'h', y: 1.18, font: { size: 10 } }, xaxis: { gridcolor: chartColors.grid, tickfont: { size: 10 } }, yaxis: { gridcolor: chartColors.grid, title: { text: targetAxis, standoff: 10 }, automargin: true, zeroline: true, zerolinecolor: chartColors.zero }, shapes: forecastDates[0] ? [{ type: 'line', x0: forecastDates[0], x1: forecastDates[0], y0: 0, y1: 1, yref: 'paper', line: { color: '#8C7BE0', width: 1, dash: 'dot' } }] : [], annotations: forecastDates[0] ? [{ x: forecastDates[0], y: 1, yref: 'paper', text: 'Forecast start', showarrow: false, font: { size: 10, color: '#8C7BE0' }, xanchor: 'left' }] : [] }} config={{ displayModeBar: false, responsive: true }} useResizeHandler style={{ width: '100%', minHeight: 250 }} /> : <div className="nw-forecast-empty">No usable historical or forecast points are available for this variable.</div>}</div>
           <div className="nw-forecast-meta">{cards.map((point, index) => <div key={index}><span>{point.label}</span><strong>{formatForecastValue(point.value)}</strong><em>{droughtIndex && point.value != null ? spiClass(point.value) : point.value != null ? targetMetric?.unit || '' : ''}</em></div>)}</div>
           {droughtIndex && <div className="nw-dash-odds"><span>Forecast points at or below -1.3</span><strong>{droughtOdds != null ? `${droughtOdds}%` : '—'}</strong><em>{droughtOdds == null ? 'Available after the forecast completes' : 'Share of projected values, not a probability estimate'}</em></div>}
         </>}

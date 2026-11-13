@@ -1,9 +1,11 @@
+import { chartColor } from '../lib/chartTheme'
 import { useEffect, useMemo, useState } from 'react'
 import { Activity, AlertTriangle, ArrowLeftRight, Download, Droplets, Gauge, MapPin, Mountain, RefreshCw, Waves, Zap } from 'lucide-react'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { buildDistrictMapScale, DistrictMap, normaliseDistrictName } from './DistrictMap'
 import WastewaterChart, { WastewaterSparkline } from './WastewaterChart'
 import LoadingProgress from './LoadingProgress'
+import MonitoringMapPanel from './MonitoringMapPanel'
 import '../niwis/rwqo.css'
 import '../niwis/water-quantity.css'
 
@@ -43,7 +45,7 @@ function IndicatorChart({ title, choices, rows, color, className = '' }) {
   const latest = rows.filter(row => valid(row[metric?.key])).at(-1)
   return <Panel title={title} subtitle="Monthly records · supplied units retained" className={`wq-indicator-panel ${className}`}>
     <div className="rq-chart-controls"><label>Indicator<select aria-label={`${title} indicator`} value={metric?.key || ''} onChange={event => setKey(event.target.value)}>{choices.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label><label>Chart<select aria-label={`${title} chart style`} value={type} onChange={event => setType(event.target.value)}><option value="area">Area</option><option value="line">Line</option><option value="bar">Bars</option></select></label></div>
-    <div className="rq-readout"><div><strong style={{ color }}>{format(latest?.[metric?.key])}<small>{metric?.unit}</small></strong><span>{latest ? periodLabel(latest.period) : 'No numeric observations'}</span></div></div>
+    <div className="rq-readout"><div><strong style={{ color: chartColor(color) }}>{format(latest?.[metric?.key])}<small>{metric?.unit}</small></strong><span>{latest ? periodLabel(latest.period) : 'No numeric observations'}</span></div></div>
     <WastewaterChart data={rows} metrics={metric ? [{ ...metric, color }] : []} xKey="period" type={type} height={255} yLabel={metric?.unit} />
   </Panel>
 }
@@ -102,12 +104,12 @@ function TransferSystemDiagram({ metrics, values }) {
   }).filter(route => route.metric)
 
   return <div className="wq-system-map" aria-label="Schematic of named transfer systems flowing to the Vaal System">
-    <div className="wq-system-routes">{routes.map(route => <article className="wq-system-route" key={route.key} style={{ '--wq-accent': route.color }}>
+    <div className="wq-system-routes">{routes.map(route => <article className="wq-system-route" key={route.key} style={{ '--wq-accent': chartColor(route.color) }}>
       <span className="wq-system-source">{route.source}</span>
       <strong>{format(values[route.key])}<small>{route.metric.unit}</small></strong>
       <span className="wq-system-route-name">{route.metric.label}</span>
     </article>)}</div>
-    <div className="wq-system-connectors" aria-hidden="true">{routes.map(route => <span key={route.key} style={{ '--wq-accent': route.color }} />)}</div>
+    <div className="wq-system-connectors" aria-hidden="true">{routes.map(route => <span key={route.key} style={{ '--wq-accent': chartColor(route.color) }} />)}</div>
     <div className="wq-system-receiving"><span>RECEIVING SYSTEM</span><strong>Vaal System</strong><p>Receives the transfers shown by the route columns.</p></div>
   </div>
 }
@@ -124,12 +126,14 @@ function exportCSV(result, meta) {
   setTimeout(() => URL.revokeObjectURL(anchor.href), 800)
 }
 
-export default function WaterQuantityAssessment() {
+export default function WaterQuantityAssessment({ section = null }) {
   const [meta, setMeta] = useState(null), [result, setResult] = useState(null), [features, setFeatures] = useState([])
   const [draft, setDraft] = useState({ region: 'National', start: '', end: '' }), [applied, setApplied] = useState(null)
   const [loading, setLoading] = useState(true), [error, setError] = useState(''), [mapError, setMapError] = useState(''), [retry, setRetry] = useState(0)
   const [mapKey, setMapKey] = useState('donor_storage'), [mapPeriod, setMapPeriod] = useState('')
   const [mapSelectionNotice, setMapSelectionNotice] = useState('')
+  const [mapScope, setMapScope] = useState('transfers'), [balanceMapKey, setBalanceMapKey] = useState('reported_balance'), [balanceMapPeriod, setBalanceMapPeriod] = useState('')
+  useEffect(() => { if (section === 'transfers' || section === 'balance') setMapScope(section) }, [section])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -169,12 +173,16 @@ export default function WaterQuantityAssessment() {
   }
   const transferAtMapPeriod = result?.transfers.monthly.find(row => row.period === activeMapPeriod) || result?.transfers.latest || {}
   const latestBalance = result?.balance.latest || {}
+  const balanceMapMetric = meta?.balance_indicators.find(item => item.key === balanceMapKey) || meta?.balance_indicators[0]
+  const balanceMapPeriods = (result?.balance.monthly || []).map(row => row.period)
+  const activeBalanceMapPeriod = balanceMapPeriods.includes(balanceMapPeriod) ? balanceMapPeriod : result?.balance.latest_period
+  const balanceMapObservation = result?.balance.monthly.find(row => row.period === activeBalanceMapPeriod) || {}
   const storageRows = (result?.balance.monthly || []).filter(row => valid(row.surface_storage))
   const previousStorage = storageRows.length > 1 ? storageRows[storageRows.length - 2] : null
   const storageChange = previousStorage && valid(latestBalance.surface_storage) ? latestBalance.surface_storage - previousStorage.surface_storage : null
   const comparison = useMemo(() => [...mapRows].sort((a, b) => (b[mapKey] ?? -Infinity) - (a[mapKey] ?? -Infinity)), [mapRows, mapKey])
 
-  return <div className="rwqo-dashboard water-quantity-dashboard">
+  return <div className="rwqo-dashboard water-quantity-dashboard" data-section={section || 'all'}>
     <header className="rq-heading"><span className="rq-heading-icon"><Waves size={29} /></span><div><span className="rq-eyebrow">WATER TRANSFERS &amp; NATIONAL WATER BALANCE</span><h1>Water Quantity Assessment</h1><p>See which transfer systems are reported, how much water they carry, and how the national water figures compare.</p></div><button className="rq-export" disabled={!result || loading} onClick={() => exportCSV(result, meta)}><Download size={15} />Export monthly data</button></header>
     <form className="rq-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}>
       <label className="rq-region">Transfer district<select aria-label="Water quantity district" value={draft.region} disabled={!meta || loading} onChange={event => setDraft({ ...draft, region: event.target.value })}><option value="National">National mean (reporting districts)</option>{meta?.regions.map(name => <option key={name}>{name}</option>)}</select></label>
@@ -183,6 +191,7 @@ export default function WaterQuantityAssessment() {
     </form>
     {error && <div className="rq-error" role="alert"><AlertTriangle size={18} /><span>{error}</span><button onClick={() => setRetry(value => value + 1)}><RefreshCw size={14} />Retry</button></div>}
     {loading && <LoadingProgress className="rq-loading" message="Retrieving water quantity database records" />}
+    {error && !loading && <MonitoringMapPanel title="Water quantity monitoring map" features={features.length ? features : undefined} geographyAvailable={false} noDataReason="Water transfer and national balance observations could not be loaded. Geographic boundaries remain available without measurement shading." />}
     {result && !loading && <>
       <div className="rq-context"><strong>Transfers: {result.region === 'National' ? 'National mean across reporting districts' : result.region} / Balance: National</strong><span>{result.start}–{result.end} · monthly source records · {meta.regions.length} transfer districts</span></div>
       <div className="rq-source-notice" role="note"><AlertTriangle size={16} /><span><strong>Monthly source data.</strong> Daily observations are not supplied. Transfer fields retain daily-rate units; national balance fields retain Mm³. The stored net-balance formula is an inferred source calculation with unverified accounting conventions.</span></div>
@@ -193,19 +202,32 @@ export default function WaterQuantityAssessment() {
         <p><b>Terms:</b> FSC means full supply capacity; ML is one million litres; Mm³ is one million cubic metres. MAP is precipitation, AET is water returned to the air by evaporation and plants, MAR is runoff, and IBT means water transferred between river basins.</p>
       </section>
 
-      <section className="wq-key-indicators" aria-label="Key water quantity indicators">
+      {section !== 'balance' && <section className="wq-key-indicators" aria-label="Key water quantity indicators">
         <div className="wq-overview-heading"><div><span>DATABASE VALUES / SELECTED TRANSFER SYSTEM</span><h2>Key Water Quantity Indicators</h2></div><p>{periodLabel(result.transfers.latest_period)} · {result.region === 'National' ? 'average across reporting districts' : result.region} · monthly source records</p></div>
         <div className="wq-indicator-grid">{meta.transfer_indicators.map((metric, index) => {
           const Icon = KPI_ICONS[index % KPI_ICONS.length], color = KPI_COLORS[index % KPI_COLORS.length]
-          return <article className="wq-indicator-card" key={metric.key} style={{ '--wq-accent': color }}>
+          return <article className="wq-indicator-card" key={metric.key} style={{ '--wq-accent': chartColor(color) }}>
             <div className="wq-indicator-label"><Icon size={16} /><span>{metric.label}</span></div>
             <strong>{format(result.transfers.latest[metric.key])}<small>{metric.unit}</small></strong>
             <div className="wq-indicator-history"><span>{periodLabel(result.transfers.latest_period)} · source value</span><WastewaterSparkline data={result.transfers.monthly.slice(-18)} metricKey={metric.key} label={metric.label} color={color} height={28} /></div>
           </article>
         })}</div>
-      </section>
+      </section>}
+
+      <div className="rq-filters" aria-label="Water quantity geographic controls">
+        {!section && <label className="rq-region">Geographic source<select aria-label="Water quantity map source" value={mapScope} onChange={event => setMapScope(event.target.value)}><option value="transfers">Water transfers | reporting districts</option><option value="balance">National water balance</option></select></label>}
+        {mapScope === 'balance' && <label>Reporting month<select aria-label="National balance map reporting month" value={activeBalanceMapPeriod || ''} onChange={event => setBalanceMapPeriod(event.target.value)}>{balanceMapPeriods.map(period => <option key={period} value={period}>{periodLabel(period)}</option>)}</select></label>}
+      </div>
+      {mapScope === 'transfers' ? <Panel title="District source coverage map" subtitle={periodLabel(activeMapPeriod) + ' · selected transfer measure by reporting district'}>
+            <div className="rq-chart-controls wq-map-controls"><label className="rq-picker">District measure<select aria-label="District map measure" value={mapKey} onChange={event => setMapKey(event.target.value)}>{meta.transfer_indicators.map(item => <option key={item.key} value={item.key}>{item.label} ({item.unit})</option>)}</select></label><label className="rq-picker">Reporting month<select aria-label="District map reporting month" value={activeMapPeriod || ''} onChange={event => setMapPeriod(event.target.value)}>{mapPeriods.map(period => <option key={period} value={period}>{periodLabel(period)}</option>)}</select></label></div>
+            <DistrictMap districts={features.length ? features : undefined} values={mapValues} valueKey={mapKey} selected={result.region} onSelect={selectDistrict} colorFn={mapScale.color} legend={mapScale.legend} valueLabel={mapMetric.label} valueUnit={mapMetric.unit} formatValue={value => format(value)} />
+            <p className="rq-note"><MapPin size={12} />Colors show four equal-width value bands for the selected measure. Grey districts have no matching source value. This is district coverage, separate from the named system schematic above.</p>
+            {mapSelectionNotice && <p className="rq-note wq-map-selection" role="status">{mapSelectionNotice}</p>}
+            {result.region !== 'National' && <button className="rq-text-button" onClick={() => { const next = { ...applied, region: 'National' }; setDraft(next); setApplied(next) }}>Return to national district mean</button>}
+          </Panel> : <MonitoringMapPanel title="National water balance map" description={`${periodLabel(activeBalanceMapPeriod)} | ${balanceMapMetric?.label || 'National observation'} | ${format(balanceMapObservation[balanceMapMetric?.key])} ${balanceMapMetric?.unit || ''} (national source value)`} indicators={meta.balance_indicators} indicator={balanceMapMetric?.key} onIndicatorChange={setBalanceMapKey} period={activeBalanceMapPeriod} features={features.length ? features : undefined} geographyAvailable={false} noDataReason="The water-balance source reports one national observation per month without district, catchment or basin identifiers. The national measurement is shown above; subnational availability, deficit and infrastructure layers are unavailable. Boundaries are for orientation only." />}
 
       <div className="wq-overview-grid">
+        {section !== 'balance' && <>
         <Panel title="Transfer systems — sources to Vaal" subtitle={periodLabel(activeMapPeriod) + ' · schematic route view from the supplied transfer records'} className="wq-transfer-panel">
           <div className="wq-basin-grid">
             <div className="wq-map-block">
@@ -215,21 +237,22 @@ export default function WaterQuantityAssessment() {
             </div>
             <div className="wq-transfer-details">
               <div className="wq-subheading"><div><span>NAMED TRANSFER SYSTEMS</span><h3>Routes and reported rates</h3></div><small>{periodLabel(transferAtMapPeriod.period)}</small></div>
-              <div className="rq-table-scroll"><table className="wq-route-table"><thead><tr><th>System / route</th><th>Reported rate</th><th>Data source</th></tr></thead><tbody>{meta.transfer_indicators.slice(0, 4).map((metric, index) => <tr key={metric.key}><th scope="row" style={{ '--wq-accent': KPI_COLORS[index] }}><span>{metric.label}</span><small className="wq-route-description">{ROUTE_GUIDE[metric.key]}</small></th><td>{format(transferAtMapPeriod[metric.key])}<small>{metric.unit}</small></td><td>{metric.reference_agency}</td></tr>)}</tbody></table></div>
+              <div className="rq-table-scroll"><table className="wq-route-table"><thead><tr><th>System / route</th><th>Reported rate</th><th>Data source</th></tr></thead><tbody>{meta.transfer_indicators.slice(0, 4).map((metric, index) => <tr key={metric.key}><th scope="row" style={{ '--wq-accent': chartColor(KPI_COLORS[index]) }}><span>{metric.label}</span><small className="wq-route-description">{ROUTE_GUIDE[metric.key]}</small></th><td>{format(transferAtMapPeriod[metric.key])}<small>{metric.unit}</small></td><td>{metric.reference_agency}</td></tr>)}</tbody></table></div>
               <p className="rq-note">Tugela–Vaal and Thukela–Vaal are separate source columns. The source does not explain scheme overlap, so their rates are not added together.</p>
             </div>
           </div>
         </Panel>
 
-        <div className="wq-right-stack">
+        </>}
+        {section !== 'transfers' && <div className="wq-right-stack">
           <Panel title="National water balance (monthly)" subtitle={periodLabel(result.balance.latest_period) + ' · source values in Mm³; accumulation basis not specified'} className="wq-balance-table-panel">
             <div className="rq-table-scroll"><table className="wq-balance-table"><thead><tr><th>Component</th><th>Symbol</th><th>Source value</th><th>Source</th></tr></thead><tbody>{meta.balance_indicators.filter(item => ['map_volume', 'aet_volume', 'runoff_volume', 'recharge_volume', 'surface_storage', 'net_ibt', 'reported_demand', 'reported_balance'].includes(item.key)).map(metric => <tr key={metric.key}><th scope="row">{metric.label}</th><td>{metric.key === 'map_volume' ? 'MAP' : metric.key === 'aet_volume' ? 'AET' : metric.key === 'runoff_volume' ? 'MAR' : metric.key === 'recharge_volume' ? 'R' : metric.key === 'surface_storage' ? 'Storage' : metric.key === 'net_ibt' ? 'IBT' : metric.key === 'reported_demand' ? 'Demand' : 'Balance'}</td><td>{format(latestBalance[metric.key])}</td><td>{metric.reference_agency}</td></tr>)}</tbody></table></div>
           </Panel>
           <DemandDistribution latest={latestBalance} />
-        </div>
+        </div>}
       </div>
 
-      <div className="wq-bottom-grid">
+      {section !== 'transfers' && <div className="wq-bottom-grid">
         <BalanceFlow result={result} />
         <Panel title="National surface storage" subtitle={periodLabel(result.balance.latest_period) + ' · reported stock'} className="wq-storage-panel">
           <div className="wq-storage-readout"><strong>{format(latestBalance.surface_storage)}<small>Mm³</small></strong><span>National source value</span></div>
@@ -238,18 +261,11 @@ export default function WaterQuantityAssessment() {
           <p className="rq-note">The source supplies an absolute storage value, not reservoir capacity or % full.</p>
         </Panel>
         <IndicatorChart title="Recent trends (National)" choices={meta.balance_indicators.filter(item => ['map_volume', 'aet_volume', 'runoff_volume', 'recharge_volume', 'surface_storage', 'reported_demand', 'reported_balance'].includes(item.key))} rows={result.balance.monthly} color={BLUE} className="wq-trend-panel" />
-      </div>
+      </div>}
 
-      <details className="rq-methods wq-detail-methods"><summary>District map, monthly trends, calculations and comparisons</summary>
+      <details className="rq-methods wq-detail-methods"><summary>Monthly trends, calculations and comparisons</summary>
         <div className="wq-detail-grid">
           <Panel title="Transfer route trends" subtitle="Monthly source rates; routes remain separate"><WastewaterChart data={result.transfers.monthly} metrics={meta.transfer_indicators.slice(0, 4).map((item, index) => ({ ...item, color: KPI_COLORS[index] }))} type="line" xKey="period" height={290} /><p className="rq-note">Daily-rate units are retained in monthly reporting rows. No monthly transfer volume is generated.</p></Panel>
-          <Panel title="District source coverage map" subtitle={periodLabel(activeMapPeriod) + ' · selected transfer measure by reporting district'}>
-            <div className="rq-chart-controls wq-map-controls"><label className="rq-picker">District measure<select aria-label="District map measure" value={mapKey} onChange={event => setMapKey(event.target.value)}>{meta.transfer_indicators.map(item => <option key={item.key} value={item.key}>{item.label} ({item.unit})</option>)}</select></label><label className="rq-picker">Reporting month<select aria-label="District map reporting month" value={activeMapPeriod || ''} onChange={event => setMapPeriod(event.target.value)}>{mapPeriods.map(period => <option key={period} value={period}>{periodLabel(period)}</option>)}</select></label></div>
-            {features.length ? <DistrictMap districts={features} values={mapValues} valueKey={mapKey} selected={result.region} onSelect={selectDistrict} colorFn={mapScale.color} legend={mapScale.legend} valueLabel={mapMetric.label} valueUnit={mapMetric.unit} formatValue={value => format(value)} /> : <p className="rq-empty" role="status">{mapError || 'District boundaries are loading.'}</p>}
-            <p className="rq-note"><MapPin size={12} />Colors show four equal-width value bands for the selected measure. Grey districts have no matching source value. This is district coverage, separate from the named system schematic above.</p>
-            {mapSelectionNotice && <p className="rq-note wq-map-selection" role="status">{mapSelectionNotice}</p>}
-            {result.region !== 'National' && <button className="rq-text-button" onClick={() => { const next = { ...applied, region: 'National' }; setDraft(next); setApplied(next) }}>Return to national district mean</button>}
-          </Panel>
           <IndicatorChart title="Transfer losses and energy" choices={meta.transfer_indicators.slice(4, 6)} rows={result.transfers.monthly} color={GOLD} />
           <IndicatorChart title="Source storage and receiving-system shortfall" choices={meta.transfer_indicators.slice(6)} rows={result.transfers.monthly} color={TEAL} />
           <Panel title="Covered district comparison" subtitle={periodLabel(activeMapPeriod) + ' · follows the map indicator'}><WastewaterChart data={comparison} metrics={[{ ...mapMetric, color: BLUE }]} xKey="district_name" horizontal type="bar" height={Math.max(270, comparison.length * 24)} /><p className="rq-note">All supplied source districts remain available. National balance records have no district identifiers.</p></Panel>

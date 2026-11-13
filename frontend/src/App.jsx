@@ -20,7 +20,7 @@ export default function App() {
 
   return (
     <Suspense fallback={
-      <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#061a2c', color: '#e6f3ff', padding: 24 }}>
+      <main className="niwis-app-loading" style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--app-loading-bg, #061a2c)', color: 'var(--app-loading-text, #e6f3ff)', padding: 24 }}>
         <p role="status" aria-live="polite">Loading NIWIS dashboard…</p>
       </main>
     }>

@@ -10,9 +10,7 @@ import math
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor
-from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode
-from urllib.request import Request, urlopen
 
 from fastapi import APIRouter, HTTPException
 from starlette.responses import Response
@@ -257,7 +255,7 @@ def metadata():
                 'National records are shown separately and are never drawn as municipality polygons.',
                 'The database has region names but no municipality codes. The city-name crosswalk maps source region Emalahleni to eMalahleni, Mpumalanga (MP312), the municipality associated with the eMalahleni city name.',
                 'Historic values use current 2026 municipal boundaries because the source tables do not include boundary-version codes.',
-                'The map shows only municipalities with a valid value for the selected field and year; areas without a value are omitted.',
+                'Municipalities with a valid value for the selected field and year are coloured; areas without a value retain grey reference boundaries and are not treated as zero.',
                 'When a source name matches more than one official municipality, the same source value is shown on each matching polygon and the ambiguity is identified.',
                 'Water-quality cost fields do not provide units; they are shown as source values without an inferred unit.',
             ],
@@ -361,31 +359,11 @@ def analytics(dataset: str = 'municipal', region: str = 'National'):
     }
 
 
-@router.get('/map-tiles/{z}/{x}/{y}.png', response_class=Response)
+@router.get('/map-tiles/{z}/{x}/{y}.jpg', response_class=Response)
 def map_tile(z: int, x: int, y: int):
-    """Proxy one MapTiler PNG tile without exposing the key in browser traffic."""
-    if z < 0 or z > 20 or x < 0 or y < 0 or x >= 2 ** z or y >= 2 ** z:
-        raise HTTPException(400, 'Invalid map tile coordinates.')
-    api_key = os.getenv('MAPTILER_API_KEY', '').strip()
-    if not api_key:
-        raise HTTPException(503, 'MapTiler is not configured. Set MAPTILER_API_KEY in backend/.env and restart the API.')
-    query = urlencode({'key': api_key})
-    url = f'https://api.maptiler.com/maps/dataviz-v4-dark/256/{z}/{x}/{y}.png?{query}'
-    request = Request(url, headers={'Accept': 'image/png', 'User-Agent': 'NIWIS municipality map'})
-    try:
-        with urlopen(request, timeout=12) as upstream:
-            image = upstream.read()
-            cache_control = upstream.headers.get('Cache-Control', 'public, max-age=3600')
-    except HTTPError as exc:
-        if exc.code in (401, 403):
-            raise HTTPException(502, 'MapTiler did not accept the configured server-side key.') from exc
-        raise HTTPException(502, 'MapTiler could not supply this map tile.') from exc
-    except (URLError, TimeoutError) as exc:
-        raise HTTPException(502, 'MapTiler is temporarily unreachable.') from exc
-    return Response(content=image, media_type='image/png', headers={
-        'Cache-Control': cache_control,
-        'X-Content-Type-Options': 'nosniff',
-    })
+    """Serve the shared cached satellite proxy without exposing its key."""
+    from app.spatial.basemap import tile_response
+    return tile_response('satellite', z, x, y)
 
 
 @router.get('/map-tiles/status')

@@ -7,6 +7,7 @@ import {
 import '../niwis/hydrology.css'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import LoadingProgress from './LoadingProgress'
+import { chartColor } from '../lib/chartTheme'
 
 const DISTRICT_PROVINCES = {
   'alfred nzo': 'Eastern Cape', amajuba: 'KwaZulu-Natal', amathole: 'Eastern Cape',
@@ -69,7 +70,7 @@ function hydrologyMapStyle(metric, stations) {
     color: value => value < 20 ? HYDRO_MAP_COLORS[0] : value < 40 ? HYDRO_MAP_COLORS[1] : value < 60 ? HYDRO_MAP_COLORS[2] : value < 80 ? HYDRO_MAP_COLORS[3] : HYDRO_MAP_COLORS[4],
     legend: { title: 'Reservoir level - % full', gradient: HYDRO_MAP_GRADIENT, items: [['80%+', 'Very high'], ['60-80%', 'High'], ['40-60%', 'Mid range'], ['20-40%', 'Low'], ['0-20%', 'Very low']] },
   }
-  const values = stations.map(row => Number(row[metric.key])).filter(Number.isFinite).sort((a, b) => a - b)
+  const values = stations.map(row => row[metric.key]).filter(isValidNumber).map(Number).sort((a, b) => a - b)
   if (values.length && values[0] === values[values.length - 1]) return {
     color: () => HYDRO_MAP_COLORS[2],
     legend: { title: `${metric.label} - national range`, gradient: HYDRO_MAP_GRADIENT, items: [[mapNumber(values[0]), 'Same value across reporting districts']] },
@@ -229,13 +230,13 @@ function SmoothSeriesChart({ series, color = '#06b6d4', gradId = 'sg1', unit = '
     <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: '100%' }}>
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
-          <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+          <stop offset="0%" stopColor={chartColor(color)} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={chartColor(color)} stopOpacity="0.02" />
         </linearGradient>
       </defs>
       {ticks.map((tick) => (
         <g key={tick}>
-          <line x1={pad.l} y1={yAt(tick)} x2={w - pad.r} y2={yAt(tick)} stroke="rgba(255,255,255,0.05)" />
+          <line x1={pad.l} y1={yAt(tick)} x2={w - pad.r} y2={yAt(tick)} stroke="var(--chart-grid, rgba(255,255,255,0.05))" />
           <text x={pad.l - 5} y={yAt(tick) + 3} fill="#4e7a94" fontSize="7" textAnchor="end">{formatMetric(tick)}</text>
         </g>
       ))}
@@ -243,9 +244,9 @@ function SmoothSeriesChart({ series, color = '#06b6d4', gradId = 'sg1', unit = '
       {meanY != null && (
         <line x1={pad.l} y1={meanY} x2={w - pad.r} y2={meanY} stroke="rgba(251,191,36,0.55)" strokeWidth="1.2" strokeDasharray="5 4" />
       )}
-      <path d={linePath} fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 3px ${color}88)` }} />
+      <path d={linePath} fill="none" stroke={chartColor(color)} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 3px ${color}88)` }} />
       {lastIndex >= 0 && (
-        <circle cx={xAt(lastIndex)} cy={yAt(last.value)} r="3.5" fill="#081c2e" stroke={color} strokeWidth="2">
+        <circle cx={xAt(lastIndex)} cy={yAt(last.value)} r="3.5" fill="var(--dashboard-surface-solid, #081c2e)" stroke={chartColor(color)} strokeWidth="2">
           <title>{`${last.date}: ${formatMetric(last.value)} ${unit}`}</title>
         </circle>
       )}
@@ -287,8 +288,8 @@ function SsiChart({ series }) {
     <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: '100%' }}>
       <defs>
         <linearGradient id="ssi-grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.03" />
+          <stop offset="0%" stopColor={chartColor('#f59e0b')} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={chartColor('#f59e0b')} stopOpacity="0.03" />
         </linearGradient>
       </defs>
       {zones.map((zone) => (
@@ -303,14 +304,14 @@ function SsiChart({ series }) {
       ))}
       {SSI_THRESHOLDS.map((threshold) => (
         <g key={threshold.y}>
-          <line x1={pad.l} y1={yAt(threshold.y)} x2={w - pad.r} y2={yAt(threshold.y)} stroke="rgba(255,255,255,0.18)" strokeDasharray="3 3" />
+          <line x1={pad.l} y1={yAt(threshold.y)} x2={w - pad.r} y2={yAt(threshold.y)} stroke="var(--chart-grid, rgba(255,255,255,0.18))" strokeDasharray="3 3" />
           <text x={w - pad.r + 4} y={yAt(threshold.y) + 3} fill="#6090a8" fontSize="6.5">{threshold.y.toFixed(1)}{threshold.label ? ` ${threshold.label}` : ''}</text>
         </g>
       ))}
       {areaPath && <path d={areaPath} fill="url(#ssi-grad)" />}
-      <path d={linePath} fill="none" stroke="#f59e0b" strokeWidth="2.2" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 3px rgba(245,158,11,0.6))' }} />
+      <path d={linePath} fill="none" stroke={chartColor('#f59e0b')} strokeWidth="2.2" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 3px rgba(245,158,11,0.6))' }} />
       {lastIndex >= 0 && (
-        <circle cx={xAt(lastIndex)} cy={yAt(series[lastIndex].value)} r="3.5" fill="#081c2e" stroke="#f59e0b" strokeWidth="2">
+        <circle cx={xAt(lastIndex)} cy={yAt(series[lastIndex].value)} r="3.5" fill="var(--dashboard-surface-solid, #081c2e)" stroke={chartColor('#f59e0b')} strokeWidth="2">
           <title>{`${series[lastIndex].date}: SSI ${Number(series[lastIndex].value).toFixed(2)}`}</title>
         </circle>
       )}
@@ -355,32 +356,32 @@ function DualSeriesChart({ seriesA, seriesB, labelA, labelB, colorA, colorB, gra
     <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: '100%' }}>
       <defs>
         <linearGradient id={gradIdA} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={colorA} stopOpacity="0.28" />
-          <stop offset="100%" stopColor={colorA} stopOpacity="0.02" />
+          <stop offset="0%" stopColor={chartColor(colorA)} stopOpacity="0.28" />
+          <stop offset="100%" stopColor={chartColor(colorA)} stopOpacity="0.02" />
         </linearGradient>
         <linearGradient id={gradIdB} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={colorB} stopOpacity="0.22" />
-          <stop offset="100%" stopColor={colorB} stopOpacity="0.02" />
+          <stop offset="0%" stopColor={chartColor(colorB)} stopOpacity="0.22" />
+          <stop offset="100%" stopColor={chartColor(colorB)} stopOpacity="0.02" />
         </linearGradient>
       </defs>
       {ticks.map((tick) => (
         <g key={tick}>
-          <line x1={pad.l} y1={yAt(tick)} x2={w - pad.r} y2={yAt(tick)} stroke="rgba(255,255,255,0.05)" />
+          <line x1={pad.l} y1={yAt(tick)} x2={w - pad.r} y2={yAt(tick)} stroke="var(--chart-grid, rgba(255,255,255,0.05))" />
           <text x={pad.l - 5} y={yAt(tick) + 3} fill="#4e7a94" fontSize="7" textAnchor="end">{formatMetric(tick)}</text>
         </g>
       ))}
       {areaA && <path d={areaA} fill={`url(#${gradIdA})`} />}
       {areaB && <path d={areaB} fill={`url(#${gradIdB})`} />}
-      {hasA && <path d={pathA} fill="none" stroke={colorA} strokeWidth="2.2" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 3px ${colorA}88)` }} />}
-      {hasB && <path d={pathB} fill="none" stroke={colorB} strokeWidth="2.2" strokeDasharray="6 3" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 3px ${colorB}88)` }} />}
+      {hasA && <path d={pathA} fill="none" stroke={chartColor(colorA)} strokeWidth="2.2" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 3px ${colorA}88)` }} />}
+      {hasB && <path d={pathB} fill="none" stroke={chartColor(colorB)} strokeWidth="2.2" strokeDasharray="6 3" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 3px ${colorB}88)` }} />}
       {labels.map((label) => (
         <text key={`${label.label}-${label.index}`} x={xAt(label.index)} y={h - 7} fill="#4e7a94" fontSize="6.5" textAnchor="middle">{label.label}</text>
       ))}
       <text x="9" y={h / 2} fill="#4e7a94" fontSize="7" transform={`rotate(-90 9 ${h / 2})`} textAnchor="middle">{yLabel}</text>
-      <circle cx={pad.l + 2} cy="10" r="3" fill={colorA} />
-      <text x={pad.l + 8} y="13" fill={colorA} fontSize="7" fontWeight="600">{labelA}</text>
-      <circle cx={pad.l + 68} cy="10" r="3" fill={colorB} />
-      <text x={pad.l + 74} y="13" fill={colorB} fontSize="7" fontWeight="600">{labelB}</text>
+      <circle cx={pad.l + 2} cy="10" r="3" fill={chartColor(colorA)} />
+      <text x={pad.l + 8} y="13" fill={chartColor(colorA)} fontSize="7" fontWeight="600">{labelA}</text>
+      <circle cx={pad.l + 68} cy="10" r="3" fill={chartColor(colorB)} />
+      <text x={pad.l + 74} y="13" fill={chartColor(colorB)} fontSize="7" fontWeight="600">{labelB}</text>
     </svg>
   )
 }
@@ -573,10 +574,21 @@ export default function HydrologyDrought() {
   ]
 
 
+  const mapPanel = <section className="hydro-panel hydro-map-panel">
+          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">DISTRICT INDICATOR MAP</span><h2 className="hydro-panel-title">{selectedMapMetric.label}</h2><p>Choose an indicator and date; select a district to update the dashboard below.</p></div><MapPin size={18} className="hydro-map-icon" /></div>
+          <div className="hydro-map-controls">
+            <label><span>Map indicator</span><select aria-label="Hydrological map indicator" value={mapMetric} onChange={event => setMapMetric(event.target.value)}>{HYDRO_MAP_OPTIONS.map(option => <option value={option.key} key={option.key}>{option.label}</option>)}</select></label>
+            <label><span>Map date</span><select aria-label="Hydrological map date" value={mapDate} onChange={event => setMapDate(event.target.value)} disabled={!mapDates.length}>{mapDates.map(date => <option value={date} key={date}>{date}</option>)}</select></label>
+          </div>
+          {mapError && <div className="hydro-map-message" role="alert">{mapError}</div>}{mapLoading && <LoadingProgress className="hydro-map-loading" message="Loading district indicator values" />}<div className="hydro-map-wrap"><DistrictMap districts={districtsGeoJson} values={mapError || mapLoading ? {} : mapValues} valueKey={mapMetric} valueLabel={selectedMapMetric.label} valueUnit={selectedMapMetric.unit} colorFn={mapStyle.color} selected={selectedDistrict} onSelect={selectMapDistrict} legend={mapStyle.legend} /></div>
+          <p className="hydro-map-caption">{mapError || mapLoading ? 0 : mapStations.length} districts with observations on {mapDate || 'the latest available date'} - {districtName}, {provinceName} selected.</p>
+        </section>
+
   if (loading) {
     return (
       <div className="hydro-container hydro-dashboard hydro-loading-state">
         <LoadingProgress className="hydro-loading" message="Reading hydrological observations from Supabase" />
+        {mapPanel}
       </div>
     )
   }
@@ -590,6 +602,7 @@ export default function HydrologyDrought() {
           <p>{loadError}</p>
           <button type="button" className="hydro-btn-report" onClick={() => window.location.reload()}>Reload dashboard</button>
         </section>
+        {mapPanel}
       </div>
     )
   }
@@ -632,15 +645,7 @@ export default function HydrologyDrought() {
       </section>
 
       <div className="hydro-primary-grid">
-        <section className="hydro-panel hydro-map-panel">
-          <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">DISTRICT INDICATOR MAP</span><h2 className="hydro-panel-title">{selectedMapMetric.label}</h2><p>Choose an indicator and date; select a district to update the dashboard below.</p></div><MapPin size={18} className="hydro-map-icon" /></div>
-          <div className="hydro-map-controls">
-            <label><span>Map indicator</span><select aria-label="Hydrological map indicator" value={mapMetric} onChange={event => setMapMetric(event.target.value)}>{HYDRO_MAP_OPTIONS.map(option => <option value={option.key} key={option.key}>{option.label}</option>)}</select></label>
-            <label><span>Map date</span><select aria-label="Hydrological map date" value={mapDate} onChange={event => setMapDate(event.target.value)} disabled={!mapDates.length}>{mapDates.map(date => <option value={date} key={date}>{date}</option>)}</select></label>
-          </div>
-          {mapError ? <div className="hydro-map-message" role="alert">{mapError}</div> : mapLoading ? <LoadingProgress className="hydro-map-loading" message="Loading district indicator values" /> : districtsGeoJson.length && mapStations.length ? <div className="hydro-map-wrap"><DistrictMap districts={districtsGeoJson} values={mapValues} valueKey={mapMetric} colorFn={mapStyle.color} selected={selectedDistrict} onSelect={selectMapDistrict} legend={mapStyle.legend} /></div> : <div className="hydro-map-message">District boundaries or hydrological map values are unavailable for {mapDate || 'the latest available date'}.</div>}
-          <p className="hydro-map-caption">{mapStations.length} districts with observations on {mapDate || 'the latest available date'} - {districtName}, {provinceName} selected.</p>
-        </section>
+        {mapPanel}
 
         <section className="hydro-panel hydro-primary-chart">
           <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">STREAMFLOW HISTORY</span><h2 className="hydro-panel-title">River discharge</h2><p>Observed daily values for {districtName}</p></div><span className="hydro-chart-unit">m³/s</span></div>

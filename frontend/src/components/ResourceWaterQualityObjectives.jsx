@@ -1,9 +1,11 @@
+import { chartColor } from '../lib/chartTheme'
 import { useEffect, useMemo, useState } from 'react'
 import { Activity, AlertTriangle, Download, Leaf, MapPin, RefreshCw, Waves } from 'lucide-react'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
-import { DistrictMap, normaliseDistrictName } from './DistrictMap'
+import { buildDistrictMapScale, DistrictMap, normaliseDistrictName } from './DistrictMap'
 import WastewaterChart, { WastewaterSparkline } from './WastewaterChart'
 import LoadingProgress from './LoadingProgress'
+import MonitoringMapPanel from './MonitoringMapPanel'
 import '../niwis/rwqo.css'
 
 const COLORS = { ecological: '#64dfbc', chemical: '#80bdff', hydrological: '#c0abff' }
@@ -32,7 +34,7 @@ function MetricChart({ title, choices, preferred, rows, xKey, color }) {
   if (valid(metric?.max)) lines.push({ value: metric.max, label: 'Source maximum' })
   return <Panel title={title} subtitle="Source measurements in their supplied units" className="rq-metric-panel">
     <div className="rq-chart-controls"><label>Indicator<select aria-label={`${title} indicator`} value={metric?.key || ''} onChange={event => setSelected(event.target.value)}>{choices.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label><label>Chart<select aria-label={`${title} chart style`} value={type} onChange={event => setType(event.target.value)}><option value="area">Area</option><option value="line">Line</option><option value="bar">Bars</option></select></label></div>
-    <div className="rq-readout"><div><strong style={{ color }}>{format(latest?.[metric?.key])}<small>{metric?.unit}</small></strong><span>{latest ? `${period(String(latest[xKey]))} ${xKey === 'year' ? 'mean' : 'mean observation'}` : 'No numeric observations'}</span></div>{metric?.limit && <span className="rq-target">Source target: {metric.limit}</span>}</div>
+    <div className="rq-readout"><div><strong style={{ color: chartColor(color) }}>{format(latest?.[metric?.key])}<small>{metric?.unit}</small></strong><span>{latest ? `${period(String(latest[xKey]))} ${xKey === 'year' ? 'mean' : 'mean observation'}` : 'No numeric observations'}</span></div>{metric?.limit && <span className="rq-target">Source target: {metric.limit}</span>}</div>
     <WastewaterChart data={rows} metrics={metric ? [{ ...metric, color }] : []} xKey={xKey} type={type} height={250} yLabel={metric?.unit} referenceLines={lines} referenceBand={valid(metric?.min) && valid(metric?.max) ? { min: metric.min, max: metric.max } : null} />
     <p className="rq-note">{metric?.objective === 'Nutrient' ? 'TN and TP share one stored nutrient flag. The DIN limit is not applied to TN.' : metric?.limit ? 'Reference lines use the target stored in the source, where a single numeric rule is available.' : 'No ecological target or compliance flag is supplied. Source indices retain their original scale.'}</p>
   </Panel>
@@ -48,7 +50,7 @@ function exportCSV(result, meta) {
   setTimeout(() => URL.revokeObjectURL(anchor.href), 800)
 }
 
-export default function ResourceWaterQualityObjectives() {
+export default function ResourceWaterQualityObjectives({ navigationSection = null }) {
   const [meta, setMeta] = useState(null), [result, setResult] = useState(null), [features, setFeatures] = useState([])
   const [draft, setDraft] = useState({ region: 'National', start: '', end: '' }), [applied, setApplied] = useState(null)
   const [loading, setLoading] = useState(true), [error, setError] = useState(''), [retry, setRetry] = useState(0)
@@ -84,20 +86,15 @@ export default function ResourceWaterQualityObjectives() {
   const selected = result?.sections[sectionKey]
   const mapMetric = section?.indicators.find(item => item.key === mapKey) || section?.indicators[0]
   const mapValues = useMemo(() => Object.fromEntries((selected?.map || []).map(row => [normaliseDistrictName(row.district_name), row])), [selected])
-  const mapScale = useMemo(() => {
-    const values = (selected?.map || []).map(row => row[mapMetric?.key]).filter(valid)
-    const min = values.length ? Math.min(...values) : 0, max = values.length ? Math.max(...values) : 1
-    return { min, max }
-  }, [selected, mapMetric])
-  const mapColor = value => {
-    const fraction = mapScale.max === mapScale.min ? 0.5 : (value - mapScale.min) / (mapScale.max - mapScale.min)
-    return fraction < 0.25 ? '#235373' : fraction < 0.5 ? '#298ca5' : fraction < 0.75 ? '#46bfb5' : '#9aead2'
-  }
+  const mapScale = useMemo(() => buildDistrictMapScale(selected?.map || [], mapMetric?.key, mapMetric?.label, mapMetric?.unit, format, features.length), [result, mapMetric, features.length])
   const selectDistrict = name => {
     const matched = meta.regions.find(item => normaliseDistrictName(item) === normaliseDistrictName(name))
     if (matched) { const next = { ...applied, region: matched }; setDraft(next); setApplied(next) }
   }
   const changeSection = key => { setSectionKey(key); setMapKey(meta.sections.find(item => item.key === key).indicators[0].key); setShowAll(false) }
+  useEffect(() => {
+    if (meta?.sections.some(item => item.key === navigationSection) && navigationSection !== sectionKey) changeSection(navigationSection)
+  }, [meta, navigationSection, sectionKey])
   const rows = selected ? cadence === 'annual' ? selected.series : selected.monthly : []
   const xKey = cadence === 'annual' ? 'year' : 'period'
   const scoreRows = useMemo(() => {
@@ -132,21 +129,22 @@ export default function ResourceWaterQualityObjectives() {
     </form>
     {error && <div className="rq-error" role="alert"><AlertTriangle size={18} /><span>{error}</span><button onClick={() => setRetry(value => value + 1)}><RefreshCw size={14} />Retry</button></div>}
     {loading && <LoadingProgress className="rq-loading" message="Retrieving RWQO database observations" />}
+    {error && !loading && <MonitoringMapPanel title="Resource water quality objectives map" features={features.length ? features : undefined} geographyAvailable={false} noDataReason="Resource water quality observations could not be loaded. Geographic boundaries remain available without ecological, chemical or flow values." />}
     {result && !loading && <>
       <div className="rq-context"><strong>{result.region === 'National' ? 'South Africa · National' : result.region}</strong><span>{result.start}–{result.end} · {meta.regions.length} source districts · Supabase district-month records</span></div>
       <div className="rq-source-notice" role="note"><AlertTriangle size={16} /><span><strong>Source data review.</strong> {negativeValues > 0 && `${format(negativeValues, 0)} negative measurement values occur across the full source history. `}The nutrient target names DIN while the measurement column names TN. Values and reported flags are retained as supplied; confirm source units and calibration before interpreting resource compliance.</span></div>
-      <div className="rq-kpis">{kpis.map(item => <article className="rq-kpi" key={item.label} style={{ '--rq-accent': item.color }}><span>{item.label}</span><strong>{format(item.value)}<small>{item.unit}</small></strong><div><span>{item.note}</span>{item.rows && <WastewaterSparkline data={item.rows.slice(-24)} metricKey={item.key} label={item.label} color={item.color} />}</div></article>)}</div>
-      <div className="rq-tabs" role="group" aria-label="RWQO section">{meta.sections.map(item => <button key={item.key} aria-pressed={sectionKey === item.key} onClick={() => changeSection(item.key)} style={{ '--rq-accent': COLORS[item.key] }}>{item.key === 'ecological' ? <Leaf size={15} /> : item.key === 'hydrological' ? <Waves size={15} /> : <Activity size={15} />}{item.label}<span>{item.indicators.length} measurements</span></button>)}</div>
+      <div className="rq-kpis">{kpis.map(item => <article className="rq-kpi" key={item.label} style={{ '--rq-accent': chartColor(item.color) }}><span>{item.label}</span><strong>{format(item.value)}<small>{item.unit}</small></strong><div><span>{item.note}</span>{item.rows && <WastewaterSparkline data={item.rows.slice(-24)} metricKey={item.key} label={item.label} color={item.color} />}</div></article>)}</div>
+      <div className="rq-tabs" role="group" aria-label="RWQO section">{meta.sections.map(item => <button key={item.key} aria-pressed={sectionKey === item.key} onClick={() => changeSection(item.key)} style={{ '--rq-accent': chartColor(COLORS[item.key]) }}>{item.key === 'ecological' ? <Leaf size={15} /> : item.key === 'hydrological' ? <Waves size={15} /> : <Activity size={15} />}{item.label}<span>{item.indicators.length} measurements</span></button>)}</div>
       <div className="rq-primary-grid">
         <Panel title="District observation map" subtitle={`${period(selected.map_period)} · ${mapMetric.label}`} className="rq-map-panel">
           <label className="rq-picker">Map indicator<select aria-label="RWQO map indicator" value={mapMetric.key} onChange={event => setMapKey(event.target.value)}>{section.indicators.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
-          {features.length ? <DistrictMap districts={features} values={mapValues} valueKey={mapMetric.key} selected={result.region} onSelect={selectDistrict} colorFn={mapColor} legend={{ title: mapMetric.unit, gradient: 'linear-gradient(180deg, #9aead2, #46bfb5, #298ca5, #235373)', items: [[format(mapScale.max), 'Higher value'], [format((mapScale.max + mapScale.min) / 2), 'Mid-range'], [format(mapScale.min), 'Lower value'], ['Grey', 'No observation']] }} /> : <p className="rq-empty" role="status">{mapError || 'District boundaries are loading.'}</p>}
+          <DistrictMap districts={features.length ? features : undefined} values={mapValues} valueKey={mapMetric.key} selected={result.region} onSelect={selectDistrict} colorFn={mapScale.color} legend={mapScale.legend} valueLabel={mapMetric.label} valueUnit={mapMetric.unit} formatValue={format} />
           <p className="rq-note"><MapPin size={12} />Select a district to update the charts. The map keeps national coverage. Colour shows measurement magnitude.</p>
           {result.region !== 'National' && <button className="rq-text-button" onClick={() => { const next = { ...applied, region: 'National' }; setDraft(next); setApplied(next) }}>Return to National</button>}
         </Panel>
-        <Panel title={sectionKey === 'ecological' ? 'Ecological condition over time' : 'Reported objective scores'} subtitle={sectionKey === 'ecological' ? 'SASS5 and FIBI retain their source score scales' : 'Scores are supplied by each source table'}>
+        <Panel title={`${mapMetric.label} over time`} subtitle="Follows the map indicator and selected district">
           <div className="rq-cadence" role="group" aria-label="RWQO trend cadence">{['annual', 'monthly'].map(value => <button key={value} aria-pressed={cadence === value} onClick={() => setCadence(value)}>{value === 'annual' ? 'Annual' : 'Monthly'}</button>)}</div>
-          <WastewaterChart data={sectionKey === 'ecological' ? rows : scoreRows} metrics={sectionKey === 'ecological' ? [{ key: 'sass5_score', label: 'SASS5', unit: 'score', color: COLORS.ecological }, { key: 'fibi', label: 'FIBI', unit: 'score', color: COLORS.hydrological }] : [{ key: 'chemical_score', label: 'Reported chemical score', unit: '%', color: COLORS.chemical }, { key: 'hydrological_score', label: 'Reported hydrological score', unit: '%', color: COLORS.hydrological }]} type="line" height={315} xKey={xKey} />
+          <WastewaterChart data={rows} metrics={[{ ...mapMetric, color: COLORS[sectionKey] }]} type="line" height={315} xKey={xKey} yLabel={mapMetric.unit} />
           <p className="rq-note">National months give each district equal weight. Annual means first average each district’s available months. Missing months remain gaps.</p>
         </Panel>
       </div>

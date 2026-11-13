@@ -1,0 +1,8 @@
+.nw .nw-theme-selector{display:inline-flex;flex:none;align-items:center;gap:7px;min-height:40px;padding:4px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--ink-2);color:var(--text-dim);font-size:11px;font-weight:500;white-space:nowrap}
+.nw .nw-theme-selector>svg{flex:none;color:var(--river)}
+.nw .nw-theme-selector select{width:auto;min-width:72px;min-height:30px;padding:4px 7px;border:0;border-radius:4px;background:var(--ink-2);color:var(--text);font:inherit;cursor:pointer}
+.nw .nw-theme-selector select:focus-visible{outline:2px solid var(--river);outline-offset:2px}
+.nw .nw-theme-selector option{background:var(--ink-2);color:var(--text)}
+@media(max-width:1150px){.nw .nw-theme-selector>span{display:none}.nw .nw-topactions>.nw-pill{display:none}}
+@media(max-width:760px){.nw .nw-theme-selector{gap:4px;padding:3px 5px;min-height:38px}.nw .nw-theme-selector select{min-width:65px;font-size:11px}.nw .nw-theme-selector>svg{display:none}.nw .nw-topbar{gap:7px}.nw .nw-topactions{gap:6px}.nw .nw-brand{gap:6px;font-size:13px}.nw .nw-brand .nw-logo-topbar{width:96px}.nw .nw-topbar>.nw-iconbtn{flex:none;width:36px;min-width:36px;padding:5px}}
+@media(max-width:360px){.nw .nw-brand{font-size:0}.nw .nw-brand .nw-logo-topbar{width:88px}}

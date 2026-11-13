@@ -1,4 +1,5 @@
 import { useId, useMemo } from 'react'
+import { chartColor } from '../lib/chartTheme'
 import {
   Area,
   Bar,
@@ -78,7 +79,7 @@ export default function WastewaterChart({ data, metrics, type = 'area', height =
       if (!metric?.key || seen.has(metric.key)) return false
       seen.add(metric.key)
       return true
-    }).map((metric, index) => ({ ...metric, color: metric.color || PALETTE[index % PALETTE.length] }))
+    }).map((metric, index) => ({ ...metric, color: chartColor(metric.color || PALETTE[index % PALETTE.length]) }))
     const rows = (Array.isArray(data) ? data : []).filter(row => row && typeof row === 'object').map(row => {
       const next = { ...row }
       series.forEach(metric => { next[metric.key] = finiteNumber(row[metric.key]) })
@@ -91,12 +92,12 @@ export default function WastewaterChart({ data, metrics, type = 'area', height =
 
   const lines = [referenceLine, ...(Array.isArray(referenceLines) ? referenceLines : [])].map(item => {
     const options = item !== null && typeof item === 'object' ? item : { value: item }
-    return { value: finiteNumber(options.value ?? options.y), label: options.label, color: options.color || '#edc77d' }
+    return { value: finiteNumber(options.value ?? options.y), label: options.label, color: chartColor(options.color || '#edc77d') }
   }).filter(item => item.value != null)
   const bandMin = finiteNumber(referenceBand?.min)
   const bandMax = finiteNumber(referenceBand?.max)
   const band = bandMin != null && bandMax != null && bandMin <= bandMax
-    ? { min: bandMin, max: bandMax, label: referenceBand.label, color: referenceBand.color || '#54d9cb' }
+    ? { min: bandMin, max: bandMax, label: referenceBand.label, color: chartColor(referenceBand.color || '#54d9cb') }
     : null
   const chartType = horizontal || type === 'bar' ? 'bar' : type === 'area' && prepared.series.length === 1 ? 'area' : 'line'
   const domainValues = [...prepared.values, ...lines.map(item => item.value), ...[bandMin, bandMax].filter(value => value != null)]
@@ -166,6 +167,7 @@ export default function WastewaterChart({ data, metrics, type = 'area', height =
 }
 
 export function WastewaterSparkline({ data, metricKey, color = '#54d9cb', label, height = 44 }) {
+  color = chartColor(color)
   const gradientId = `ww-sparkline-${useId().replace(/:/g, '')}`
   const width = 180
   const inset = 4

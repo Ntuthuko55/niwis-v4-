@@ -135,3 +135,6 @@
   .ww-chart-tooltip > div { flex-wrap: wrap; }
   .ww-chart-tooltip > div > strong { margin-left: 16px !important; padding-left: 0 !important; }
 }
+.wastewater-dashboard[data-section]:not([data-section="all"]) .ww-kpi-grid,
+.wastewater-dashboard[data-section]:not([data-section="all"]) .ww-district-panel,
+.wastewater-dashboard[data-section]:not([data-section="all"]) .ww-methods { display: none; }

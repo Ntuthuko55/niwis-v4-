@@ -107,3 +107,17 @@
 @media(max-width:1500px){.rf-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.rf-kpi span{min-height:0}.rf-three-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.rf-three-grid>.rf-panel:last-child{grid-column:1/-1}.rf-index-strip{grid-template-columns:repeat(4,minmax(0,1fr))}.rf-index-strip>div{grid-column:1/-1;flex-direction:row;justify-content:flex-start;align-items:center;gap:12px;margin-bottom:8px}.rf-filters .rf-compare{margin-left:0}}
 @media(max-width:1100px){.rf-primary-grid,.rf-daily-grid{grid-template-columns:1fr}.rf-heading{flex-wrap:wrap}.nw .rf-export{margin-left:66px}.rf-analysis-grid{grid-template-columns:1fr}.rf-index-strip>button{margin-top:4px}}
 @media(max-width:760px){.nw .rf-heading h1{font-size:23px}.rf-heading{gap:10px}.rf-heading>div{flex:1;min-width:0}.rf-heading-icon{width:43px;height:43px}.rf-heading-icon svg{width:25px}.rf-eyebrow{font-size:8px}.nw .rf-heading p{font-size:9px}.nw .rf-export{margin-left:53px}.rf-filters{gap:10px;padding:12px}.rf-filters .rf-region{width:100%;min-width:0}.rf-filters label:not(.rf-compare){flex:1;min-width:0}.rf-filters input[type=month]{width:100%;font-size:10px!important}.rf-filters .rf-apply{width:100%}.rf-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.rf-kpi{padding:13px 9px;gap:8px}.rf-kpi>svg{width:20px}.rf-kpi strong{font-size:21px}.rf-kpi strong small{font-size:8px;display:block;margin:0}.rf-kpi span{font-size:9px;min-height:24px}.rf-three-grid{grid-template-columns:1fr}.rf-index-strip{grid-template-columns:repeat(4,minmax(0,1fr))}.rf-index-strip>button>strong{font-size:18px}.rf-index-strip small{font-size:7px}.rf-index-strip>div{flex-wrap:wrap;gap:7px}.rf-context{font-size:8px}.nw .rf-map-panel .sat-district-map{height:265px}.nw .rf-map-panel .map-color-legend{min-width:60px!important;width:60px}.rf-daily-controls .rf-tabs{flex-basis:100%}.rf-ranking strong{font-size:10px}.rf-ranking small{font-size:8px}.rf-footer{font-size:8px}.rf-map-controls label{flex:1;min-width:130px}.rf-map-controls label select{flex:1;width:100%}.rf-map-controls>select{flex:1;min-width:130px}}
+.rainfall-dashboard[data-section="indices"] .rf-kpis,
+.rainfall-dashboard[data-section="indices"] .rain-primary-grid > :not(:nth-child(2)),
+.rainfall-dashboard[data-section="indices"] .rain-satellite-grid,
+.rainfall-dashboard[data-section="indices"] .rf-daily-grid,
+.rainfall-dashboard[data-section="indices"] .rf-analysis-grid { display: none; }
+.rainfall-dashboard[data-section="core"] .rain-primary-grid > :nth-child(2),
+.rainfall-dashboard[data-section="core"] .rf-index-strip,
+.rainfall-dashboard[data-section="indices"] .rain-primary-grid > :not(:nth-child(2)) { display: none; }
+.runoff-dashboard[data-section]:not([data-section="all"]) .rf-kpis { display: none; }
+.runoff-dashboard[data-section="derived"] .ro-water-path,
+.runoff-dashboard[data-section="derived"] .runoff-daily-panels,
+.runoff-dashboard[data-section="variables"] .runoff-derived-panels > :nth-child(n+2),
+.runoff-dashboard[data-section="variables"] .runoff-flood-panels > :first-child,
+.runoff-dashboard[data-section="derived"] .runoff-flood-panels > :nth-child(3) { display: none; }

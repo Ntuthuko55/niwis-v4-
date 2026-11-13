@@ -4,6 +4,7 @@ import { Activity, ArrowDownRight, ArrowUpRight, CloudRain, Database, Droplets, 
 import { ResponsiveContainer, ComposedChart, Line, Bar, Area, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ReferenceLine } from 'recharts'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import LoadingProgress from './LoadingProgress'
+import { chartColor } from '../lib/chartTheme'
 import '../niwis/drought-monitoring.css'
 
 const names = { meteorological: 'Meteorological', hydrological: 'Hydrological', satellite: 'Satellite' }
@@ -28,17 +29,17 @@ async function read(url, signal) {
 function Panel({ title, subtitle, children, className = '', action }) {
   return <section className={`dm-panel ${className}`}><header><div><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div>{action}</header>{children}</section>
 }
-function Chart({ data, lines, bars = [], unit = '', zero = false, domain, height = 195 }) {
+function Chart({ data, lines, bars = [], unit = '', zero = false, domain, height = 280 }) {
   if (!data?.length) return <div className="dm-empty">No observations available for this period.</div>
-  return <div className="dm-chart" style={{ height }}><ResponsiveContainer width="100%" height="100%"><ComposedChart data={data} margin={{ top: 8, right: 10, left: -13, bottom: 0 }}>
+  return <div className="dm-chart" style={{ '--dm-chart-height': `${height}px` }}><ResponsiveContainer width="100%" height="100%"><ComposedChart data={data} margin={{ top: 8, right: 10, left: -13, bottom: 0 }}>
     <CartesianGrid stroke="#15374d" vertical={false} strokeDasharray="3 4" />
     <XAxis dataKey="month" tick={{ fill: '#80a4bb', fontSize: 10 }} tickLine={false} axisLine={false} minTickGap={35} tickFormatter={(v) => v.length === 7 ? v.slice(0, 4) + '/' + v.slice(5) : v} />
     <YAxis tick={{ fill: '#80a4bb', fontSize: 10 }} tickLine={false} axisLine={false} domain={domain || ['auto', 'auto']} width={55} />
     <Tooltip contentStyle={{ background: '#08253b', border: '1px solid #226081', borderRadius: 8, color: '#e8f8ff', fontSize: 12 }} labelFormatter={(v) => v?.length === 7 ? monthName(v) : v} formatter={(v, name) => [`${number(v)} ${unit}`, name]} />
     <Legend iconType="plainline" wrapperStyle={{ fontSize: 10, paddingTop: 5 }} />
     {zero && <ReferenceLine y={0} stroke="#7299af" strokeDasharray="3 3" />}
-    {bars.map(([key, label, color]) => <Bar key={key} dataKey={key} name={label} fill={color} radius={[2, 2, 0, 0]} maxBarSize={15} isAnimationActive={false} />)}
-    {lines?.map(([key, label, color, area]) => area ? <Area key={key} dataKey={key} name={label} stroke={color} fill={color} fillOpacity={.1} strokeWidth={1.8} dot={false} connectNulls={false} isAnimationActive={false} /> : <Line key={key} dataKey={key} name={label} stroke={color} strokeWidth={1.8} dot={false} connectNulls={false} isAnimationActive={false} />)}
+    {bars.map(([key, label, color]) => <Bar key={key} dataKey={key} name={label} fill={chartColor(color)} radius={[2, 2, 0, 0]} maxBarSize={15} isAnimationActive={false} />)}
+    {lines?.map(([key, label, color, area]) => area ? <Area key={key} dataKey={key} name={label} stroke={chartColor(color)} fill={chartColor(color)} fillOpacity={.1} strokeWidth={1.8} dot={false} connectNulls={false} isAnimationActive={false} /> : <Line key={key} dataKey={key} name={label} stroke={chartColor(color)} strokeWidth={1.8} dot={false} connectNulls={false} isAnimationActive={false} />)}
   </ComposedChart></ResponsiveContainer></div>
 }
 function Metric({ icon: Icon, label, value, unit, date, accent }) {
@@ -50,7 +51,7 @@ function Comparison({ title, data, unit }) {
   return <div className="dm-comparison"><span>{title} · {monthName(data.month)}</span><strong>{number(data.current)} <small>{unit}</small></strong><p>{data.change_pct == null ? 'Insufficient comparable history' : <><Icon size={14} /> {number(Math.abs(data.change_pct), 1)}% {data.change_pct < 0 ? 'below' : 'above'} same-month mean</>}</p><small>{data.baseline_years} prior years{data.baseline_start ? ` · ${data.baseline_start.slice(0, 4)}–${data.baseline_end.slice(0, 4)}` : ''}</small></div>
 }
 
-export default function DroughtMonitoring({ renderForecast }) {
+export default function DroughtMonitoring() {
   const [regions, setRegions] = useState([])
   const [mapRegions, setMapRegions] = useState([])
   const [geometry, setGeometry] = useState([])
@@ -143,11 +144,18 @@ export default function DroughtMonitoring({ renderForecast }) {
     ['Vegetation health · VHI', sat.vhi, '%', sat.date, 'Satellite'], ['Land surface temperature', sat.lst, '°C', sat.date, 'Satellite'], ['Surface soil moisture', sat.surface_soil_moisture, 'm³/m³', sat.date, 'Satellite'], ['GRACE water storage', sat.grace_tws, 'cm', sat.date, 'Satellite'],
   ]
   const titleRegion = selected || 'South Africa'
+  const mapPanel = <Panel title="National drought picture" subtitle={`${names[mapLayer]} · ${mapLabel} · ${mapDate || mapDates.join(' / ') || 'No observations'}`} className="dm-map-panel">
+          <div className="dm-tabs">{[['meteorological', 'SPI / SPEI'], ['hydrological', 'SSI'], ['satellite', 'NDVI']].map(([key, label]) => <button key={key} className={mapLayer === key ? 'active' : ''} onClick={() => { setMapLayer(key); setMapMetric(mapOptions[key][0][0]) }}>{label}</button>)}</div>
+          <div className="dm-map-controls"><label className="dm-map-selector">Map indicator<select aria-label="Drought map indicator" value={mapKey} onChange={(event) => setMapMetric(event.target.value)}>{mapOptions[mapLayer].map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label><label className="dm-map-selector">Map month<select aria-label="Drought map month" value={mapDate || mapDateOptions.at(-1) || ''} onChange={(event) => setMapDate(event.target.value)}>{mapDateOptions.map(date => <option key={date}>{date}</option>)}</select></label></div>
+          {mapError && <div className="dm-empty" role="alert">{mapError}</div>}{mapLoading && <LoadingProgress className="dm-loading" message="Loading map observations" />}<DistrictMap districts={geometry} values={mapError || mapLoading ? {} : values} selected={selected} onSelect={(name) => setSelected(regions.find((r) => r.key === normaliseDistrictName(name))?.name || name)} valueKey={mapKey} valueLabel={mapLabel} colorFn={mapLayer === 'satellite' ? ndviColor : spiColor} />
+          <div className="dm-map-footer"><MapPin size={14} /><strong>{titleRegion}</strong><span>{mapDate || 'Latest'} · {mapRegions.length} regions · click to explore</span></div>
+        </Panel>
   return <div className="dm-dashboard">
     <div className="dm-heading"><div><span className="dm-eyebrow">NIWIS / INTEGRATED WATER INTELLIGENCE</span><h1>Drought monitoring</h1><p>Climate, water and vegetation. One regional picture.</p></div><div className="dm-heading-actions"><span className="dm-source-pill"><Database size={13} /> Supabase observations</span><button className="dm-refresh" onClick={() => setRevision((v) => v + 1)} aria-label="Refresh drought monitoring"><RefreshCw size={16} /></button></div></div>
     <div className="dm-controls"><label className="dm-region"><MapPin size={23} /><div><span>REGION / MUNICIPALITY</span><select aria-label="Monitoring region" value={selected} onChange={(e) => setSelected(e.target.value)}>{regions.map((r) => <option key={r.key}>{r.name}</option>)}</select></div></label><div className="dm-source-dates">{Object.entries(names).map(([kind, label]) => <div key={kind}><i className={source[kind]?.status === 'ok' ? 'ok' : ''} /><span>{label}<strong>{loading ? 'Loading…' : source[kind]?.end || 'Unavailable'}</strong></span></div>)}</div><label className="dm-range">Chart history<select aria-label="Chart history" value={windowMonths} onChange={(e) => setWindowMonths(Number(e.target.value))}><option value={60}>Last 5 years</option><option value={120}>Last 10 years</option><option value={0}>All observations</option></select></label></div>
     {catalogError && <p className="dm-warning" role="alert">{catalogError}</p>}{error && <p className="dm-warning" role="alert">{error}</p>}
     {loading && <LoadingProgress className="dm-loading" message="Assembling the regional drought picture" />}
+    {(loading || !payload) && mapPanel}
     {!loading && payload && <>
       {Object.entries(source).filter(([, s]) => s.status !== 'ok').map(([kind, s]) => <p className="dm-warning" role="alert" key={kind}>{names[kind]}: {s.error || 'No observations for this region.'} Other available sources remain visible.</p>)}
       <div className="dm-kpis">
@@ -159,27 +167,23 @@ export default function DroughtMonitoring({ renderForecast }) {
         <Metric icon={Leaf} label="Vegetation · NDVI" value={sat.ndvi} unit="" date={sat.date} accent="#66dca6" />
       </div>
       <div className="dm-grid">
-        <Panel title="National drought picture" subtitle={`${names[mapLayer]} · ${mapLabel} · ${mapDate || mapDates.join(' / ') || 'No observations'}`} className="dm-map-panel">
-          <div className="dm-tabs">{[['meteorological', 'SPI / SPEI'], ['hydrological', 'SSI'], ['satellite', 'NDVI']].map(([key, label]) => <button key={key} className={mapLayer === key ? 'active' : ''} onClick={() => { setMapLayer(key); setMapMetric(mapOptions[key][0][0]) }}>{label}</button>)}</div>
-          <div className="dm-map-controls"><label className="dm-map-selector">Map indicator<select aria-label="Drought map indicator" value={mapKey} onChange={(event) => setMapMetric(event.target.value)}>{mapOptions[mapLayer].map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label><label className="dm-map-selector">Map month<select aria-label="Drought map month" value={mapDate || mapDateOptions.at(-1) || ''} onChange={(event) => setMapDate(event.target.value)}>{mapDateOptions.map(date => <option key={date}>{date}</option>)}</select></label></div>
-          {mapError ? <div className="dm-empty" role="alert">{mapError}</div> : mapLoading ? <LoadingProgress className="dm-loading" message="Loading map observations" /> : <DistrictMap districts={geometry} values={values} selected={selected} onSelect={(name) => setSelected(regions.find((r) => r.key === normaliseDistrictName(name))?.name || name)} valueKey={mapKey} colorFn={mapLayer === 'satellite' ? ndviColor : spiColor} />}
-          <div className="dm-map-footer"><MapPin size={14} /><strong>{titleRegion}</strong><span>{mapDate || 'Latest'} · {mapRegions.length} regions · click to explore</span></div>
-        </Panel>
-        <Panel title="Temperature trends" subtitle="Monthly means · °C" action={<Thermometer size={16} />}>
+        {mapPanel}
+        <Panel title="Temperature trends" subtitle="Monthly means · °C" action={<Thermometer size={16} />} className="dm-chart-panel">
           <div className="dm-tabs">{[['tmin_c', 'Tmin'], ['tmax_c', 'Tmax'], ['tavg_c', 'Tavg']].map(([key, label]) => <button className={temperature === key ? 'active' : ''} key={key} onClick={() => setTemperature(key)}>{label}</button>)}</div>
           <Chart data={slice(climate)} lines={[[temperature, 'Temperature', '#39d7ef', true]]} unit="°C" />
           <p className="dm-footnote">Observed means; the most recent month may be incomplete.</p>
         </Panel>
-        <Panel title="Monthly precipitation" subtitle="Daily observations summed over complete months · mm">
-          <Chart data={currentYear ? rainfall : []} bars={[[ 'previous', previousYear, '#17669e'], ['current', currentYear, '#2ecbff']]} unit="mm" domain={[0, 'auto']} height={224} />
+        <Panel title="Monthly precipitation" subtitle="Daily observations summed over complete months · mm" className="dm-chart-panel">
+          <Chart data={currentYear ? rainfall : []} bars={[[ 'previous', previousYear, '#17669e'], ['current', currentYear, '#2ecbff']]} unit="mm" domain={[0, 'auto']} />
           <p className="dm-footnote">Blank months are incomplete or unavailable; they are not zero rainfall.</p>
         </Panel>
-        <Panel title="Hydrological response" subtitle="Monthly river discharge · m³/s"><Chart data={slice(water)} lines={[[ 'river_discharge_m3_s', 'Discharge', '#42d5e8', true], ['baseflow_separation_m3_s', 'Baseflow', '#688cff']]} unit="m³/s" /><Comparison title="River discharge" data={payload.comparisons.hydrological} unit="m³/s" /></Panel>
-        <Panel title="Vegetation & water stress" subtitle="Monthly vegetation greenness · NDVI"><Chart data={slice(vegetation)} lines={[[ 'ndvi', 'NDVI', '#6ee6ae', true]]} domain={[-1, 1]} /><Comparison title="Vegetation greenness" data={payload.comparisons.satellite} unit="NDVI" /></Panel>
-        <Panel title="Drought indices" subtitle="Monthly means · precipitation and climatic water balance"><Chart data={slice(climate)} lines={[[ 'spi_3', 'SPI-3', '#3fbcff'], ['spei_3', 'SPEI-3', '#79e2ad']]} zero /><Comparison title="Monthly rainfall" data={payload.comparisons.meteorological} unit="mm" /></Panel>
-        <Panel title="Heat & frost exposure" subtitle="Hot days: Tmax > 35°C · frost days: Tmin < 0°C"><Chart data={annual} bars={[[ 'hot_days', 'Hot days', '#ff9861'], ['frost_days', 'Frost days', '#53b7ff']]} unit="days" domain={[0, 'auto']} /><p className="dm-footnote">Observed days only; * marks incomplete years. Hot-day counts do not measure heatwave duration.</p></Panel>
-        <Panel title="Evapotranspiration" subtitle="Monthly daily mean · mm/day"><div className="dm-tabs">{[['pet_mm_day', 'PET'], ['et0_mm_day', 'ET₀']].map(([key, label]) => <button key={key} className={evaporation === key ? 'active' : ''} onClick={() => setEvaporation(key)}>{label}</button>)}</div><Chart data={slice(climate)} lines={[[evaporation, evaporation === 'pet_mm_day' ? 'PET' : 'ET₀', '#a599ff', true]]} unit="mm/day" height={166} /></Panel>
-        <Panel title="Reservoir & groundwater condition" subtitle="Monthly storage and groundwater index"><Chart data={slice(water)} lines={[[ 'dam_level_pct_fsc', 'Dam storage (% full)', '#52a5ff']]} unit="%" height={110} /><Chart data={slice(water)} lines={[[ 'sgi_dimensionless', 'Groundwater index · SGI', '#72dcbf']]} zero height={110} /></Panel>
+        <Panel title="Hydrological response" subtitle="Monthly river discharge · m³/s" className="dm-chart-panel"><Chart data={slice(water)} lines={[[ 'river_discharge_m3_s', 'Discharge', '#42d5e8', true], ['baseflow_separation_m3_s', 'Baseflow', '#688cff']]} unit="m³/s" /><Comparison title="River discharge" data={payload.comparisons.hydrological} unit="m³/s" /></Panel>
+        <Panel title="Vegetation & water stress" subtitle="Monthly vegetation greenness · NDVI" className="dm-chart-panel"><Chart data={slice(vegetation)} lines={[[ 'ndvi', 'NDVI', '#6ee6ae', true]]} domain={[-1, 1]} /><Comparison title="Vegetation greenness" data={payload.comparisons.satellite} unit="NDVI" /></Panel>
+        <Panel title="Drought indices" subtitle="Monthly means · precipitation and climatic water balance" className="dm-chart-panel"><Chart data={slice(climate)} lines={[[ 'spi_3', 'SPI-3', '#3fbcff'], ['spei_3', 'SPEI-3', '#79e2ad']]} zero /><Comparison title="Monthly rainfall" data={payload.comparisons.meteorological} unit="mm" /></Panel>
+        <Panel title="Heat & frost exposure" subtitle="Hot days: Tmax > 35°C · frost days: Tmin < 0°C" className="dm-chart-panel"><Chart data={annual} bars={[[ 'hot_days', 'Hot days', '#ff9861'], ['frost_days', 'Frost days', '#53b7ff']]} unit="days" domain={[0, 'auto']} /><p className="dm-footnote">Observed days only; * marks incomplete years. Hot-day counts do not measure heatwave duration.</p></Panel>
+        <Panel title="Evapotranspiration" subtitle="Monthly daily mean · mm/day" className="dm-chart-panel"><div className="dm-tabs">{[['pet_mm_day', 'PET'], ['et0_mm_day', 'ET₀']].map(([key, label]) => <button key={key} className={evaporation === key ? 'active' : ''} onClick={() => setEvaporation(key)}>{label}</button>)}</div><Chart data={slice(climate)} lines={[[evaporation, evaporation === 'pet_mm_day' ? 'PET' : 'ET₀', '#a599ff', true]]} unit="mm/day" /></Panel>
+        <Panel title="Reservoir storage" subtitle="Monthly storage · % full" className="dm-chart-panel"><Chart data={slice(water)} lines={[[ 'dam_level_pct_fsc', 'Dam storage (% full)', '#52a5ff']]} unit="%" /></Panel>
+        <Panel title="Groundwater index" subtitle="Monthly groundwater index · SGI" className="dm-chart-panel"><Chart data={slice(water)} lines={[[ 'sgi_dimensionless', 'Groundwater index · SGI', '#72dcbf']]} zero /></Panel>
         <Panel title="Regional indicator register" subtitle="Latest reading from each source" className="dm-register"><div className="dm-table-wrap"><table><thead><tr><th>Indicator</th><th>Value</th><th>Observed</th><th>Source</th></tr></thead><tbody>{indicatorRows.map(([label, value, unit, date, provider]) => <tr key={label}><td>{label}</td><td>{number(value)} <small>{unit}</small></td><td>{date || '—'}</td><td>{provider}</td></tr>)}</tbody></table></div></Panel>
         <Panel title="Converging drought signals" subtitle={aligned?.month ? `Aligned comparison · ${monthName(aligned.month)}` : 'No common complete observation month'} className="dm-signals" action={<Activity size={17} />}>
           <div className="dm-signal-count"><strong>{aligned?.dry_count ?? '—'}<small> / {aligned?.available_signals ?? 0}</small></strong><span>available indicators exceed<br />their dryness threshold</span></div>
@@ -191,7 +195,6 @@ export default function DroughtMonitoring({ renderForecast }) {
           <div className="dm-insight"><Waves size={18} /><p>{aligned?.spi_ssi_correlation != null ? `Monthly SPI-3 and SSI correlation: ${number(aligned.spi_ssi_correlation)} across ${aligned.paired_months} shared months. Association does not establish cause.` : 'At least 12 paired months are needed to compare precipitation and streamflow indices.'}</p></div>
           <div className="dm-insight"><ShieldCheck size={18} /><p>{!aligned?.month ? 'Restore missing source coverage before making a combined drought assessment.' : aligned.dry_count >= 2 ? 'Multiple indicators show dryness in the aligned month. Review local water availability and conservation planning alongside newer field observations.' : aligned.dry_count === 1 ? 'One indicator shows dryness in the aligned month. Monitor whether the signal also appears in streamflow and vegetation.' : 'No available indicator exceeds the selected dryness thresholds in the aligned month. Continue routine monitoring and review newer observations.'}</p></div>
         </Panel>
-        <Panel title={`Forecasting studio · ${titleRegion}`} subtitle="Regional meteorological history · LSTM default · selectable models, targets and horizon" className="dm-forecast nw-overview-forecast"><span className="dm-forecast-badge">FORWARD OUTLOOK</span>{source.meteorological?.status === 'ok' ? renderForecast(met.district_name || selected) : <p className="dm-empty">Meteorological observations are required to run a regional forecast.</p>}</Panel>
       </div>
       <details className="dm-method"><summary>How this overview is calculated</summary><p>All observations come from the three Supabase drought tables. Climate charts use monthly means; rainfall uses daily sums only where every day of the month is present. Seasonal comparisons use complete observations from the same calendar month in prior years, with at least three years required. They are not a 1981–2010 reference climatology. Heat and frost counts use available daily observations; incomplete years are marked with an asterisk. SSI, SPI and VHI signals are aligned to the latest complete month shared by all three sources. Forecasts reuse the existing regional forecasting service; historical comparisons and thresholds are observational indicators, not validated impact predictions.</p></details>
       <footer className="dm-footer"><span><Droplets size={16} /> NIWIS <b>Drought intelligence</b></span><span>{Object.values(source).reduce((n, s) => n + s.records, 0).toLocaleString()} regional observations · Database observations</span></footer>

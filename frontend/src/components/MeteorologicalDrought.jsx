@@ -1,7 +1,8 @@
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { useEffect, useMemo, useState } from 'react'
 import Plot from './LazyPlot'
-import { DistrictMap, normaliseDistrictName as normalise } from './DistrictMap'
+import { buildDistrictMapScale, buildStandardizedIndexScale, DistrictMap, normaliseDistrictName as normalise } from './DistrictMap'
+import MonitoringMapPanel from './MonitoringMapPanel'
 import LoadingProgress from './LoadingProgress'
 
 const metrics = [
@@ -10,7 +11,6 @@ const metrics = [
   ['rainfall_anomaly_pct', 'Rainfall anomaly', '%'], ['tavg_c', 'Mean temperature', '°C'],
   ['pet_mm_day', 'Potential evapotranspiration', 'mm/day'], ['relative_humidity_pct', 'Relative humidity', '%'],
 ]
-const color = (v) => v <= -2 ? '#f04444' : v <= -1.5 ? '#fa8c25' : v <= -1 ? '#f4dc45' : v <= 1 ? '#64c968' : '#2196c4'
 async function read(url, signal) {
   const response = await fetch(url, { signal })
   const data = await response.json()
@@ -46,8 +46,8 @@ export default function MeteorologicalDrought({ renderForecast }) {
     return () => controller.abort()
   }, [])
   const values = useMemo(() => Object.fromEntries(mapRows.map((r) => [normalise(r.district_name), r])), [mapRows])
-  const current = values[normalise(selected)]
-  const region = current?.district_name
+  const current = mapError || mapLoading ? undefined : values[normalise(selected)]
+  const region = rows.find(row => normalise(row.district_name) === normalise(selected))?.district_name || selected
   const mapDates = useMemo(() => [...new Set(history.map(row => String(row.date || '').slice(0, 10)))].filter(Boolean).sort(), [history])
   useEffect(() => {
     if (!mapDate) return undefined
@@ -72,6 +72,9 @@ export default function MeteorologicalDrought({ renderForecast }) {
     return () => controller.abort()
   }, [region])
   const label = metrics.find(([key]) => key === metric)
+  const mapScale = useMemo(() => /^(spi|spei)_/.test(metric)
+    ? buildStandardizedIndexScale(label[1])
+    : buildDistrictMapScale(mapRows, metric, label[1], label[2], undefined, districts.length || 52), [mapRows, metric, label, districts.length])
   return <>
     <div className="nw-crumb">Situation / Meteorological drought</div>
     <h1 className="page">Meteorological drought</h1>
@@ -79,11 +82,13 @@ export default function MeteorologicalDrought({ renderForecast }) {
     {loading && <LoadingProgress className="nw-forecast-loading" message="Loading meteorological regions" />}
     {error && <div className="nw-error" role="alert">{error}</div>}
     {!loading && !error && !rows.length && <p>No meteorological observations are available.</p>}
+    {!rows.length && <MonitoringMapPanel title="Meteorological monitoring map" indicators={metrics.map(([key, title, unit]) => ({ key, label: title, unit }))} indicator={metric} onIndicatorChange={setMetric} features={districts} geographyAvailable={false} noDataReason={error || (loading ? 'Meteorological observations are loading.' : 'No meteorological observations are available.')} />}
     {!!rows.length && <>
       <div className="nw-overview-grid">
-        <section className="nw-panel"><div className="nw-phead"><h3>Regional SPI-3</h3><span className="src">Observations for {mapDate || rows[0]?.date}</span></div>
+        <section className="nw-panel"><div className="nw-phead"><h3>Regional {label[1]}</h3><span className="src">Observations for {mapDate || rows[0]?.date}</span></div>
+          <label>Map indicator <select aria-label="Meteorological map indicator" value={metric} onChange={event => setMetric(event.target.value)}>{metrics.map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select></label>
           <label>Map date <select aria-label="Meteorological map date" value={mapDate} onChange={event => setMapDate(event.target.value)}>{(mapDates.length ? mapDates : [mapDate]).filter(Boolean).map(date => <option key={date}>{date}</option>)}</select></label>
-          {mapError ? <p className="nw-error" role="alert">{mapError}</p> : mapLoading ? <LoadingProgress className="nw-map-loading" message="Loading map observations" /> : <DistrictMap districts={districts} values={values} valueKey="spi_3" colorFn={color} selected={selected} onSelect={setSelected} />}
+          {mapError && <p className="nw-error" role="alert">{mapError}</p>}{mapLoading && <LoadingProgress className="nw-map-loading" message="Loading map observations" />}<DistrictMap districts={districts} values={mapError || mapLoading ? {} : values} valueKey={metric} valueLabel={label[1]} valueUnit={label[2]} colorFn={mapScale.color} legend={mapScale.legend} selected={selected} onSelect={setSelected} />
           <p className="nw-note">Grey regions have no observation for the selected date.</p>
         </section>
         <section className="nw-panel"><div className="nw-phead"><h3>Region details</h3></div>
@@ -97,7 +102,7 @@ export default function MeteorologicalDrought({ renderForecast }) {
         </section>
       </div>
       <section className="nw-panel" style={{ marginTop: 16 }}><div className="nw-phead"><h3>Observation history · {selected}</h3><span className="src">Supabase meteorological observations</span></div>
-        <label>Measurement <select value={metric} onChange={(e) => setMetric(e.target.value)}>{metrics.map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select></label>
+        <label>Measurement <select aria-label="Meteorological history measurement" value={metric} onChange={(e) => setMetric(e.target.value)}>{metrics.map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select></label>
         {historyLoading ? <LoadingProgress className="nw-map-loading" message="Loading region history" /> : historyError ? <p className="nw-error" role="alert">{historyError}</p> : history.length ? <Plot data={[{ x: history.map((r) => r.date), y: history.map((r) => r[metric]), type: 'scatter', mode: 'lines', name: label[1], connectgaps: false, line: { color: '#64c968' } }]} layout={{ height: 340, paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: '#93aebb' }, margin: { l: 65, r: 20, t: 25, b: 45 }, xaxis: { title: 'Date' }, yaxis: { title: `${label[1]} ${label[2]}` }, autosize: true }} config={{ responsive: true, displayModeBar: false }} useResizeHandler style={{ width: '100%' }} /> : <p>No history available for this region.</p>}
       </section>
     </>}

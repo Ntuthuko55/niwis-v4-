@@ -67,6 +67,7 @@ def _request_page(
     start: int | None = None,
     end: int | None = None,
     count_exact: bool = False,
+    timeout: float = 45,
 ) -> tuple[list[dict], str | None]:
     headers = {
         "apikey": key,
@@ -79,7 +80,7 @@ def _request_page(
         headers["Range"] = f"{start}-{end}"
     request = Request(url, headers=headers)
     try:
-        with urlopen(request, timeout=45) as response:
+        with urlopen(request, timeout=timeout) as response:
             payload = json.loads(response.read().decode("utf-8"))
             content_range = response.headers.get("Content-Range")
     except HTTPError as exc:

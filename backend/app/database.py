@@ -78,6 +78,7 @@ def engine():
         max_overflow=_int_setting("NIWIS_DB_MAX_OVERFLOW", 10, 0, 100),
         pool_timeout=_int_setting("NIWIS_DB_POOL_TIMEOUT", 30, 1, 300),
         pool_recycle=_int_setting("NIWIS_DB_POOL_RECYCLE", 1800, 60, 86400),
+        connect_args={"connect_timeout": 5},
         future=True,
     )
 

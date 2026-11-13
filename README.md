@@ -2,6 +2,52 @@
 
 National Integrated Water Information System (NIWIS) is a dashboard for exploring South African climate, drought, satellite, water-storage, and time-series data.
 
+## Production deployment
+
+NIWIS deploys as a static React frontend plus a FastAPI backend. The repository
+does not assume a particular cloud host; configure the host to follow this
+same-origin routing contract:
+
+1. Install the backend dependencies in `backend/.venv` and configure
+   `backend/.env` from [`backend/.env.example`](backend/.env.example). Keep
+   Supabase, MapTiler and Gemini credentials on the backend. Set
+   `NIWIS_ENV=production`. If the frontend uses a different origin, set
+   `NIWIS_CORS_ORIGINS` to its exact HTTPS origin or comma-separated origins.
+   Leave it empty when the reverse proxy serves both parts on one origin.
+2. Start the Windows backend with `backend\start.ps1 -Production`. It checks
+   the configured database before serving, binds to `0.0.0.0`, and uses the
+   platform `PORT` value when supplied (otherwise port 8000).
+   On a Linux/container host, set the same server environment and run from
+   `backend/`:
+
+   ```sh
+   python scripts/check_database_access.py && \
+   python -m app.spatial.prepare_landcover && \
+   python -m uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}" --workers 1
+   ```
+
+3. Build the frontend with `npm ci` and `npm run build` from `frontend/`, then
+   publish `frontend/dist/`. Serve both generated HTML entry points and route
+   dashboard URLs back to the frontend entry point.
+4. Reverse proxy `/api/*` to the backend after removing the `/api` prefix.
+   Proxy `/niwis-api/*` and `/spatial-api/*` without changing their paths.
+   These rules match the local Vite proxy and keep API requests same-origin.
+5. Use `GET /health` for process liveness and `GET /ready` when the monitor
+   needs confirmation that the configured database is reachable. `/health`
+   intentionally does not claim database readiness.
+
+Forecast datasets and job status are currently held in backend process memory.
+Datasets expire after an hour, each is limited to 64 MiB, total forecast data
+defaults to a 256 MiB budget, and no more than two jobs train at once. Configure
+these bounds with `NIWIS_DATASET_*` and `NIWIS_TRAINING_MAX_*`. Run one Uvicorn
+process per deployment instance; do not add workers or horizontal replicas
+until this state moves to shared storage.
+
+The API does not provide user authentication. CORS only controls browser
+cross-origin access; it does not authorize requests. Before exposing write or
+compute endpoints to the public internet, put them behind the intended identity
+gateway and apply request limits there.
+
 ## Run locally
 
 From the project root, create a dedicated backend environment and install its dependencies:
@@ -17,11 +63,12 @@ Start the backend from the project root:
 .\backend\start.ps1
 ```
 
-The startup script runs a read-only connectivity check against the three
-drought tables before it starts the API. Run it from a normal PowerShell
+The startup script runs a read-only connectivity check against the configured
+database before it starts the API (the three drought tables for Supabase, or a
+`SELECT 1` query for PostgreSQL). Run it from a normal PowerShell
 session with outbound network access; if the check fails, it stops before the
 dashboard can fill with repeated Supabase socket errors. The development API
-listens on `127.0.0.1:8001`.
+listens on `127.0.0.1:8000`.
 
 If starting from the `backend` directory, use the same guarded startup script:
 
@@ -40,11 +87,24 @@ In a second terminal, start the frontend:
 
 ```powershell
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
-Open the local Vite URL displayed in the terminal. The frontend proxies API requests to `http://127.0.0.1:8001`. Restart the frontend after changing proxy settings.
+Open the local Vite URL displayed in the terminal. The frontend proxies API requests to `http://127.0.0.1:8000`. Restart the frontend after changing proxy settings.
+
+## Dashboard appearance
+
+Use the **Theme** selector in the dashboard header to choose **Navy** or **Light**.
+The choice is saved in the browser and applies across dashboards, charts, map
+controls, and the Spatial Intelligence workspace. Navy is the default.
+
+Monitoring dashboards share an interactive map with province extent, district
+selection, indicator legends and selectable map backgrounds. Water Services
+keeps a map in every tab; Water Quantity's geographic map is visible in its main
+layout. Sources without verified geographic identifiers retain selectable
+boundaries and an explicit unavailable-data message. See the
+[map coverage and source limitations](output/INTERACTIVE_MAP_COVERAGE.md).
 
 ## Project layout
 
@@ -207,7 +267,7 @@ remains selectable as the shared studio's default.
 Run RWQO checks from `backend` with
 `.\.venv\Scripts\python.exe -m unittest test_rwqo_service -v` and the read-only live
 audit with `.\.venv\Scripts\python.exe verify_rwqo_database.py`. Run
-`node verify-rwqo-browser.mjs` from `frontend` with the backend on port 8001 and
+`node verify-rwqo-browser.mjs` from `frontend` with the backend on port 8000 and
 frontend on port 5173. These checks generate evidence in
 [`output/rwqo-dashboard/`](output/rwqo-dashboard/); the implementation report is
 [`RWQO-Implementation.md`](output/rwqo-dashboard/RWQO-Implementation.md).
@@ -364,7 +424,7 @@ The read-only database schema audit is in
 Focused source aggregation checks run from `backend` with
 `.\.venv\Scripts\python.exe -m unittest test_water_services_service -v`;
 browser verification runs as `node verify-water-services-browser.mjs` from
-`frontend` with the backend and frontend listening on ports 8001 and 5173.
+`frontend` with the backend and frontend listening on ports 8000 and 5173.
 
 Both water quality dashboards include the shared **Forecasting Studio** below
 their charts. Select **Open forecasting studio**, choose National or a district,
@@ -433,3 +493,44 @@ uses MapTiler's Dataviz v4 Dark raster tiles; its
 [Maps API](https://docs.maptiler.com/cloud/api/maps/) documents raster tile
 requests, and MapTiler's [key guidance](https://docs.maptiler.com/guides/developer/credentials/api-key/)
 recommends replacing and revoking a compromised key.
+
+### Spatial Intelligence dashboard
+
+Spatial Intelligence is available from NIWIS navigation at `/spatial`. It embeds
+Ally's React Leaflet workspace, including the map explorer, searchable data
+catalogue, data-readiness view, feature inspector, exports, viewport queries,
+and SANLC raster tiles. The iframe keeps Ally's own styles and map behavior
+isolated within the portal. Its bounded, read-only API is mounted on the NIWIS
+backend under `/spatial-api`; it uses the normal NIWIS backend and frontend
+startup commands.
+
+Ally's application source is under [`frontend/src/spatial/`](frontend/src/spatial/)
+and its spatial API modules are under [`backend/app/spatial/`](backend/app/spatial/).
+The required GIS inputs have been copied into the local `spatial_data/` tree:
+2026 MDB boundaries, GRID3 settlement extents, OSM roads, waterways, the SANLC
+2022 raster, WPdx reports, smallholder irrigation points, and source audit and
+manifest files. These local raw data files are excluded from Git. The 67.81 GB
+incomplete agricultural polygon export remains excluded, as Ally's audit
+recommends. Source review: [`output/SPATIAL_GIS_REVIEW.md`](output/SPATIAL_GIS_REVIEW.md).
+
+The original source limitations still apply. Display boundaries are generalized
+and must not be used for precision-dependent assignment. GRID3 building counts
+are not population; roads are not validated for tanker suitability; WPdx
+reports are historical and incomplete; irrigation records are points, not
+scheme boundaries or evidence of current operation; and the file named
+`boreholes.geojson` contains waterways, not boreholes. The readiness view keeps
+these gaps visible rather than presenting derived service claims.
+
+The backend requires Shapely and Rasterio for bounded vector queries and raster
+tiles. Install them with the rest of `backend/requirements.txt` when setting up
+the NIWIS Python environment. Backend startup prepares the small land-cover
+display preview; it does not alter the source TIFF.
+
+The map starts with local provincial and 2026 district boundaries. When the
+existing server-side `MAPTILER_API_KEY` is configured, Spatial reuses NIWIS's
+satellite tile proxy; the key is never sent to the browser. The Basemap selector
+also offers the online OpenStreetMap street map and a local-boundaries view.
+Online tile failures leave local GIS layers usable. The map fits the chosen
+province again when resized or expanded. Vector responses include the loaded
+geometry, and the land-cover renderer uses Rasterio's bundled projection data
+to avoid conflicts with a separately installed PostgreSQL/PostGIS runtime.

@@ -164,3 +164,13 @@
 @media(max-width:760px){.nw .climate-shell{grid-template-columns:minmax(0,1fr)}.nw .climate-shell>.nw-main{padding:18px 12px 26px}.nw .climate-shell>.nw-nav{display:none}.nw .climate-shell>.nw-nav.open{display:block;position:fixed;top:56px;left:0;bottom:0;width:232px}.nw .climate-shell .nw-statusstrip{display:none}.nw .climate-shell>.nw-topbar{padding:0 10px;gap:10px}.nw .climate-shell .nw-topactions{margin-left:auto}.cl-heading{flex-wrap:wrap}.nw .cl-title h1{font-size:25px}.nw .cl-title p{font-size:10px}.cl-title-icon{padding:8px}.cl-title-icon svg{width:25px}.cl-eyebrow{font-size:8px!important}.cl-filters{gap:9px;padding:12px}.cl-filters .cl-region{width:100%;min-width:0}.cl-filters label{flex:1;min-width:80px}.cl-filters .cl-apply{width:100%}.cl-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cl-kpi{padding:13px;gap:11px}.cl-kpi strong{font-size:23px}.cl-kpi span{font-size:10px;min-height:20px}.cl-kpis>.cl-kpi:last-child{grid-column:1/-1}.cl-detail-grid,.cl-bottom-grid{grid-template-columns:1fr}.cl-context{font-size:9px}.cl-section-links{gap:12px}.nw .cl-map-panel .sat-district-map{height:245px}.nw .cl-map-panel .map-color-legend{width:65px;min-width:65px!important}.cl-panel-heading{gap:5px}.cl-error{flex-wrap:wrap}}
 
 @media(max-width:760px){.cl-filters .cl-region{flex:1 1 100%}.nw .cl-filters select{font-size:12px}.cl-filters label{font-size:11px}}
+.surface-water-dashboard[data-section]:not([data-section="all"]) .rf-kpis,
+.surface-water-dashboard[data-section="stations"] .surface-metric-panels,
+.surface-water-dashboard[data-section="stations"] .surface-catchment-panels,
+.surface-water-dashboard[data-section="catchments"] .rf-daily-grid,
+.surface-water-dashboard[data-section="catchments"] .surface-metric-panels > :not(:nth-child(2)),
+.surface-water-dashboard[data-section="catchments"] .surface-catchment-panels > :nth-child(n+3),
+.surface-water-dashboard[data-section="sansa"] .rf-daily-grid,
+.surface-water-dashboard[data-section="sansa"] .surface-catchment-panels,
+.surface-water-dashboard[data-section="sansa"] .surface-metric-panels > :not(:first-child),
+.surface-water-dashboard[data-section="sansa"] .rf-analysis-grid { display: none; }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BarChart3, TrendingUp } from 'lucide-react'
 import ClimateChart, { CLIMATE_COLORS, climateNumber } from './ClimateChart'
+import { chartColor } from '../lib/chartTheme'
 
 const PRESENTATIONS = {
   temperature: {
@@ -82,7 +83,7 @@ function SummaryCards({ keys, catalogue, summary }) {
     if (!metric) return null
     const value = summary[key]
     const volume = metric.unit === 'm\u00b3/year'
-    return <div className="cl-section-kpi" key={key} style={{ '--indicator-color': CLIMATE_COLORS[key] || '#3987c6' }}><span>{metric.label}</span><strong>{climateNumber(volume && value != null ? value / 1e9 : value, metric.unit === 'm\u00b3/m\u00b3' ? 4 : 2)}<small>{volume ? 'billion m\u00b3/year' : metric.unit}</small></strong><p>Selected-period mean</p></div>
+    return <div className="cl-section-kpi" key={key} style={{ '--indicator-color': chartColor(CLIMATE_COLORS[key] || '#3987c6') }}><span>{metric.label}</span><strong>{climateNumber(volume && value != null ? value / 1e9 : value, metric.unit === 'm\u00b3/m\u00b3' ? 4 : 2)}<small>{volume ? 'billion m\u00b3/year' : metric.unit}</small></strong><p>Selected-period mean</p></div>
   })}</div>
 }
 

@@ -11,3 +11,12 @@
 .water-quality-dashboard .rf-methods{margin-top:12px}
 @media(max-width:1100px){.wq-source-strip{gap:12px}.wq-source-strip small{flex-basis:100%;margin:0}}
 @media(max-width:760px){.water-quality-dashboard .rf-heading h1{font-size:22px}.wq-source-strip{padding:12px;gap:9px}.wq-source-strip>span{flex-basis:100%}.wq-definition{grid-template-columns:1fr;gap:4px}.wq-chart-select{justify-content:stretch}.wq-chart-select label,.wq-chart-select select{width:100%}}
+.water-quality-dashboard[data-section]:not([data-section="all"]) .rf-kpis { display: none; }
+.water-quality-dashboard[data-section="physical"] .wq-parameter-grid > :not(:nth-child(1)),
+.water-quality-dashboard[data-section="chemical"] .wq-parameter-grid > :not(:nth-child(2)),
+.water-quality-dashboard[data-section="biological"] .wq-parameter-grid > :not(:nth-child(3)),
+.water-quality-dashboard[data-section="sansa"] .wq-parameter-grid,
+.water-quality-dashboard[data-section="physical"] .wq-sansa-grid,
+.water-quality-dashboard[data-section="chemical"] .wq-sansa-grid,
+.water-quality-dashboard[data-section="biological"] .wq-sansa-grid,
+.water-quality-dashboard[data-section="sansa"] .wq-sansa-grid > :not(:nth-child(1)) { display: none; }

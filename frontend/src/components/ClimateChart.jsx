@@ -1,5 +1,6 @@
 import { useId, useState } from 'react'
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { chartColor } from '../lib/chartTheme'
 
 export const CLIMATE_COLORS = {
   Tmin_C: '#3987c6', Tavg_C: '#168a82', Tmax_C: '#df7850',
@@ -64,7 +65,7 @@ export default function ClimateChart({ data, metrics, bars = false, type, xKey =
   const hasData = data?.some(row => visible.some(metric => row[metric.key] != null && Number.isFinite(Number(row[metric.key]))))
   const signedScale = signed || visible.some(metric => /Anomaly|SPEI|Nino34/.test(metric.key))
   const units = [...new Set(visible.map(metric => metric.unit))].join(' / ')
-  const colorFor = (metric, index) => colors?.[index % colors.length] || CLIMATE_COLORS[metric.key] || ['#3987c6', '#168a82', '#8063b9', '#c99331'][index % 4]
+  const colorFor = (metric, index) => chartColor(colors?.[index % colors.length] || CLIMATE_COLORS[metric.key] || ['#3987c6', '#168a82', '#8063b9', '#c99331'][index % 4])
 
   return <div className="cl-chart-frame">
     <div className="cl-chart-meta"><span>{units}</span><span>{chartType === 'bar' ? (indexKey === 'month' ? 'Monthly comparison' : 'Yearly comparison') : 'Change over time'}</span></div>
@@ -81,7 +82,7 @@ export default function ClimateChart({ data, metrics, bars = false, type, xKey =
             {visible.map(metric => {
               const color = colorFor(metric, validMetrics.indexOf(metric))
               const common = { dataKey: metric.key, name: metric.label, isAnimationActive: false }
-              if (chartType === 'bar') return <Bar key={metric.key} {...common} fill={color} radius={[4, 4, 0, 0]} maxBarSize={30}>{signedScale && visible.length === 1 && data.map((row, index) => <Cell key={index} fill={row[metric.key] < 0 ? '#c99331' : color} />)}</Bar>
+              if (chartType === 'bar') return <Bar key={metric.key} {...common} fill={color} radius={[4, 4, 0, 0]} maxBarSize={30}>{signedScale && visible.length === 1 && data.map((row, index) => <Cell key={index} fill={row[metric.key] < 0 ? chartColor('#c99331') : color} />)}</Bar>
               const line = { stroke: color, strokeWidth: 2.5, dot: data.length <= 12 ? { r: 3, fill: color, stroke: '#fff', strokeWidth: 1.5 } : false, activeDot: { r: 5, stroke: '#fff', strokeWidth: 2 }, connectNulls: false, type: 'linear' }
               return chartType === 'area' ? <Area key={metric.key} {...common} {...line} fill={`url(#${gradientId}-${metric.key})`} baseValue={signedScale ? 0 : 'dataMin'} /> : <Line key={metric.key} {...common} {...line} />
             })}

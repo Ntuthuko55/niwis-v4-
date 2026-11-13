@@ -4,31 +4,22 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.database import postgres_enabled
+from app.readiness import DatabaseReadinessError, check_database_readiness
 
 
 def main() -> int:
-    # The PostgreSQL deployment has its own connection configuration and is
-    # checked by its deployment environment. This guard targets the Supabase
-    # REST source used by the local NIWIS development server.
-    if postgres_enabled():
-        return 0
+    """Stop startup unless every required table or the active DB responds."""
+    try:
+        source = check_database_readiness()
+    except DatabaseReadinessError as exc:
+        print(
+            f"Database preflight failed: {exc}\n"
+            "Check the backend connection settings and database availability.",
+            file=sys.stderr,
+        )
+        return 1
 
-    from app.drought_source import TABLES, read_rows
-
-    for table in sorted(TABLES):
-        try:
-            read_rows(table, {"select": "date", "limit": "1"})
-        except Exception as exc:
-            print(
-                f"Database preflight failed for {table}: {exc}\n"
-                "The backend cannot reach Supabase. Start it from a normal, "
-                "network-enabled PowerShell session using backend\\start.ps1.",
-                file=sys.stderr,
-            )
-            return 1
-
-    print("Supabase preflight passed for all drought tables.")
+    print(f"{source} preflight passed.")
     return 0
 
 

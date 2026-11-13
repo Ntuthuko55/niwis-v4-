@@ -15,6 +15,13 @@ dist/
 vite-dev.log
 vite-dev.err.log
 
+# Local runtime logs, caches, and temporary deployment output
+/backend/.cache/
+/backend/*.log
+/backend/*.log.*
+/frontend/*.log
+/frontend/*.log.*
+
 # Generated frontend inspection artifacts
 /frontend/output/
 /frontend/hydrology.png
@@ -27,6 +34,7 @@ vite-dev.err.log
 
 # Misc
 .DS_Store
+spatial_data/
 
 .env.local
 .env.*.local

@@ -2,10 +2,12 @@ import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { useEffect, useMemo, useState } from 'react'
 import { Sun, Thermometer, CloudRain, CalendarDays, Wind, Leaf, Waves, Download, MapPin, ArrowUpRight, Info, RefreshCw } from 'lucide-react'
 import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Cell } from 'recharts'
+import { chartColor } from '../lib/chartTheme'
 import Chart from './ClimateChart'
 import ClimateSectionCharts from './ClimateSectionCharts'
 import LoadingProgress from './LoadingProgress'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
+import MonitoringMapPanel from './MonitoringMapPanel'
 import '../niwis/climate-dashboard.css'
 
 const SECTIONS = { temperature: 'Temperature', spells: 'Wet & dry spells', rainfall: 'Mean annual precipitation', evaporation: 'Evaporation', irrigation: 'Irrigation demand', streamflow: 'Streamflow & climate' }
@@ -176,10 +178,12 @@ export default function ClimateDashboard({ section = null }) {
     ['Irrigation_Water_Demand_mm', 'Irrigation demand', Leaf, 'gold'], ['MAR_m3_year', 'Mean annual runoff', Waves, 'purple'],
   ]
 
-  const mapContent = mapError ? <div className="cl-empty">District boundaries could not be loaded. Use the region filter above.</div>
-    : mapDataError ? <div className="cl-empty" role="alert">{mapDataError}<button type="button" onClick={() => setMapRetry(value => value + 1)}>Retry map</button></div>
-    : mapLoading ? <LoadingProgress message="Loading the national climate map" />
-    : <DistrictMap districts={districts} values={mapValues} valueKey={mapKey} colorFn={mapScale.color} selected={applied?.region || result?.region} onSelect={selectDistrict} legend={mapScale.legend} />
+  const mapContent = <>
+    {mapError && <p className="cl-empty" role="status">The dashboard boundary request failed. The map will retry its shared boundary source.</p>}
+    {mapDataError && <div className="cl-empty" role="alert">{mapDataError}<button type="button" onClick={() => setMapRetry(value => value + 1)}>Retry map</button></div>}
+    {mapLoading && <LoadingProgress message="Loading the national climate map" />}
+    <DistrictMap districts={districts} values={mapDataError || mapLoading ? {} : mapValues} valueKey={mapKey} valueLabel={catalogue[mapKey]?.label || mapKey} valueUnit={catalogue[mapKey]?.unit} colorFn={mapScale.color} selected={applied?.region || result?.region} onSelect={selectDistrict} legend={mapScale.legend} />
+  </>
 
   return <div className={`climate-dashboard ${section ? 'cl-section-dashboard' : ''}`}>
     <div className="cl-heading"><div className="cl-title"><span className="cl-title-icon"><Sun size={32} /></span><div><span className="cl-eyebrow">NIWIS · CLIMATE INTELLIGENCE</span><h1>{SECTION_TITLES[section] || 'Climate Dashboard'}</h1><p>{section ? `${SECTIONS[section]} / District indicators and monthly trends` : 'Temperature / Precipitation / Evaporation / Agriculture / Streamflow'}</p></div></div><button className="cl-export" onClick={exportData} disabled={!result || loading}><Download size={15} /> Export data</button></div>
@@ -202,6 +206,7 @@ export default function ClimateDashboard({ section = null }) {
     {!section && <div className="cl-section-links"><a href="#cl-overview">Overview</a>{Object.entries(SECTIONS).map(([key, label]) => <a key={key} href={`#cl-${key}`}>{label}</a>)}<a href="#cl-sources">Data & sources</a></div>}
     {error && <div className="cl-error" role="alert">{error}<button onClick={() => metadata ? setApplied({ ...applied }) : setRetry(retry + 1)}><RefreshCw size={14} /> Retry</button></div>}
     {loading && <LoadingProgress className="cl-loading" message={`Loading climate indicators from ${metadata?.source || 'the climate source'}`} />}
+    {!metadata && <MonitoringMapPanel title={`${section ? SECTION_TITLES[section] : 'Climate'} monitoring map`} features={districts} geographyAvailable={false} noDataReason={error || 'Climate observations are loading. District boundaries remain available for inspection.'} />}
     {monthlyLoading && result && <LoadingProgress className="cl-loading" message="Loading monthly climate trends" />}
     {!result && metadata && applied && <div className={section ? 'cl-section-primary' : 'cl-primary-grid'}>
       <Panel title={section ? 'District patterns' : 'Climate overview'} subtitle="National source snapshot" className={`cl-map-panel ${section ? 'cl-section-map' : ''}`}>
@@ -237,13 +242,13 @@ export default function ClimateDashboard({ section = null }) {
         <Panel title={trend === 'temperature' ? `Temperature trends of ${result.region === 'National' ? 'South Africa' : result.region}` : 'Climate trends'} subtitle={`${result.region === 'National' ? 'Equal-weight district average' : result.region} · ${period}`} id="cl-temperature">
           <div className="cl-tabs" role="group" aria-label="Climate trend category">{Object.keys(trendKeys).map(key => <button key={key} aria-pressed={trend === key} onClick={() => setTrend(key)}>{key === 'rainfall' ? 'Precipitation' : SECTIONS[key].split(' &')[0]}</button>)}</div>
           <div className="cl-axis-caption">{catalogue[trendKeys[trend][0]].unit} · {trendUsesMonthly ? 'Monthly source observations' : ['rainfall', 'streamflow'].includes(trend) ? 'Annual source values' : scope}</div>
-          <Chart key={`${trend}-${trendUsesMonthly ? 'monthly' : 'annual'}`} data={trendData} metrics={trendKeys[trend].map(key => catalogue[key])} type="line" height={310} />
+          <Chart key={`${trend}-${trendUsesMonthly ? 'monthly' : 'annual'}`} data={trendData} metrics={trendKeys[trend].map(key => catalogue[key])} type="line" height={275} />
         </Panel>
       </div>
       <div className="cl-detail-grid">
         <MetricPanel title="Precipitation extremes" subtitle="Annual source indices" options={[[ 'Rx1day_mm', 'Rx1day'], ['Rx5day_mm', 'Rx5day'], ['R10mm_Days', 'R10mm'], ['R20mm_Days', 'R20mm'], ['PRCPTOT_mm', 'PRCPTOT'], ['SDII_mm_per_wet_day', 'SDII']]} data={result.series} catalogue={catalogue} bars color="#328cce" />
         <MetricPanel title="Wet and dry spells" subtitle="Annual source indices" id="cl-spells" options={[[ 'CWD_Days', 'CWD'], ['CDD_Days', 'CDD']]} data={result.series} catalogue={catalogue} bars color="#24aa70" />
-        <Panel title="Seasonal rainfall (MAP)" subtitle={`Mean seasonal totals · ${period}`} id="cl-rainfall"><div className="cl-axis-caption">Rainfall (mm) · seasons as reported in source</div><div className="cl-chart" style={{ height: 250 }}><ResponsiveContainer width="100%" height="100%"><BarChart data={['MAM', 'JJA', 'SON', 'DJF'].map(season => ({ season, rainfall: summary[`Precip_${season}_mm`] }))} margin={{ top: 22, right: 12, left: 0, bottom: 2 }}><CartesianGrid stroke="#e7edf3" vertical={false} /><XAxis dataKey="season" tick={{ fill: '#65788d', fontSize: 10 }} /><YAxis tick={{ fill: '#65788d', fontSize: 10 }} width={45} /><Tooltip formatter={v => [`${fmt(v)} mm`, 'Rainfall']} contentStyle={{ color: '#17334d' }} /><Bar dataKey="rainfall" radius={[4, 4, 0, 0]} maxBarSize={48} isAnimationActive={false}>{['#27ad70', '#f7a356', '#bc7654', '#378bd1'].map(color => <Cell key={color} fill={color} />)}</Bar></BarChart></ResponsiveContainer></div></Panel>
+        <Panel title="Seasonal rainfall (MAP)" subtitle={`Mean seasonal totals · ${period}`} id="cl-rainfall"><div className="cl-axis-caption">Rainfall (mm) · seasons as reported in source</div><div className="cl-chart" style={{ height: 275 }}><ResponsiveContainer width="100%" height="100%"><BarChart data={['MAM', 'JJA', 'SON', 'DJF'].map(season => ({ season, rainfall: summary[`Precip_${season}_mm`] }))} margin={{ top: 22, right: 12, left: 0, bottom: 2 }}><CartesianGrid stroke="#e7edf3" vertical={false} /><XAxis dataKey="season" tick={{ fill: '#65788d', fontSize: 10 }} /><YAxis tick={{ fill: '#65788d', fontSize: 10 }} width={45} /><Tooltip formatter={v => [`${fmt(v)} mm`, 'Rainfall']} contentStyle={{ color: '#17334d' }} /><Bar dataKey="rainfall" radius={[4, 4, 0, 0]} maxBarSize={48} isAnimationActive={false}>{['#27ad70', '#f7a356', '#bc7654', '#378bd1'].map(color => <Cell key={color} fill={chartColor(color)} />)}</Bar></BarChart></ResponsiveContainer></div></Panel>
         <MetricPanel title="Evaporation & atmosphere" subtitle="Monthly source observations" id="cl-evaporation" options={[[ 'Daily_ET0_mm', 'ET₀'], ['Daily_PET_mm', 'PET'], ['Daily_AET_mm', 'AET'], ['Daily_Pan_Evap_mm', 'Pan'], ['Daily_VPD_kPa', 'VPD']]} data={monthlyResult?.series || result.series} catalogue={catalogue} color="#8854d3" />
       </div>
       <div className="cl-bottom-grid">

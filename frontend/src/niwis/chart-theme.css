@@ -1,0 +1,19 @@
+/* Chart primitives follow the active surface; measured data and status bands
+   keep their meaning. Series colours are provided by chartTheme.js. */
+html[data-niwis-theme="light"] .nw.nw-unified-theme{--dashboard-surface-solid:#fff;--chart-grid:#dce6ee;--chart-text:#526b80}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .recharts-cartesian-grid line{stroke:#dce6ee}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .recharts-cartesian-axis line{stroke:#b6c8d6}
+html[data-niwis-theme="light"] .nw.nw-unified-theme :is(.recharts-cartesian-axis-tick-value,.recharts-label){fill:#425e73}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .recharts-legend-item-text,
+html[data-niwis-theme="light"] .nw.nw-unified-theme .recharts-legend-item-text span{color:#425e73!important}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .recharts-default-tooltip{background:#fff!important;color:#16334b!important;border-color:#adc7d8!important;box-shadow:0 6px 20px #16334b1c}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .recharts-tooltip-label,
+html[data-niwis-theme="light"] .nw.nw-unified-theme .recharts-tooltip-item{color:#16334b!important}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .recharts-tooltip-cursor{fill:#e6eff6}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .ww-chart-tooltip{background:#fff!important;color:#16334b!important;border-color:#adc7d8!important;box-shadow:0 6px 20px #16334b1c!important}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .ww-chart-tooltip strong{color:#16334b!important}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .js-plotly-plot .bg{fill:#fff!important}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .js-plotly-plot :is(.xtick,.ytick,.g-xtitle,.g-ytitle,.g-gtitle) text{fill:#425e73!important}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .highcharts-background{fill:#fff}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .hydro-chart-canvas svg text{fill:#425e73}
+html[data-niwis-theme="light"] .nw.nw-unified-theme .hydro-chart-canvas svg path{filter:none!important}

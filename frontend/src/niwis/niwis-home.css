@@ -30,7 +30,7 @@
 .nh-header { position: relative; z-index: 20; border-bottom: 1px solid #e4ecea; background: #fff; }
 .nh-header-inner { min-height: 105px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .nh-brand { display: flex; align-items: center; flex-shrink: 0; gap: 17px; }
-.nh-brand img { width: 161px; height: auto; display: block; }
+.nh-brand img { width: 190px; height: auto; max-height: 65px; object-fit: contain; display: block; }
 .nh-brand-divider { height: 42px; width: 1px; background: #dae4e5; }
 .nh-wordmark { display: flex; flex-direction: column; gap: 3px; }
 .nh-wordmark > strong { font-family: 'Manrope', 'Segoe UI', sans-serif; font-size: 27px; font-weight: 800; letter-spacing: -.055em; line-height: 1.15; }

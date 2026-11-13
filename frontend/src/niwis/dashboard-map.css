@@ -1,0 +1,64 @@
+.dashboard-map{display:flex;flex:1 1 auto;flex-direction:column;min-width:0;min-height:0;width:100%;height:100%;color:inherit}
+.dashboard-map-toolbar{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;flex:0 0 auto;gap:7px 12px;min-height:38px;padding:5px 7px 8px}
+.dashboard-map-choice{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:600;color:#a8c3ce}
+.dashboard-map-choice>span{white-space:nowrap}
+.dashboard-map-choice select{width:auto;max-width:230px;min-height:30px;padding:5px 27px 5px 9px;border:1px solid #31576b;border-radius:6px;background:#102b3b;color:#e5f3f8;font:inherit;font-size:11px;cursor:pointer}
+.dashboard-map-choice select:focus-visible,.dashboard-map button:focus-visible{outline:2px solid #63cfc3;outline-offset:2px}
+.dashboard-map-availability{font-size:9px;font-weight:400;color:#8aa8b8}
+.dashboard-map-config-retry{display:inline-flex;align-items:center;gap:4px;border:1px solid #31576b;border-radius:5px;padding:4px 7px;background:#102b3b;color:#d5edf4;font-size:10px;cursor:pointer}
+.dashboard-map-original{display:flex;flex:1 1 auto;align-items:stretch;width:100%;min-width:0;min-height:0}
+.dashboard-map-loading{display:grid;place-items:center;flex:1;min-height:320px;border:1px solid var(--dashboard-border,#17537a);border-radius:8px;color:var(--dashboard-muted,#85a9c2);font-size:12px}
+.dashboard-map-original>svg,.dashboard-map-original>.nw-map{width:100%;min-width:0}
+.sat-district-map .dashboard-map-original>svg{display:block;height:100%;max-height:100%;min-height:0}
+.sat-district-map.dashboard-map-frame{height:clamp(360px,33vw,480px)!important;min-height:clamp(360px,33vw,480px)!important}
+.dashboard-map.dashboard-map-province{height:520px;min-height:520px}
+.dashboard-map-province .dashboard-map-original>.nw-map{height:100%;display:flex;align-items:stretch}
+.dashboard-map-province .dashboard-map-original>.nw-map>svg{height:100%;max-height:none}
+.dashboard-map-interactive{position:relative;flex:1 1 auto;width:100%;height:var(--dashboard-map-height,430px);min-height:160px;min-width:0;border:1px solid #27485b;border-radius:8px;overflow:hidden;background:#e4ece8}
+.dashboard-map-interactive:fullscreen{width:100vw;height:100vh;min-height:100vh;border:0;border-radius:0}
+.dashboard-map-leaflet{width:100%;height:100%;min-height:inherit;background:#183340;font-family:Arial,Helvetica,sans-serif;z-index:0}
+.dashboard-map-interactive--boundaries .dashboard-map-leaflet{background:#17313e}
+.dashboard-map .leaflet-control-container .leaflet-bar a{color:#284e5b;background:#fff}
+.dashboard-map .leaflet-control-attribution{max-width:80%;font-size:8px;line-height:1.35}
+.dashboard-map .leaflet-tooltip{max-width:260px;white-space:normal;line-height:1.5;font-size:11px}
+.dashboard-map .leaflet-overlay-pane path:focus-visible{outline:none;stroke:#fff;stroke-width:3}
+.dashboard-map .leaflet-overlay-pane>svg{max-height:none!important;max-width:none!important}
+.dashboard-map-toolbar svg,.dashboard-map-actions svg{width:16px;height:16px;max-width:16px;max-height:16px;flex-shrink:0}
+.dashboard-map .dashboard-map-province-label{background:none;border:0;pointer-events:none!important;text-align:center;white-space:nowrap}
+.dashboard-map-province-label>span{display:inline-block;color:#173b48;font-size:11px;font-weight:700;line-height:18px;text-shadow:-1px -1px 0 #ffffffdf,1px -1px 0 #ffffffdf,-1px 1px 0 #ffffffdf,1px 1px 0 #ffffffdf;pointer-events:none}
+.dashboard-map-actions{position:absolute;right:10px;top:10px;bottom:auto;display:grid;gap:5px;z-index:501}
+.dashboard-map-actions button{display:grid;place-items:center;width:30px;height:30px;padding:0;border:1px solid #cadbdc;border-radius:5px;background:#fff;color:#375f62;box-shadow:0 2px 5px #0a25352b;cursor:pointer}
+.dashboard-map-actions button:hover{background:#eaf7f3}
+.dashboard-map-message{position:absolute;left:10px;right:50px;bottom:34px;z-index:501;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #c5d8d7;border-radius:6px;background:#fffffff2;color:#38575c;font-size:10px;line-height:1.5;box-shadow:0 2px 5px #0a253522}
+.dashboard-map-message>span{flex:1;min-width:0}
+.dashboard-map-message button{flex:0 0 auto;border:1px solid #8fb6b2;border-radius:4px;padding:4px 7px;background:#f2faf7;color:#245a54;font:inherit;cursor:pointer}
+.dashboard-map-tile-status{position:absolute;left:10px;top:10px;z-index:501;padding:6px 9px;border-radius:5px;background:#fffffff0;color:#38575c;font-size:10px;pointer-events:none}
+.sat-district-map>.dashboard-map{flex:1 1 0;min-width:0;min-height:0}
+.sat-small-map .sat-district-map.dashboard-map-frame{height:240px!important;min-height:240px!important}
+.sat-dual-map .sat-district-map.dashboard-map-frame{height:220px!important;min-height:220px!important}
+.sat-water-map .sat-district-map.dashboard-map-frame{height:230px!important;min-height:230px!important}
+.sat-small-map .dashboard-map-frame .dashboard-map-original>svg{height:190px;max-height:none}
+.sat-dual-map .dashboard-map-frame .dashboard-map-original>svg{height:170px;max-height:none}
+.sat-water-map .dashboard-map-frame .dashboard-map-original>svg{height:180px;max-height:none}
+.sat-small-map .dashboard-map-interactive{height:190px;min-height:160px}
+.sat-dual-map .dashboard-map-interactive{height:170px;min-height:160px}
+.sat-water-map .dashboard-map-interactive{height:180px;min-height:160px}
+.vg-map.small .sat-district-map.dashboard-map-frame{height:330px!important;min-height:330px!important}
+.vg-map.small .dashboard-map-frame .dashboard-map-original>svg{height:280px;max-height:none}
+.dashboard-map.dashboard-map-province .dashboard-map-interactive{height:var(--dashboard-map-height,520px)}
+.dashboard-map.dashboard-map-province .dashboard-map-original>.nw-map>svg{height:100%;max-height:none}
+.sat-small-map .dashboard-map-actions,.sat-dual-map .dashboard-map-actions,.sat-water-map .dashboard-map-actions{top:8px;bottom:auto}
+@media(max-width:760px){.sat-district-map.dashboard-map-frame{height:340px!important;min-height:340px!important}.dashboard-map.dashboard-map-province{height:440px;min-height:440px}.dashboard-map-toolbar{padding:5px 2px 8px;gap:5px 8px}.dashboard-map-choice{font-size:9px;gap:6px}.dashboard-map-choice select{max-width:190px;font-size:10px;min-height:32px}.dashboard-map-availability{font-size:8px}.dashboard-map-message{left:7px;right:45px;bottom:32px;padding:7px 8px;flex-wrap:wrap;font-size:9px}.dashboard-map-province-label>span{font-size:9px}.dashboard-map-actions{right:9px}.dashboard-map .leaflet-control-attribution{font-size:7px}}
+
+/* A side legend must not squeeze a phone's map into a narrow strip. */
+.dashboard-map-frame>.map-color-legend{max-width:180px;overflow-wrap:anywhere}
+@media(max-width:760px){
+  .nw .sat-district-map.dashboard-map-frame{display:flex!important;flex-direction:column!important;gap:10px!important;height:auto!important;min-height:0!important;align-items:stretch!important}
+  .nw .sat-district-map.dashboard-map-frame>.dashboard-map{display:flex!important;flex:none!important;width:100%!important;height:360px!important;min-height:360px!important}
+  .nw .sat-district-map.dashboard-map-frame>.map-color-legend{display:grid!important;position:static!important;flex:none!important;max-width:none!important;width:100%!important;min-width:0!important;height:auto!important;padding:10px 4px!important;box-sizing:border-box}
+  .sat-district-map .map-color-legend>ul{grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px!important}
+  .sat-district-map .map-color-legend>div{min-height:96px!important}
+  .sat-district-map .map-color-legend>div>i{min-height:96px!important}
+  .sat-district-map .map-color-legend :is(strong,b){font-size:10px!important}
+  .sat-district-map .map-color-legend li span{font-size:9px!important}
+}

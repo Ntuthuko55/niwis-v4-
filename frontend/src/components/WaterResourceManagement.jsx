@@ -1,9 +1,11 @@
+import { chartColor } from '../lib/chartTheme'
 import { useEffect, useMemo, useState } from 'react'
 import { Activity, AlertTriangle, Download, MapPin, Mountain, RefreshCw, Waves } from 'lucide-react'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
-import { DistrictMap, normaliseDistrictName } from './DistrictMap'
+import { buildDistrictMapScale, DistrictMap, normaliseDistrictName } from './DistrictMap'
 import WastewaterChart, { WastewaterSparkline } from './WastewaterChart'
 import LoadingProgress from './LoadingProgress'
+import MonitoringMapPanel from './MonitoringMapPanel'
 import '../niwis/rwqo.css'
 import '../niwis/wrm.css'
 
@@ -29,7 +31,7 @@ function IndicatorChart({ title, choices, rows, color }) {
   const latest = rows.filter(row => valid(row[metric?.key])).at(-1)
   return <Panel title={title} subtitle="Annual observations · source units retained" className="wr-indicator-panel">
     <div className="rq-chart-controls"><label>Indicator<select aria-label={`${title} indicator`} value={metric?.key || ''} onChange={event => setKey(event.target.value)}>{choices.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label><label>Chart<select aria-label={`${title} chart style`} value={type} onChange={event => setType(event.target.value)}><option value="area">Area</option><option value="line">Line</option><option value="bar">Bars</option></select></label></div>
-    <div className="rq-readout"><div><strong style={{ color }}>{format(latest?.[metric?.key])}<small>{metric?.unit}</small></strong><span>{latest ? `${latest.year} · ${latest.entity || 'mean of selected source records'}` : 'No numeric observations'}</span></div></div>
+    <div className="rq-readout"><div><strong style={{ color: chartColor(color) }}>{format(latest?.[metric?.key])}<small>{metric?.unit}</small></strong><span>{latest ? `${latest.year} · ${latest.entity || 'mean of selected source records'}` : 'No numeric observations'}</span></div></div>
     <WastewaterChart data={rows} metrics={metric ? [{ ...metric, color }] : []} xKey="year" type={type} height={245} yLabel={metric?.unit} />
   </Panel>
 }
@@ -46,11 +48,12 @@ function exportCSV(result, meta) {
   setTimeout(() => URL.revokeObjectURL(anchor.href), 800)
 }
 
-export default function WaterResourceManagement() {
+export default function WaterResourceManagement({ section = null }) {
   const [meta, setMeta] = useState(null), [result, setResult] = useState(null), [features, setFeatures] = useState([])
   const [draft, setDraft] = useState({ region: 'National', area: ALL_AREAS, start: '', end: '' }), [applied, setApplied] = useState(null)
   const [loading, setLoading] = useState(true), [error, setError] = useState(''), [mapError, setMapError] = useState(''), [retry, setRetry] = useState(0)
   const [tab, setTab] = useState('matrix'), [mapKey, setMapKey] = useState('runoff'), [swsaKey, setSwsaKey] = useState('swsa_streamflow')
+  useEffect(() => { if (section) setTab(section === 'source-areas' ? 'swsa' : 'matrix') }, [section])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -80,14 +83,7 @@ export default function WaterResourceManagement() {
   const mapMetric = meta?.indicators.find(item => item.key === mapKey)
   const swsaMetric = meta?.swsa_indicators.find(item => item.key === swsaKey)
   const mapValues = useMemo(() => Object.fromEntries((result?.matrix.map || []).map(row => [normaliseDistrictName(row.district_name), row])), [result])
-  const mapScale = useMemo(() => {
-    const values = (result?.matrix.map || []).map(row => row[mapKey]).filter(valid)
-    return { min: values.length ? Math.min(...values) : 0, max: values.length ? Math.max(...values) : 1 }
-  }, [result, mapKey])
-  const mapColor = value => {
-    const ratio = mapScale.min === mapScale.max ? 0.5 : (value - mapScale.min) / (mapScale.max - mapScale.min)
-    return ratio < 0.25 ? '#235373' : ratio < 0.5 ? '#298ca5' : ratio < 0.75 ? '#46bfb5' : '#9aead2'
-  }
+  const mapScale = useMemo(() => buildDistrictMapScale(result?.matrix.map || [], mapKey, mapMetric?.label, mapMetric?.unit, format, features.length), [result, mapMetric, features.length])
   const applyPatch = patch => { const next = { ...applied, ...patch }; setDraft(next); setApplied(next) }
   const selectDistrict = name => {
     const region = meta.regions.find(value => normaliseDistrictName(value) === normaliseDistrictName(name))
@@ -120,15 +116,17 @@ export default function WaterResourceManagement() {
     </form>
     {error && <div className="rq-error" role="alert"><AlertTriangle size={18} /><span>{error}</span><button onClick={() => setRetry(value => value + 1)}><RefreshCw size={14} />Retry</button></div>}
     {loading && <LoadingProgress className="rq-loading" message="Retrieving annual water resource observations" />}
+    {error && !loading && <MonitoringMapPanel title="Water resource monitoring map" indicators={tab === 'swsa' ? meta?.swsa_indicators : meta?.indicators} features={features.length ? features : undefined} geographyAvailable={false} noDataReason="Water resource observations could not be loaded. Geographic boundaries remain available; no resource measurements are displayed." />}
     {result && !loading && <>
       <div className="rq-context"><strong>{result.region === 'National' ? 'South Africa · District means' : result.region} / {result.area}</strong><span>{result.start}–{result.end} · annual source data · {meta.regions.length} districts · {meta.areas.length} source areas</span></div>
       <div className="rq-source-notice" role="note"><Activity size={16} /><span><strong>Annual source observations.</strong> National charts show equal district means. SWSA overviews average the named areas. Demand intensities and overlapping water components are kept in their source units; a reconciled national water balance is unavailable.</span></div>
-      <div className="rq-tabs" role="group" aria-label="WRM section"><button aria-pressed={tab === 'matrix'} onClick={() => setTab('matrix')} style={{ '--rq-accent': TEAL }}><Waves size={15} />Complete WRM matrix<span>{meta.indicators.length} variables</span></button><button aria-pressed={tab === 'swsa'} onClick={() => setTab('swsa')} style={{ '--rq-accent': BLUE }}><Mountain size={15} />Strategic Water Source Areas<span>{meta.areas.length} areas · {meta.swsa_indicators.length} variables</span></button></div>
-      <div className="rq-kpis">{kpis.map(([label, key, unit, color]) => <article className="rq-kpi" key={key} style={{ '--rq-accent': color }}><span>{label}</span><strong>{format(current.latest[key])}<small>{unit}</small></strong><div><span>{current.latest_year || 'No source year'} · {tab === 'matrix' ? result.region === 'National' ? 'district mean' : 'district value' : result.area === ALL_AREAS ? 'source-area mean' : 'source-area value'}</span><WastewaterSparkline data={current.series} metricKey={key} label={label} color={color} /></div></article>)}</div>
+      <div className="rq-tabs" role="group" aria-label="WRM section"><button aria-pressed={tab === 'matrix'} onClick={() => setTab('matrix')} style={{ '--rq-accent': chartColor(TEAL) }}><Waves size={15} />Complete WRM matrix<span>{meta.indicators.length} variables</span></button><button aria-pressed={tab === 'swsa'} onClick={() => setTab('swsa')} style={{ '--rq-accent': chartColor(BLUE) }}><Mountain size={15} />Strategic Water Source Areas<span>{meta.areas.length} areas · {meta.swsa_indicators.length} variables</span></button></div>
+      <div className="rq-kpis">{kpis.map(([label, key, unit, color]) => <article className="rq-kpi" key={key} style={{ '--rq-accent': chartColor(color) }}><span>{label}</span><strong>{format(current.latest[key])}<small>{unit}</small></strong><div><span>{current.latest_year || 'No source year'} · {tab === 'matrix' ? result.region === 'National' ? 'district mean' : 'district value' : result.area === ALL_AREAS ? 'source-area mean' : 'source-area value'}</span><WastewaterSparkline data={current.series} metricKey={key} label={label} color={color} /></div></article>)}</div>
+      {tab === 'swsa' && <MonitoringMapPanel title="Strategic Water Source Areas map" description={`${result.area} · ${result.swsa.comparison_year || 'No source year'} · ${swsaMetric?.label || 'Source-area observations'}`} indicators={meta.swsa_indicators} indicator={swsaKey} onIndicatorChange={setSwsaKey} period={String(result.swsa.comparison_year || '')} features={features.length ? features : undefined} geographyAvailable={false} noDataReason="The source contains named-area observations but no SWSA polygons, coordinates or verified district links. District boundaries are for orientation only; source-area measurements remain in the linked comparison and historical charts." />}
       <div className="rq-primary-grid">
         {tab === 'matrix' ? <Panel title="District resource map" subtitle={`${result.matrix.comparison_year || 'No source year'} · ${mapMetric.label}`} className="rq-map-panel">
           <label className="rq-picker">Map indicator<select aria-label="WRM map indicator" value={mapKey} onChange={event => setMapKey(event.target.value)}>{meta.indicators.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
-          {features.length ? <DistrictMap districts={features} values={mapValues} valueKey={mapKey} selected={result.region} onSelect={selectDistrict} colorFn={mapColor} legend={{ title: mapMetric.unit, gradient: 'linear-gradient(180deg, #9aead2, #46bfb5, #298ca5, #235373)', items: [[format(mapScale.max), 'Higher value'], [format((mapScale.min + mapScale.max) / 2), 'Mid-range'], [format(mapScale.min), 'Lower value'], ['Grey', 'No observation']] }} /> : <p className="rq-empty" role="status">{mapError || 'District boundaries are loading.'}</p>}
+          <DistrictMap districts={features.length ? features : undefined} values={mapValues} valueKey={mapKey} selected={result.region} onSelect={selectDistrict} colorFn={mapScale.color} legend={mapScale.legend} valueLabel={mapMetric.label} valueUnit={mapMetric.unit} formatValue={format} />
           <p className="rq-note"><MapPin size={12} />Select a district to update WRM charts. The map retains national district coverage. Colours show magnitude.</p>
           {result.region !== 'National' && <button className="rq-text-button" onClick={() => applyPatch({ region: 'National' })}>Return to National</button>}
         </Panel> : <Panel title="Source-area comparison" subtitle={`${result.swsa.comparison_year || 'No source year'} · all ${meta.areas.length} source areas`}>
@@ -136,8 +134,8 @@ export default function WaterResourceManagement() {
           <WastewaterChart data={result.swsa.comparison} metrics={[{ ...swsaMetric, color: TEAL }]} horizontal type="bar" xKey="entity" height={320} yLabel={swsaMetric.unit} />
           <p className="rq-note">SWSA boundaries and district links are not supplied. These named-area comparisons use the SWSA table directly.</p>
         </Panel>}
-        <Panel title={tab === 'matrix' ? 'Climate input trends' : 'Rainfall & groundwater recharge'} subtitle={`${tab === 'matrix' ? result.region : result.area} · annual observations`}>
-          <WastewaterChart data={current.series} metrics={tab === 'matrix' ? [{ key: 'precipitation', label: 'Precipitation (MAP)', unit: 'mm/year', color: BLUE }, { key: 'evapotranspiration', label: 'Evapotranspiration (MAE)', unit: 'mm/year', color: GOLD }] : [{ key: 'swsa_rainfall', label: 'Rainfall', unit: 'mm/year', color: BLUE }, { key: 'swsa_recharge', label: 'Groundwater recharge', unit: 'mm/year', color: TEAL }]} type="line" xKey="year" height={340} />
+        <Panel title={`${tab === 'matrix' ? mapMetric.label : swsaMetric.label} over time`} subtitle={`${tab === 'matrix' ? result.region : result.area} | annual observations; follows the map indicator`}>
+          <WastewaterChart data={current.series} metrics={[{ ...(tab === 'matrix' ? mapMetric : swsaMetric), color: BLUE }]} type="line" xKey="year" height={340} yLabel={tab === 'matrix' ? mapMetric.unit : swsaMetric.unit} />
           <p className="rq-note">Missing observations stay as gaps. Annual source values are not expanded into monthly records.</p>
         </Panel>
       </div>

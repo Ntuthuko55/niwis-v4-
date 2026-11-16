@@ -1,10 +1,11 @@
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { useEffect, useMemo, useState } from 'react'
-import { Sun, Thermometer, CloudRain, CalendarDays, Wind, Leaf, Waves, Download, MapPin, ArrowUpRight, Info, RefreshCw } from 'lucide-react'
+import { Sun, Thermometer, CloudRain, CalendarDays, Wind, Leaf, Waves, MapPin, ArrowUpRight, Info, RefreshCw } from 'lucide-react'
 import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Cell } from 'recharts'
 import { chartColor } from '../lib/chartTheme'
 import Chart from './ClimateChart'
 import ClimateSectionCharts from './ClimateSectionCharts'
+import DashboardDataExport from './DashboardDataExport'
 import LoadingProgress from './LoadingProgress'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import MonitoringMapPanel from './MonitoringMapPanel'
@@ -156,14 +157,7 @@ export default function ClimateDashboard({ section = null }) {
     const canonical = metadata.regions.find(region => normaliseDistrictName(region) === normaliseDistrictName(name))
     if (canonical) { const selection = { ...applied, region: canonical }; setDraft(selection); setApplied(selection) }
   }
-  const exportData = () => {
-    const fields = ['Year', ...metadata.metrics.filter(m => !section || m.section === section).map(m => m.key)]
-    const escape = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-    const rows = [['Region', 'Season (daily variables only)', ...fields.map(key => key === 'Year' ? key : `${catalogue[key].label} (${catalogue[key].unit})`)], ...result.series.map(row => [result.region, result.season, ...fields.map(key => row[key])])]
-    const blob = new Blob(['\uFEFF' + rows.map(row => row.map(escape).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob), link = document.createElement('a')
-    link.href = url; link.download = `NIWIS-climate-${result.region.replaceAll(' ', '-')}-${result.start}-${result.end}-${result.season}.csv`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000)
-  }
+
   const scope = result?.season === 'Annual' ? 'Annual' : `${result?.season} · daily variables`
   const period = result ? `${result.start}–${result.end}` : ''
   const summary = result?.summary || {}
@@ -189,7 +183,16 @@ export default function ClimateDashboard({ section = null }) {
   </>
 
   return <div className={`climate-dashboard ${section ? 'cl-section-dashboard' : ''}`}>
-    <div className="cl-heading"><div className="cl-title"><span className="cl-title-icon"><Sun size={32} /></span><div><span className="cl-eyebrow">NIWIS · CLIMATE INTELLIGENCE</span><h1>{SECTION_TITLES[section] || 'Climate Dashboard'}</h1><p>{section ? `${SECTIONS[section]} / District indicators and monthly trends` : 'Temperature / Precipitation / Evaporation / Agriculture / Streamflow'}</p></div></div><button className="cl-export" onClick={exportData} disabled={!result || loading}><Download size={15} /> Export data</button></div>
+    <div className="cl-heading"><div className="cl-title"><span className="cl-title-icon"><Sun size={32} /></span><div><span className="cl-eyebrow">NIWIS · CLIMATE INTELLIGENCE</span><h1>{SECTION_TITLES[section] || 'Climate Dashboard'}</h1><p>{section ? `${SECTIONS[section]} / District indicators and monthly trends` : 'Temperature / Precipitation / Evaporation / Agriculture / Streamflow'}</p></div></div><DashboardDataExport
+      rows={result?.series || []}
+      disabled={loading || !result}
+      source={{ url: '/api/climate/dashboard', params: { region: result?.region, season: result?.season, section: section || undefined, include_map: false }, minDate: metadata?.years?.[0], maxDate: metadata?.years?.at(-1), period: 'year' }}
+      dateField="Year"
+      metrics={(metadata?.metrics || []).filter(metric => !section || metric.section === section)}
+      context={{ Region: result?.region, Season: result?.season }}
+      filename={`NIWIS-climate-${result?.region || 'data'}`}
+      triggerClassName="cl-export"
+    /></div>
     <form className="cl-filters" onSubmit={event => {
       event.preventDefault()
       const next = { ...draft }

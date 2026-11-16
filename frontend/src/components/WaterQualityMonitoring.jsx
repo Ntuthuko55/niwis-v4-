@@ -1,9 +1,10 @@
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, Download, Droplets, FlaskConical, MapPin, RefreshCw, Satellite, ShieldCheck } from 'lucide-react'
+import { Activity, Droplets, FlaskConical, MapPin, Satellite, ShieldCheck } from 'lucide-react'
 import { Chart, Panel } from './RainfallStatus'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import LoadingProgress from './LoadingProgress'
+import DashboardDataExport from './DashboardDataExport'
 import '../niwis/water-quality.css'
 
 const fmt = (value, digits = 2) => value == null || !Number.isFinite(Number(value)) ? '—' : Number(value).toLocaleString('en-ZA', { minimumFractionDigits: digits, maximumFractionDigits: digits })
@@ -14,12 +15,6 @@ async function getJSON(url, signal) {
   const data = await response.json()
   if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Water-quality data could not be loaded.')
   return data
-}
-
-function downloadCSV(name, headers, rows) {
-  const esc = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-  const blob = new Blob(['\uFEFF' + [headers, ...rows].map(row => row.map(esc).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' })
-  const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = name; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 800)
 }
 
 export default function WaterQualityMonitoring({ section = null }) {
@@ -94,10 +89,18 @@ export default function WaterQualityMonitoring({ section = null }) {
     ['ph', 'pH', FlaskConical, 'chemical'], ['dissolved_oxygen_mg_l', 'Dissolved oxygen', Droplets, 'chemical'], ['turbidity_ntu', 'Turbidity', Activity, 'physical'],
     ['electrical_conductivity_ms_m', 'Electrical conductivity', Activity, 'physical'], ['ecoli_cfu_100ml', 'E. coli', ShieldCheck, 'biological'], ['cyanobacterial_bloom_index', 'Cyanobacterial bloom', Satellite, 'sansa'],
   ]
-  const exportData = () => { if (!result) return; const allowed = new Set(scopedMetrics.map(item => item.key)); const keys = section ? result.variables.filter(key => allowed.has(key)) : result.variables; downloadCSV(`NIWIS-water-quality${section ? `-${section}` : ''}-${result.region.replaceAll(' ', '-')}-${result.start}-${result.end}.csv`, ['Region', 'Year', ...keys.map(key => `${metric(key).label} (${metric(key).unit})`)], result.series.map(row => [result.region, row.year, ...keys.map(key => row[key])])) }
 
   return <div className="rainfall-dashboard water-quality-dashboard" data-section={section || 'all'}>
-    <div className="rf-heading"><span className="rf-heading-icon quality-icon"><ShieldCheck size={31} /></span><div><span className="rf-eyebrow">NIWIS / DWS SECTION 12</span><h1>Water Quality Monitoring Network</h1><p>Physical, chemical, biological and SANSA water-quality observations across South Africa</p></div><button className="rf-export" onClick={exportData} disabled={!result || loading}><Download size={15} /> Export annual data</button></div>
+    <div className="rf-heading"><span className="rf-heading-icon quality-icon"><ShieldCheck size={31} /></span><div><span className="rf-eyebrow">NIWIS / DWS SECTION 12</span><h1>Water Quality Monitoring Network</h1><p>Physical, chemical, biological and SANSA water-quality observations across South Africa</p></div><DashboardDataExport
+      rows={result?.series || []}
+      disabled={loading || !result}
+      source={{ url: '/api/water-quality/dashboard', params: { region: result?.region, include_map: false }, minDate: meta?.years?.[0], maxDate: meta?.years?.at(-1), period: 'year' }}
+      dateField="year"
+      metrics={scopedMetrics}
+      context={{ Region: result?.region }}
+      filename={`NIWIS-water-quality-${section || 'all'}-${result?.region || 'data'}`}
+      triggerClassName="rf-export"
+    /></div>
     <form className="rf-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}><label className="rf-region">Region / District<select aria-label="Water quality region" disabled={!meta} value={draft.region} onChange={event => setDraft({ ...draft, region: event.target.value })}><option value="National">South Africa (district average)</option>{meta?.regions.map(region => <option key={region}>{region}</option>)}</select></label><label>From year<select aria-label="Water quality start year" value={draft.start} disabled={!meta} onChange={event => setDraft({ ...draft, start: Number(event.target.value) })}>{meta?.years.map(year => <option key={year}>{year}</option>)}</select></label><label>To year<select aria-label="Water quality end year" value={draft.end} disabled={!meta} onChange={event => setDraft({ ...draft, end: Number(event.target.value) })}>{meta?.years.map(year => <option key={year}>{year}</option>)}</select></label><button className="rf-apply" disabled={loading || !meta || draft.start > draft.end}>Apply filters</button></form>
     {loading && <LoadingProgress className="rf-loading" message="Combining physical, chemical, biological and SANSA observations" />}
     {error && <div className="rf-error" role="alert">{error}<button onClick={() => meta ? setApplied({ ...applied }) : setRetry(retry + 1)}>Retry</button></div>}

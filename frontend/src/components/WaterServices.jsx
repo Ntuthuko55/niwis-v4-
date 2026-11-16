@@ -1,11 +1,13 @@
 import { chartColor } from '../lib/chartTheme'
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, AlertTriangle, Building2, Download, Droplets, RefreshCw, Satellite, ShieldCheck } from 'lucide-react'
+import { Activity, AlertTriangle, Building2, Droplets, RefreshCw, Satellite, ShieldCheck } from 'lucide-react'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { buildDistrictMapScale, DistrictMap, normaliseDistrictName } from './DistrictMap'
 import WastewaterChart, { WastewaterSparkline } from './WastewaterChart'
 import LoadingProgress from './LoadingProgress'
 import MonitoringMapPanel from './MonitoringMapPanel'
+import DashboardDataExport from './DashboardDataExport'
+import { servicesExportRows } from '../lib/dashboardExportAdapters'
 import '../niwis/rwqo.css'
 import '../niwis/water-services.css'
 
@@ -48,17 +50,6 @@ function Comparison({ result, meta }) {
     {!rows.length && <p className="rq-empty">No regions match this search.</p>}
     <div className="ws-pagination"><span>{rows.length} source regions · {result.comparison_note}</span><button disabled={current === 0} onClick={() => setPage(current - 1)}>Previous</button><span>{current + 1} / {last + 1}</span><button disabled={current >= last} onClick={() => setPage(current + 1)}>Next</button></div>
   </Panel>
-}
-
-function exportCSV(result, meta) {
-  const escape = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-  const rows = result.series.flatMap(row => meta.indicators.map(metric => [result.scope, result.category, row.year, row.source_periods, metric.label, row[metric.key], metric.unit, result.coverage.find(item => item.year === row.year)?.[metric.key], result.table, metric.source_column, result.aggregation]))
-  const content = [['Scope', 'Category', 'Year', 'Source reporting labels', 'Indicator', 'Value', 'Unit', 'Usable regional values', 'Source table', 'Source column', 'Aggregation'], ...rows].map(row => row.map(escape).join(',')).join('\r\n')
-  const url = URL.createObjectURL(new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8' }))
-  const anchor = document.createElement('a')
-  const scope = result.region === ALL ? 'all-regions' : result.region.trim().replaceAll(/\s+/g, '-')
-  anchor.href = url; anchor.download = `NIWIS-water-services-${result.section}-${scope}-${result.category}-${result.start}-${result.end}.csv`; anchor.click()
-  setTimeout(() => URL.revokeObjectURL(url), 800)
 }
 
 export default function WaterServices({ section: navigationSection = null }) {
@@ -113,7 +104,7 @@ export default function WaterServices({ section: navigationSection = null }) {
     const target = navigationSection === 'sansa' ? 'eo' : navigationSection
     if (['access', 'operations', 'eo', 'reliability'].includes(target) && target !== tab) changeTab(target)
   }, [meta, navigationSection])
-  const mapIndicators = (source?.indicators || []).filter(item => tab !== 'reliability' || item.group === 'Reliability')
+  const mapIndicators = (source?.indicators || []).filter(item => tab === 'reliability' ? item.group === 'Reliability' : tab === 'access' ? item.group !== 'Reliability' : true)
   const mapMetric = mapIndicators.find(item => item.key === mapKey) || mapIndicators[0]
   const mapHistory = result?.map_history || {}
   const mapYears = Object.keys(mapHistory).sort((a, b) => Number(a) - Number(b))
@@ -133,7 +124,18 @@ export default function WaterServices({ section: navigationSection = null }) {
   const coverage = source?.category_coverage.find(item => item.category === draft?.category)
 
   return <div className="rwqo-dashboard water-services-dashboard">
-    <header className="rq-heading"><span className="rq-heading-icon"><Droplets size={29} /></span><div><span className="rq-eyebrow">WATER SERVICES / SECTION 18</span><h1>Water Services, Infrastructure Access and Supply Reliability</h1><p>Household access, operational records and earth observation support for service delivery.</p></div><button className="rq-export" disabled={!result || loading || result.empty} onClick={() => exportCSV(result, source)}><Download size={15} />Export data</button></header>
+    <header className="rq-heading"><span className="rq-heading-icon"><Droplets size={29} /></span><div><span className="rq-eyebrow">WATER SERVICES / SECTION 18</span><h1>Water Services, Infrastructure Access and Supply Reliability</h1><p>Household access, operational records and earth observation support for service delivery.</p></div><DashboardDataExport
+      rows={servicesExportRows(result, mapIndicators)}
+      disabled={loading || !result || result.empty}
+      rowMetricField="indicator_key"
+      source={{ url: '/api/water-services/dashboard', params: { section, region: result?.region, category: result?.category }, minDate: source?.years?.[0], maxDate: source?.years?.at(-1), period: 'year', selectRows: payload => servicesExportRows(payload, mapIndicators) }}
+      extraFields={[{ key: 'source_periods', label: 'Source reporting labels' }, { key: 'usable_regions', label: 'Usable regional values' }, { key: 'source_table', label: 'Source table' }, { key: 'source_column', label: 'Source column' }, { key: 'aggregation', label: 'Aggregation' }]}
+      dateField="year"
+      metrics={mapIndicators}
+      context={{ Scope: result?.scope, Category: result?.category, Region: result?.region }}
+      filename={`NIWIS-water-services-${tab}-${result?.region || 'data'}`}
+      triggerClassName="rq-export"
+    /></header>
     <div className="rq-tabs" role="group" aria-label="Water services sections">{TABS.map(([key, label, Icon], index) => <button key={key} aria-pressed={tab === key} onClick={() => changeTab(key)} disabled={!meta || loading} style={{ '--rq-accent': chartColor(COLORS[index]) }}><Icon size={16} />{label}</button>)}</div>
     {source && draft && <form className="rq-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}>
       <label className="rq-region">{section === 'eo' ? 'District' : 'Source region'}<select aria-label="Water services region" value={draft.region} disabled={loading} onChange={event => setDraft({ ...draft, region: event.target.value })}><option value={ALL}>Covered-region mean (unweighted)</option>{source.regions.map(name => <option key={name}>{name}</option>)}</select></label>

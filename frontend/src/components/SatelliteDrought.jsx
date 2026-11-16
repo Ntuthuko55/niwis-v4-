@@ -4,6 +4,7 @@ import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import { LineChart } from '../niwis/svgCharts'
 import LoadingProgress from './LoadingProgress'
 import MonitoringMapPanel from './MonitoringMapPanel'
+import DashboardDataExport from './DashboardDataExport'
 
 const fields = [
   ['NDVI', 'NDVI', '', 2], ['VCI', 'VCI', '%', 1], ['VHI', 'VHI', '%', 1],
@@ -114,7 +115,15 @@ export default function SatelliteDrought() {
         <Panel title={`District Details – ${selected}`}><div className="sat-detail-grid">{fields.map(([key, label, unit, precision]) => <article className="sat-detail" key={key}><div><small>{label}</small><strong>{display(actual[key], precision)} {valid(actual[key]) ? unit : ''}</strong><b>Latest observation</b></div></article>)}</div></Panel>
         <Panel title={`Time Series – ${selected}`}><div className="sat-chart-tabs">{[3, 6, 12, 24].map((count) => <button key={count} className={months === count ? 'sel' : ''} onClick={() => setMonths(count)}>{count}M</button>)}</div>
           {historyLoading ? <LoadingProgress className="nw-map-loading" message="Loading district history" /> : historyError ? <p className="nw-error" role="alert">{historyError}</p> : !chartPoints.length ? <p>No NDVI history available for this region.</p> : <div className="sat-chart"><LineChart sets={[{ n: 'NDVI', data: chartPoints.map((row) => row.NDVI), c: '#7cd957', w: 2.5 }, { n: 'Historical mean', data: chartPoints.map(() => mean), c: '#78b5cf', dash: '4 4' }]} labels={chartPoints.map((row) => row.date.slice(0, 7))} min={-1} max={1} h={185} dec={1} /></div>}
-          <div className="sat-chart-stats"><div><small>Latest NDVI</small><strong>{display(actual.NDVI)}</strong></div><div><small>Historical mean NDVI</small><strong>{display(mean)}</strong></div></div><p className="sat-note">{history.length} database observations for {selected}.</p>
+          <div className="sat-chart-stats"><div><small>Latest NDVI</small><strong>{display(actual.NDVI)}</strong></div><div><small>Historical mean NDVI</small><strong>{display(mean)}</strong></div></div><p className="sat-note">{history.length} database observations for {selected}.</p><DashboardDataExport
+            rows={history}
+            disabled={historyLoading || !!historyError}
+            source={{ url: '/api/satellite/history', params: { district: selected }, period: 'month', queryPeriod: false, selectRows: payload => payload.history }}
+            dateField="date"
+            metrics={fields.map(([key, label, unit]) => ({ key, label, unit }))}
+            context={{ District: selected }}
+            filename={`NIWIS-satellite-drought-${selected || 'data'}`}
+          />
         </Panel>
       </div>
       <div className="sat-bottom-grid">

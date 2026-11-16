@@ -106,6 +106,36 @@ layout. Sources without verified geographic identifiers retain selectable
 boundaries and an explicit unavailable-data message. See the
 [map coverage and source limitations](output/INTERACTIVE_MAP_COVERAGE.md).
 
+## Download dashboard data
+
+Open a monitoring subtopic and select **Download data**. Choose a **From** and
+**To** date, select the variables to include, then choose **Download CSV**. The
+download retrieves observations through the database-backed dashboard API for
+the current district, region or source area. Its date range can extend beyond
+the period currently displayed in the chart, within the source's coverage.
+
+Each subtopic offers its associated measurements. CSVs retain source units,
+missing measurements, reporting periods and relevant source details. Monthly
+and annual exports include the reporting months or years touched by the chosen
+dates; these are identified in the download dialog. Sources without connected
+observations, such as Blue Drop process data and the groundwater GRACE layers,
+show an unavailable message. Downloads support both Navy and Light appearances.
+
+### Drought indicator names and periods
+
+Meteorological observation history and map selectors include the connected
+SPI and SPEI fields for 1, 3, 6, 12 and 24 months. Names explain the indicator,
+for example **Rainfall drought indicator — 12 months (SPI-12)** and
+**Rainfall & evaporation drought indicator — 24 months (SPEI-24)**. These names
+also appear in forecast target selectors and CSV measurement headings.
+
+The month count describes the accumulation period used by the indicator.
+Periods of 12 and 24 months help describe persistent drought conditions and
+water availability. Forecasts use the separate **Horizon** setting; model
+accuracy requires validation for the chosen location and target. The help text
+follows the [WMO SPI user guide](https://www.droughtmanagement.info/literature/WMO_standardized_precipitation_index_user_guide_en_2012.pdf)
+and [Government of Canada SPEI documentation](https://climate-scenarios.canada.ca/index.php?page=spei-technical-notes).
+
 ## Project layout
 
 - `frontend/` - React and Vite dashboard
@@ -284,8 +314,8 @@ The WRM view includes a district map, all 16 variable selectors, climate and
 resource trends, demand and loss measures, water-volume comparisons and the
 complete variable matrix. The SWSA view provides independent area filters,
 comparisons, climate/water and vegetation/snow/soil charts, river systems and
-monitoring-priority profiles. Annual CSV export includes both sources. District
-selection does not change SWSA scope, and area selection does not change the
+monitoring-priority profiles. Annual CSV export follows the selected source tab.
+District selection does not change SWSA scope, and area selection does not change the
 district scope. Source boundaries, district-to-SWSA links, land-use change and
 wetland observations are not supplied; soil-moisture units remain unspecified.
 

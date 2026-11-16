@@ -201,6 +201,11 @@ body.nw-body{margin:0;background:#0C1A22}
 .nw-phead{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
 .nw-phead h3{margin:0;font-size:13.5px;font-weight:600;letter-spacing:.1px}
 .nw-phead .src{margin-left:auto;color:var(--text-faint);font-size:11px}
+.nw-meteo-history-controls{display:flex;align-items:end;flex-wrap:wrap;gap:10px 14px;margin:8px 0 12px}
+.nw-meteo-history-controls label{display:grid;gap:4px;min-width:150px;color:var(--text-dim);font-size:11px;font-weight:600}
+.nw-meteo-history-controls select,.nw-meteo-history-controls input[type=date]{width:100%;min-height:36px;padding:0 10px;border:1px solid var(--rule);border-radius:7px;background:var(--dashboard-control,#0D2029);color:var(--dashboard-text,var(--text));font:inherit}
+.nw-meteorological-history-panel .nw-phead{align-items:center;flex-wrap:wrap}
+.nw-meteo-history-controls select:disabled,.nw-meteo-history-controls input:disabled{opacity:.65;cursor:not-allowed}
 .nw-psub{color:var(--text-dim);font-size:12.5px;margin:-4px 0 10px}
 .nw-kpi{background:var(--ink-2);border:1px solid var(--rule);border-radius:var(--r);padding:13px 14px}
 .nw-kpi .lab{color:var(--text-dim);font-size:12px;margin-bottom:6px}

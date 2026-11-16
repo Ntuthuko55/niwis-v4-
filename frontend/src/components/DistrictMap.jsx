@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import MunicipalityMapLabel from './MunicipalityMapLabel'
 import DashboardMap from './DashboardMap'
 import useDistrictBoundaries from '../services/useDistrictBoundaries'
+import { droughtIndicatorLabel } from '../lib/droughtIndicators'
 import '../niwis/monitoring-map.css'
 
 const DISTRICT_VALUE_COLORS = ['#235373', '#298ca5', '#46bfb5', '#9aead2']
@@ -59,8 +60,9 @@ export function buildDistrictMapScale(rows, valueKey, label, unit, formatValue, 
 export function normaliseDistrictName(name = '') { const key = String(name ?? '').toLowerCase().replace(/^city of /, '').replace(/[^a-z0-9]/g, ''); return ({ cacadu: 'sarahbaartman', eden: 'gardenroute', sisonke: 'harrygwala', uthungulu: 'kingcetshwayo', siyanda: 'zfmgcawu', greatersekhukhune: 'sekhukhune' })[key] || key }
 
 function normalizeIndicatorOption(option) {
-  if (Array.isArray(option)) return { key: option[0], label: option[1], unit: option[2] }
-  return { key: option?.key ?? option?.value, label: option?.label ?? option?.name ?? option?.key ?? option?.value, unit: option?.unit }
+  if (Array.isArray(option)) return { key: option[0], label: droughtIndicatorLabel(option[0], option[1]), unit: option[2] }
+  const key = option?.key ?? option?.value
+  return { key, label: droughtIndicatorLabel(key, option?.label ?? option?.name), unit: option?.unit }
 }
 
 const project = ([lon, lat]) => [((lon - 16.45) / 16.5) * 680, ((-22.12 - lat) / 12.75) * 560]

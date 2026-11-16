@@ -5,13 +5,16 @@ import { ResponsiveContainer, ComposedChart, Line, Bar, Area, CartesianGrid, XAx
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import LoadingProgress from './LoadingProgress'
 import { chartColor } from '../lib/chartTheme'
+import { droughtIndicatorDetails, droughtIndicatorLabel } from '../lib/droughtIndicators'
 import '../niwis/drought-monitoring.css'
 
 const names = { meteorological: 'Meteorological', hydrological: 'Hydrological', satellite: 'Satellite' }
 const mapOptions = {
   meteorological: [
-    ['spi_1', 'SPI-1'], ['spi_3', 'SPI-3'], ['spi_6', 'SPI-6'], ['spi_12', 'SPI-12'], ['spi_24', 'SPI-24'],
-    ['spei_1', 'SPEI-1'], ['spei_3', 'SPEI-3'], ['spei_6', 'SPEI-6'], ['spei_12', 'SPEI-12'], ['spei_24', 'SPEI-24'],
+    ...['spi', 'spei'].flatMap(family => [1, 3, 6, 12, 24].map(months => {
+      const key = `${family}_${months}`
+      return [key, droughtIndicatorLabel(key)]
+    })),
   ],
   hydrological: [['ssi_dimensionless', 'SSI']],
   satellite: [['ndvi', 'NDVI']],
@@ -185,7 +188,7 @@ export default function DroughtMonitoring() {
         {signalsPanel}
         <Panel title="Hydrological response" subtitle="Monthly river discharge · m³/s" className="dm-chart-panel"><Chart data={slice(water)} lines={[[ 'river_discharge_m3_s', 'Discharge', '#42d5e8', true], ['baseflow_separation_m3_s', 'Baseflow', '#688cff']]} unit="m³/s" /><Comparison title="River discharge" data={payload.comparisons.hydrological} unit="m³/s" /></Panel>
         <Panel title="Vegetation & water stress" subtitle="Monthly vegetation greenness · NDVI" className="dm-chart-panel"><Chart data={slice(vegetation)} lines={[[ 'ndvi', 'NDVI', '#6ee6ae', true]]} domain={[-1, 1]} /><Comparison title="Vegetation greenness" data={payload.comparisons.satellite} unit="NDVI" /></Panel>
-        <Panel title="Drought indices" subtitle="Monthly means · precipitation and climatic water balance" className="dm-chart-panel"><Chart data={slice(climate)} lines={[[ 'spi_3', 'SPI-3', '#3fbcff'], ['spei_3', 'SPEI-3', '#79e2ad']]} zero /><Comparison title="Monthly rainfall" data={payload.comparisons.meteorological} unit="mm" /></Panel>
+        <Panel title="Drought indices" subtitle="Monthly means · precipitation and climatic water balance" className="dm-chart-panel"><Chart data={slice(climate)} lines={[[ 'spi_3', droughtIndicatorDetails('spi_3').shortLabel, '#3fbcff'], ['spei_3', droughtIndicatorDetails('spei_3').shortLabel, '#79e2ad']]} zero /><Comparison title="Monthly rainfall" data={payload.comparisons.meteorological} unit="mm" /></Panel>
         <Panel title="Heat & frost exposure" subtitle="Hot days: Tmax > 35°C · frost days: Tmin < 0°C" className="dm-chart-panel"><Chart data={annual} bars={[[ 'hot_days', 'Hot days', '#ff9861'], ['frost_days', 'Frost days', '#53b7ff']]} unit="days" domain={[0, 'auto']} /><p className="dm-footnote">Observed days only; * marks incomplete years. Hot-day counts do not measure heatwave duration.</p></Panel>
         <Panel title="Evapotranspiration" subtitle="Monthly daily mean · mm/day" className="dm-chart-panel"><div className="dm-tabs">{[['pet_mm_day', 'PET'], ['et0_mm_day', 'ET₀']].map(([key, label]) => <button key={key} className={evaporation === key ? 'active' : ''} onClick={() => setEvaporation(key)}>{label}</button>)}</div><Chart data={slice(climate)} lines={[[evaporation, evaporation === 'pet_mm_day' ? 'PET' : 'ET₀', '#a599ff', true]]} unit="mm/day" /></Panel>
         <Panel title="Reservoir storage" subtitle="Monthly storage · % full" className="dm-chart-panel"><Chart data={slice(water)} lines={[[ 'dam_level_pct_fsc', 'Dam storage (% full)', '#52a5ff']]} unit="%" /></Panel>

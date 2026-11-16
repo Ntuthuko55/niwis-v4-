@@ -16,7 +16,7 @@ export default function DashboardMap({
   mapLabel = 'Dashboard map', mapId, height = 430, onViewChange, className = '', fixedView, toolbarTarget,
 }) {
   const stateKey = `${window.location.pathname}:${mapId || mapLabel}`
-  const [view, setView] = useState(() => fixedView || mapViews.get(stateKey)?.view || 'boundaries')
+  const [view, setView] = useState(() => fixedView || mapViews.get(stateKey)?.view || 'satellite')
   const activeView = fixedView || view
   const [config, setConfig] = useState(null)
   const [configError, setConfigError] = useState('')

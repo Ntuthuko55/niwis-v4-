@@ -2,10 +2,11 @@ import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Droplets, Waves, Activity, Calendar, MapPin,
-  AlertTriangle, CheckCircle2, ChevronRight
+  AlertTriangle, CheckCircle2
 } from 'lucide-react'
 import '../niwis/hydrology.css'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
+import DashboardDataExport from './DashboardDataExport'
 import LoadingProgress from './LoadingProgress'
 import { chartColor } from '../lib/chartTheme'
 
@@ -47,6 +48,19 @@ const HYDRO_MAP_OPTIONS = [
   { key: 'river_discharge_m3_s', label: 'River discharge (m3/s)', type: 'relative' },
   { key: 'surface_runoff_m3_s', label: 'Surface runoff (m3/s)', type: 'relative' },
   { key: 'baseflow_m3_s', label: 'Baseflow (m3/s)', type: 'relative' },
+]
+const HYDRO_EXPORT_METRICS = [
+  { key: 'river_discharge_m3_s', label: 'River discharge', unit: 'm³/s' },
+  { key: 'fdc_percentiles_m3_s', label: 'Flow duration curve percentile', unit: 'm³/s' },
+  { key: 'ssi_dimensionless', label: 'Standardized Streamflow Index', unit: 'index' },
+  { key: 'dam_storage_million_m3', label: 'Dam storage', unit: 'million m³' },
+  { key: 'dam_level_pct_fsc', label: 'Dam level', unit: '% FSC' },
+  { key: 'dam_inflow_m3_s', label: 'Dam inflow', unit: 'm³/s' },
+  { key: 'dam_outflow_m3_s', label: 'Dam outflow', unit: 'm³/s' },
+  { key: 'borehole_water_level_m_bgl', label: 'Borehole water level below ground', unit: 'm bgl' },
+  { key: 'sgi_dimensionless', label: 'Standardized Groundwater Index', unit: 'index' },
+  { key: 'surface_runoff_m3_s', label: 'Surface runoff', unit: 'm³/s' },
+  { key: 'baseflow_separation_m3_s', label: 'Baseflow separation', unit: 'm³/s' },
 ]
 
 const HYDRO_MAP_COLORS = ['#e94f63', '#f58b48', '#f0c85b', '#58c99a', '#279fd3']
@@ -139,21 +153,6 @@ async function loadHydrologyRecords(region, signal) {
   return (payload.records || []).map((row) => ({ ...row,
     district_name: row.district_name.replace(/\b\w/g, (letter) => letter.toUpperCase()),
   }))
-}
-
-function exportHydrologyCsv(rows, district) {
-  if (!rows.length) return
-  const columns = Object.keys(rows[0])
-  const quote = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-  const csv = [columns.map(quote).join(','), ...rows.map(row => columns.map(column => quote(row[column])).join(','))].join('\r\n')
-  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
-  const link = document.createElement('a')
-  link.href = url
-  link.download = `hydrology-${district.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.csv`
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  window.setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
 function classifySSI(ssi) {
@@ -550,7 +549,6 @@ export default function HydrologyDrought() {
     return items
   }, [latestRow, latest.ssi, latest.sgi, latest.date, dischargeChange, runoffChange, baseflowChange, districtName])
 
-
   const recommendations = useMemo(() => {
     if (!latestRow) return [{ text: `No data available for ${selectedDistrict}.` }]
     return [
@@ -572,7 +570,6 @@ export default function HydrologyDrought() {
     { variable: 'Borehole Water Level', value: latest.borehole, unit: 'm bgl', status: !isValidNumber(latest.borehole) ? 'No data available' : 'Recorded', tone: 'info' },
     { variable: 'SGI (Groundwater)', value: latest.sgi, unit: '(dimensionless)', status: sgiClass.label, tone: 'info' },
   ]
-
 
   const mapPanel = <section className="hydro-panel hydro-map-panel">
           <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">DISTRICT INDICATOR MAP</span><h2 className="hydro-panel-title">{selectedMapMetric.label}</h2><p>Use the map controls to choose an indicator, map view and district.</p></div><MapPin size={18} className="hydro-map-icon" /></div>
@@ -687,7 +684,16 @@ export default function HydrologyDrought() {
         <section className="hydro-panel hydro-recommend-panel">
           <div className="hydro-panel-head"><div><span className="hydro-panel-kicker">NEXT STEPS</span><h2 className="hydro-panel-title">Monitoring guidance</h2><p>Operational prompts based on available indicators.</p></div></div>
           <div className="hydro-recom-list">{recommendations.map((rec, index) => <div key={`${index}-${rec.text}`} className="hydro-recom-item"><CheckCircle2 size={16} className="check-icon" /><span>{rec.text}</span></div>)}</div>
-          <button type="button" className="hydro-btn-report" onClick={() => exportHydrologyCsv(filteredData, districtName)} disabled={!filteredData.length}>Download district CSV <ChevronRight size={14} /></button>
+          <DashboardDataExport
+            rows={filteredData}
+            source={{ url: '/api/hydrology/observations', params: { region: selectedDistrict }, selectRows: payload => payload.records }}
+            dateField="date"
+            metrics={HYDRO_EXPORT_METRICS}
+            context={{ District: districtName, Province: provinceName }}
+            filename={`NIWIS-hydrology-${districtName || 'data'}`}
+            label="Download district data"
+            triggerClassName="hydro-btn-report"
+          />
         </section>
       </div>
 

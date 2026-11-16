@@ -1,0 +1,7 @@
+.nw .nw-drought-index-help{margin:10px 0 12px;padding:10px 12px;border:1px solid var(--dashboard-border,var(--rule));border-left:3px solid var(--river);border-radius:7px;background:var(--dashboard-control,var(--ink-3));color:var(--dashboard-text,var(--text));font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.nw .nw-drought-index-help strong{display:block;font-weight:700;color:var(--dashboard-text,var(--text))}
+.nw .nw-drought-index-help p{margin:4px 0;color:var(--text-dim)}
+.nw .nw-drought-index-help small{display:block;color:var(--text-dim);font-size:10px}
+.nw .nw-meteo-history-controls label:first-child{flex:1 1 370px;max-width:560px}
+.nw .nw-meteo-history-controls select{min-width:0;max-width:100%}
+@media(max-width:600px){.nw .nw-meteo-history-controls label:first-child{flex-basis:100%;max-width:none}.nw .nw-drought-index-help{font-size:11px}}

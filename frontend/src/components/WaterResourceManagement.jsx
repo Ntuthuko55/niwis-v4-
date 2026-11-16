@@ -1,11 +1,12 @@
 import { chartColor } from '../lib/chartTheme'
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, AlertTriangle, Download, MapPin, Mountain, RefreshCw, Waves } from 'lucide-react'
+import { Activity, AlertTriangle, MapPin, Mountain, RefreshCw, Waves } from 'lucide-react'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { buildDistrictMapScale, DistrictMap, normaliseDistrictName } from './DistrictMap'
 import WastewaterChart, { WastewaterSparkline } from './WastewaterChart'
 import LoadingProgress from './LoadingProgress'
 import MonitoringMapPanel from './MonitoringMapPanel'
+import DashboardDataExport from './DashboardDataExport'
 import '../niwis/rwqo.css'
 import '../niwis/wrm.css'
 
@@ -34,18 +35,6 @@ function IndicatorChart({ title, choices, rows, color }) {
     <div className="rq-readout"><div><strong style={{ color: chartColor(color) }}>{format(latest?.[metric?.key])}<small>{metric?.unit}</small></strong><span>{latest ? `${latest.year} · ${latest.entity || 'mean of selected source records'}` : 'No numeric observations'}</span></div></div>
     <WastewaterChart data={rows} metrics={metric ? [{ ...metric, color }] : []} xKey="year" type={type} height={245} yLabel={metric?.unit} />
   </Panel>
-}
-
-function exportCSV(result, meta) {
-  const escape = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-  const rows = [
-    ...result.matrix.series.flatMap(row => meta.indicators.map(metric => [result.region, 'WRM district matrix', row.year, metric.label, row[metric.key], metric.unit, meta.audits.matrix.table])),
-    ...result.swsa.series.flatMap(row => meta.swsa_indicators.map(metric => [result.area, 'SWSA', row.year, metric.label, row[metric.key], metric.unit, meta.audits.swsa.table])),
-  ]
-  const blob = new Blob(['\uFEFF' + [['Scope', 'Dataset', 'Year', 'Indicator', 'Value', 'Unit', 'Source table'], ...rows].map(row => row.map(escape).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' })
-  const anchor = document.createElement('a')
-  anchor.href = URL.createObjectURL(blob); anchor.download = `NIWIS-WRM-${result.region.replaceAll(' ', '-')}-${result.start}-${result.end}.csv`; anchor.click()
-  setTimeout(() => URL.revokeObjectURL(anchor.href), 800)
 }
 
 export default function WaterResourceManagement({ section = null }) {
@@ -107,7 +96,16 @@ export default function WaterResourceManagement({ section = null }) {
   ] : []
 
   return <div className="rwqo-dashboard wrm-dashboard">
-    <header className="rq-heading"><span className="rq-heading-icon"><Waves size={29} /></span><div><span className="rq-eyebrow">INTEGRATED WATER RESOURCE MANAGEMENT / SECTION 16</span><h1>Water Resource Management</h1><p>Annual climate, water availability, demand and ecological requirements, with strategic source-area monitoring.</p></div><button className="rq-export" disabled={!result || loading} onClick={() => exportCSV(result, meta)}><Download size={15} />Export annual data</button></header>
+    <header className="rq-heading"><span className="rq-heading-icon"><Waves size={29} /></span><div><span className="rq-eyebrow">INTEGRATED WATER RESOURCE MANAGEMENT / SECTION 16</span><h1>Water Resource Management</h1><p>Annual climate, water availability, demand and ecological requirements, with strategic source-area monitoring.</p></div><DashboardDataExport
+      rows={current?.series || []}
+      disabled={loading || !result}
+      source={{ url: '/api/wrm/dashboard', params: { region: result?.region, area: result?.area }, minDate: meta?.years?.[0], maxDate: meta?.years?.at(-1), period: 'year', selectRows: payload => tab === 'matrix' ? payload.matrix.series : payload.swsa.series }}
+      dateField="year"
+      metrics={tab === 'matrix' ? meta?.indicators || [] : meta?.swsa_indicators || []}
+      context={{ Scope: tab === 'matrix' ? result?.region : result?.area, Dataset: tab === 'matrix' ? 'WRM district matrix' : 'Strategic Water Source Areas', 'Source table': tab === 'matrix' ? meta?.audits?.matrix?.table : meta?.audits?.swsa?.table }}
+      filename={`NIWIS-WRM-${tab}-${result?.region || result?.area || 'data'}`}
+      triggerClassName="rq-export"
+    /></header>
     <form className="rq-filters wr-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}>
       <label className="rq-region">District<select aria-label="WRM district" value={draft.region} disabled={!meta || loading} onChange={event => setDraft({ ...draft, region: event.target.value })}><option value="National">National — district means</option>{meta?.regions.map(name => <option key={name}>{name}</option>)}</select></label>
       <label className="wr-area-filter">Strategic source area<select aria-label="WRM source area" value={draft.area} disabled={!meta || loading} onChange={event => setDraft({ ...draft, area: event.target.value })}><option>{ALL_AREAS}</option>{meta?.areas.map(name => <option key={name}>{name}</option>)}</select></label>

@@ -1,11 +1,13 @@
 import { chartColor } from '../lib/chartTheme'
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, AlertTriangle, Download, Leaf, MapPin, RefreshCw, Waves } from 'lucide-react'
+import { Activity, AlertTriangle, Leaf, MapPin, RefreshCw, Waves } from 'lucide-react'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { buildDistrictMapScale, DistrictMap, normaliseDistrictName } from './DistrictMap'
 import WastewaterChart, { WastewaterSparkline } from './WastewaterChart'
 import LoadingProgress from './LoadingProgress'
 import MonitoringMapPanel from './MonitoringMapPanel'
+import DashboardDataExport from './DashboardDataExport'
+import { objectivesExportRows } from '../lib/dashboardExportAdapters'
 import '../niwis/rwqo.css'
 
 const COLORS = { ecological: '#64dfbc', chemical: '#80bdff', hydrological: '#c0abff' }
@@ -38,16 +40,6 @@ function MetricChart({ title, choices, preferred, rows, xKey, color }) {
     <WastewaterChart data={rows} metrics={metric ? [{ ...metric, color }] : []} xKey={xKey} type={type} height={250} yLabel={metric?.unit} referenceLines={lines} referenceBand={valid(metric?.min) && valid(metric?.max) ? { min: metric.min, max: metric.max } : null} />
     <p className="rq-note">{metric?.objective === 'Nutrient' ? 'TN and TP share one stored nutrient flag. The DIN limit is not applied to TN.' : metric?.limit ? 'Reference lines use the target stored in the source, where a single numeric rule is available.' : 'No ecological target or compliance flag is supplied. Source indices retain their original scale.'}</p>
   </Panel>
-}
-
-function exportCSV(result, meta) {
-  const escape = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-  const header = ['Region', 'Section', 'Period', 'Indicator', 'Value', 'Unit', 'Source target', 'Source table']
-  const rows = meta.sections.flatMap(section => result.sections[section.key].monthly.flatMap(row => section.indicators.map(item => [result.region, section.label, row.period, item.label, row[item.key], item.unit, item.limit, section.audit.table])))
-  const blob = new Blob(['\uFEFF' + [header, ...rows].map(row => row.map(escape).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' })
-  const anchor = document.createElement('a')
-  anchor.href = URL.createObjectURL(blob); anchor.download = `NIWIS-RWQO-${result.region.replaceAll(' ', '-')}-${result.start}-${result.end}.csv`; anchor.click()
-  setTimeout(() => URL.revokeObjectURL(anchor.href), 800)
 }
 
 export default function ResourceWaterQualityObjectives({ navigationSection = null }) {
@@ -120,7 +112,18 @@ export default function ResourceWaterQualityObjectives({ navigationSection = nul
   ] : []
 
   return <div className="rwqo-dashboard">
-    <header className="rq-heading"><span className="rq-heading-icon"><Waves size={29} /></span><div><span className="rq-eyebrow">RESOURCE DIRECTED MEASURES / SECTION 15</span><h1>Resource Water Quality Objectives</h1><p>Ecological condition, chemical targets and flow requirements across South Africa.</p></div><button className="rq-export" disabled={!result || loading} onClick={() => exportCSV(result, meta)}><Download size={15} />Export monthly data</button></header>
+    <header className="rq-heading"><span className="rq-heading-icon"><Waves size={29} /></span><div><span className="rq-eyebrow">RESOURCE DIRECTED MEASURES / SECTION 15</span><h1>Resource Water Quality Objectives</h1><p>Ecological condition, chemical targets and flow requirements across South Africa.</p></div><DashboardDataExport
+      rows={objectivesExportRows(result, section, cadence)}
+      rowMetricField="indicator_key"
+      extraFields={[{ key: 'source_target', label: 'Source target' }, { key: 'source_table', label: 'Source table' }]}
+      disabled={loading || !result}
+      source={{ url: '/api/rwqo/dashboard', params: { region: result?.region }, minDate: section?.audit?.first_period, maxDate: section?.audit?.last_period, period: cadence === 'annual' ? 'year' : 'month', queryPeriod: 'year', selectRows: payload => objectivesExportRows(payload, section, cadence) }}
+      dateField={xKey}
+      metrics={section?.indicators || []}
+      context={{ Region: result?.region, Section: section?.label }}
+      filename={`NIWIS-RWQO-${sectionKey}-${result?.region || 'data'}`}
+      triggerClassName="rq-export"
+    /></header>
     <form className="rq-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}>
       <label className="rq-region">District<select aria-label="RWQO region" value={draft.region} disabled={!meta || loading} onChange={event => setDraft({ ...draft, region: event.target.value })}><option value="National">National — South Africa</option>{meta?.regions.map(name => <option key={name}>{name}</option>)}</select></label>
       <label>From year<select aria-label="RWQO start year" value={draft.start} disabled={!meta || loading} onChange={event => setDraft({ ...draft, start: event.target.value })}>{!meta && <option value="">Loading…</option>}{meta?.years.map(year => <option key={year}>{year}</option>)}</select></label>

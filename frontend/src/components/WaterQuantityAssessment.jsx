@@ -1,11 +1,13 @@
 import { chartColor } from '../lib/chartTheme'
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, AlertTriangle, ArrowLeftRight, Download, Droplets, Gauge, MapPin, Mountain, RefreshCw, Waves, Zap } from 'lucide-react'
+import { Activity, AlertTriangle, ArrowLeftRight, Droplets, Gauge, MapPin, Mountain, RefreshCw, Waves, Zap } from 'lucide-react'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { buildDistrictMapScale, DistrictMap, normaliseDistrictName } from './DistrictMap'
 import WastewaterChart, { WastewaterSparkline } from './WastewaterChart'
 import LoadingProgress from './LoadingProgress'
 import MonitoringMapPanel from './MonitoringMapPanel'
+import DashboardDataExport from './DashboardDataExport'
+import { quantityExportRows } from '../lib/dashboardExportAdapters'
 import '../niwis/rwqo.css'
 import '../niwis/water-quantity.css'
 
@@ -114,18 +116,6 @@ function TransferSystemDiagram({ metrics, values }) {
   </div>
 }
 
-function exportCSV(result, meta) {
-  const escape = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-  const rows = [
-    ...result.transfers.monthly.flatMap(row => meta.transfer_indicators.map(item => [result.region === 'National' ? 'Source district mean' : result.region, 'Transfers', row.period, item.label, row[item.key], item.unit, meta.audits.transfers.table])),
-    ...result.balance.monthly.flatMap(row => meta.balance_indicators.map(item => ['National', 'National balance', row.period, item.label, row[item.key], item.unit, meta.audits.balance.table])),
-  ]
-  const blob = new Blob(['\uFEFF' + [['Scope', 'Dataset', 'Period', 'Indicator', 'Value', 'Unit', 'Source table'], ...rows].map(row => row.map(escape).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' })
-  const anchor = document.createElement('a')
-  anchor.href = URL.createObjectURL(blob); anchor.download = `NIWIS-water-quantity-${result.region.replaceAll(' ', '-')}-${result.start}-${result.end}.csv`; anchor.click()
-  setTimeout(() => URL.revokeObjectURL(anchor.href), 800)
-}
-
 export default function WaterQuantityAssessment({ section = null }) {
   const [meta, setMeta] = useState(null), [result, setResult] = useState(null), [features, setFeatures] = useState([])
   const [draft, setDraft] = useState({ region: 'National', start: '', end: '' }), [applied, setApplied] = useState(null)
@@ -174,6 +164,11 @@ export default function WaterQuantityAssessment({ section = null }) {
   const transferAtMapPeriod = result?.transfers.monthly.find(row => row.period === activeDiagramPeriod) || result?.transfers.latest || {}
   const latestBalance = result?.balance.latest || {}
   const activeMapScope = section === 'balance' ? 'balance' : 'transfers'
+
+  const quantityExportMetrics = useMemo(() => [
+    ...(section === 'balance' ? [] : (meta?.transfer_indicators || []).map(item => ({ key: `transfer:${item.key}`, label: `Transfer · ${item.label}`, unit: item.unit }))),
+    ...(section === 'transfers' ? [] : (meta?.balance_indicators || []).map(item => ({ key: `balance:${item.key}`, label: `National balance · ${item.label}`, unit: item.unit }))),
+  ], [meta, section])
   const balanceMapMetric = meta?.balance_indicators.find(item => item.key === balanceMapKey) || meta?.balance_indicators[0]
   const activeBalanceMapPeriod = result?.balance.latest_period
   const balanceMapObservation = result?.balance.monthly.find(row => row.period === activeBalanceMapPeriod) || {}
@@ -183,7 +178,20 @@ export default function WaterQuantityAssessment({ section = null }) {
   const comparison = useMemo(() => [...mapRows].sort((a, b) => (b[mapKey] ?? -Infinity) - (a[mapKey] ?? -Infinity)), [mapRows, mapKey])
 
   return <div className="rwqo-dashboard water-quantity-dashboard" data-section={section || 'all'}>
-    <header className="rq-heading"><span className="rq-heading-icon"><Waves size={29} /></span><div><span className="rq-eyebrow">WATER TRANSFERS &amp; NATIONAL WATER BALANCE</span><h1>Water Quantity Assessment</h1><p>See which transfer systems are reported, how much water they carry, and how the national water figures compare.</p></div><button className="rq-export" disabled={!result || loading} onClick={() => exportCSV(result, meta)}><Download size={15} />Export monthly data</button></header>
+    <header className="rq-heading"><span className="rq-heading-icon"><Waves size={29} /></span><div><span className="rq-eyebrow">WATER TRANSFERS &amp; NATIONAL WATER BALANCE</span><h1>Water Quantity Assessment</h1><p>See which transfer systems are reported, how much water they carry, and how the national water figures compare.</p></div><DashboardDataExport
+      rows={quantityExportRows(result, meta, section)}
+      disabled={loading || !result}
+      source={{ url: '/api/water-quantity/dashboard', params: { region: result?.region }, minDate: meta?.first_period, maxDate: meta?.last_period, period: 'month', queryPeriod: 'year', selectRows: payload => quantityExportRows(payload, meta, section) }}
+      dateField="period"
+      metrics={quantityExportMetrics}
+      rowMetricField="indicator_key"
+      metricLabelField="indicator"
+      valueField="value"
+      unitField="unit"
+      extraFields={[{ key: 'scope', label: 'Scope' }, { key: 'dataset', label: 'Dataset' }, { key: 'source_table', label: 'Source table' }]}
+      filename={`NIWIS-water-quantity-${section || 'all'}-${result?.region || 'data'}`}
+      triggerClassName="rq-export"
+    /></header>
     <form className="rq-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}>
       <label className="rq-region">Transfer district<select aria-label="Water quantity district" value={draft.region} disabled={!meta || loading} onChange={event => setDraft({ ...draft, region: event.target.value })}><option value="National">National mean (reporting districts)</option>{meta?.regions.map(name => <option key={name}>{name}</option>)}</select></label>
       {['start', 'end'].map(key => <label key={key}>{key === 'start' ? 'From year' : 'To year'}<select aria-label={'Water quantity ' + key + ' year'} value={draft[key]} disabled={!meta || loading} onChange={event => setDraft({ ...draft, [key]: event.target.value })}>{!meta && <option value="">Loading…</option>}{meta?.years.map(year => <option key={year}>{year}</option>)}</select></label>)}
@@ -213,7 +221,6 @@ export default function WaterQuantityAssessment({ section = null }) {
           </article>
         })}</div>
       </section>}
-
 
       {activeMapScope === 'transfers' ? <Panel title="District source coverage map" subtitle={periodLabel(activeMapPeriod) + ' · selected transfer measure by reporting district'}>
 

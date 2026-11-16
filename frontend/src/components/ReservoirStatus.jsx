@@ -1,11 +1,12 @@
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { useEffect, useMemo, useState } from 'react'
-import { Waves, Download, RefreshCw, Info, AlertTriangle, MapPin } from 'lucide-react'
+import { Waves, Info, AlertTriangle, MapPin } from 'lucide-react'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import LoadingProgress from './LoadingProgress'
 import ClimateChart, { climateNumber } from './ClimateChart'
 import { Panel } from './RainfallStatus'
 import { reservoirReferenceLocations } from '../lib/reservoirLocations'
+import DashboardDataExport from './DashboardDataExport'
 import '../niwis/reservoir-status.css'
 
 const METRIC_COLORS = ['#47a9de', '#5ecab1', '#eda965', '#a68adc']
@@ -116,14 +117,7 @@ export default function ReservoirStatus({ section = null }) {
     const filters = { ...applied, region: match.district_name }
     setDraft(filters); setApplied(filters)
   }
-  function exportData() {
-    const fields = section ? scopedMetrics.map(metric => metric.key) : meta.metrics.map(metric => metric.key)
-    const escape = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-    const exportMetrics = section ? scopedMetrics : meta.metrics
-    const rows = [['Reservoir group / district', 'Date', ...exportMetrics.map(metric => `${metric.label} (${metric.unit})`)], ...result.series.map(row => [result.region, row.date, ...fields.map(key => row[key])])]
-    const url = URL.createObjectURL(new Blob(['\uFEFF' + rows.map(row => row.map(escape).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8;' }))
-    const link = document.createElement('a'); link.href = url; link.download = `NIWIS-reservoir-${result.region.replaceAll(' ', '-')}-${result.start}-${result.end}.csv`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000)
-  }
+
   const region = result?.region === 'National' ? 'all source groups' : result?.region
   const chartRegion = result?.region === 'National' ? 'the source group average' : `${result?.region} reservoirs`
   const indicators = result?.indicators || {}
@@ -150,7 +144,16 @@ export default function ReservoirStatus({ section = null }) {
   }, [result])
 
   return <div className="rainfall-dashboard reservoir-dashboard" data-section={section || 'all'}>
-    <div className="rf-heading"><span className="rf-heading-icon"><Waves size={30} /></span><div><span className="rf-eyebrow">NIWIS / RESERVOIR MONITORING</span><h1>Dam and Reservoir Status</h1><p>Operational storage status, alert levels, inflows and source-quality evidence</p></div><button className="rf-export" disabled={!result || loading} onClick={exportData}><Download size={14} /> Export data</button></div>
+    <div className="rf-heading"><span className="rf-heading-icon"><Waves size={30} /></span><div><span className="rf-eyebrow">NIWIS / RESERVOIR MONITORING</span><h1>Dam and Reservoir Status</h1><p>Operational storage status, alert levels, inflows and source-quality evidence</p></div><DashboardDataExport
+      rows={result?.series || []}
+      disabled={loading || !result}
+      source={{ url: '/api/reservoirs/dashboard', params: { region: result?.region, as_of: applied?.as_of }, minDate: meta?.first_date, maxDate: meta?.observed_end || meta?.default_end, period: 'day' }}
+      dateField="date"
+      metrics={scopedMetrics}
+      context={{ 'Reservoir group / district': result?.region }}
+      filename={`NIWIS-reservoirs-${result?.region || 'data'}`}
+      triggerClassName="rf-export"
+    /></div>
     <form className="rf-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}>
       <label className="rf-region">Reservoir group / district<select aria-label="Reservoir group" value={draft.region} disabled={!meta} onChange={event => setDraft({ ...draft, region: event.target.value })}><option value="National">All groups (equal-weight mean)</option>{meta?.regions.map(item => <option key={item.district_name} value={item.district_name} title={item.dam_name}>{item.district_name}</option>)}</select></label>
       <label>From<input type="date" aria-label="Reservoir start date" min={meta?.first_date} max={meta?.default_end} value={draft.start} onChange={event => setDraft({ ...draft, start: event.target.value })} /></label>

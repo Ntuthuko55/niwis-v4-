@@ -1,9 +1,11 @@
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { useEffect, useMemo, useState } from 'react'
-import { Leaf, Sprout, HeartPulse, Droplets, Thermometer, CloudRain, Download, RefreshCw, MapPin, Info, ArrowUpRight } from 'lucide-react'
+import { Leaf, Sprout, HeartPulse, Droplets, Thermometer, CloudRain, RefreshCw, MapPin, Info, ArrowUpRight } from 'lucide-react'
 import { ResponsiveContainer, ComposedChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, Cell } from 'recharts'
 import { DistrictMap, normaliseDistrictName, buildStandardizedIndexScale } from './DistrictMap'
 import LoadingProgress from './LoadingProgress'
+import DashboardDataExport from './DashboardDataExport'
+import { droughtIndicatorLabel, labelDroughtMetric } from '../lib/droughtIndicators'
 import { chartColor } from '../lib/chartTheme'
 import '../niwis/climate-dashboard.css'
 import '../niwis/vegetation-condition.css'
@@ -105,7 +107,7 @@ export default function VegetationCondition({ section = null }) {
   const [waterKey, setWaterKey] = useState('NDWI'), [weatherKey, setWeatherKey] = useState('Monthly_Rainfall_mm')
   const [rankOrder, setRankOrder] = useState('highest'), [register, setRegister] = useState('Greenness')
   const [weatherMapResult, setWeatherMapResult] = useState(null), [weatherMapLoading, setWeatherMapLoading] = useState(false), [weatherMapError, setWeatherMapError] = useState('')
-  const scopedMetrics = (meta?.metrics || []).filter(item => section === 'satellite' ? item.category !== 'Weather' : section === 'meteorological' ? item.category === 'Weather' : section === 'derived' ? item.category === 'Condition' : true)
+  const scopedMetrics = (meta?.metrics || []).filter(item => section === 'satellite' ? item.category !== 'Weather' : section === 'meteorological' ? item.category === 'Weather' : section === 'derived' ? item.category === 'Condition' : true).map(labelDroughtMetric)
   const activeMetricKey = scopedMetrics.some(item => item.key === metricKey) ? metricKey : scopedMetrics[0]?.key || metricKey
   const weatherMapIndicator = meta?.metrics.find(item => item.key === activeMetricKey)?.category === 'Weather' ? activeMetricKey : ''
   useEffect(() => {
@@ -157,7 +159,7 @@ export default function VegetationCondition({ section = null }) {
     fetchJSON(`/api/vegetation/map?${new URLSearchParams({ start: effectiveMapMonth || applied.start, end: effectiveMapMonth || applied.end, indicator: weatherMapIndicator })}`, controller.signal).then(setWeatherMapResult).catch(err => { if (err.name !== 'AbortError') setWeatherMapError(err.message) }).finally(() => { if (!controller.signal.aborted) setWeatherMapLoading(false) })
     return () => controller.abort()
   }, [applied?.start, applied?.end, effectiveMapMonth, weatherMapIndicator, mapRetry])
-  const catalogue = useMemo(() => Object.fromEntries((meta?.metrics || []).map(metric => [metric.key, { ...metric, ...METRIC_PRESENTATION[metric.key] }])), [meta])
+  const catalogue = useMemo(() => Object.fromEntries((meta?.metrics || []).map(metric => [metric.key, { ...labelDroughtMetric(metric), ...METRIC_PRESENTATION[metric.key] }])), [meta])
   const registerOptions = section === 'satellite' ? ['All satellite', ...GROUPS.filter(group => group !== 'Weather')] : section === 'meteorological' ? ['Weather'] : section === 'derived' ? ['Condition'] : GROUPS
   const registerMetrics = (meta?.metrics || []).filter(item => section === 'satellite' && register === 'All satellite' ? item.category !== 'Weather' : item.category === register)
   const satelliteMapSource = effectiveMapMonth ? monthResult : mapResult
@@ -171,15 +173,7 @@ export default function VegetationCondition({ section = null }) {
     const canonical = meta?.regions.find(region => normaliseDistrictName(region) === normaliseDistrictName(name))
     if (canonical) { const selection = { ...applied, region: canonical }; setDraft(selection); setApplied(selection) }
   }
-  const download = () => {
-    const exportMetrics = section ? scopedMetrics : meta.metrics
-    const keys = ['month', ...exportMetrics.map(metric => metric.key), 'complete', 'observed_days', 'expected_days', ...(section === 'satellite' ? ['ndvi_baseline', 'baseline_years', 'ndvi_anomaly_percent'] : [])]
-    const escape = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-    const rows = [['Region', ...keys.map(key => catalogue[key] ? `${catalogue[key].label} (${catalogue[key].unit})` : key)], ...result.series.map(row => [result.region, ...keys.map(key => row[key])])]
-    const url = URL.createObjectURL(new Blob(['\uFEFF' + rows.map(row => row.map(escape).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8;' }))
-    const suffix = section ? `-${section}` : ''
-    const link = document.createElement('a'); link.href = url; link.download = `NIWIS-vegetation${suffix}-${result.region.replaceAll(' ', '-')}-${result.start}-${result.end}.csv`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000)
-  }
+
   const metric = catalogue[activeMetricKey] || { key: activeMetricKey, label: 'Vegetation condition', unit: '', description: 'District observations' }
   const selectedName = result?.region === 'National' ? 'South Africa · district average' : result?.region
   const period = result ? `${monthLabel(result.start)} – ${monthLabel(result.end)}` : ''
@@ -191,7 +185,17 @@ export default function VegetationCondition({ section = null }) {
     <div className="vg-map-layout"><div className="vg-map-body"><div className="vg-map-title"><strong>{metric.label}</strong><span>{metric.description} · {mapPeriod}</span></div>{mapStatus && <div className="vg-error" role="alert">{mapStatus}{mapDataError && <button onClick={() => setMapRetry(value => value + 1)}>Retry map</button>}</div>}{mapLoading && <LoadingProgress message="Loading national vegetation map" />}<VegMap features={features} values={mapStatus || mapLoading ? {} : values} metric={metric} indicatorOptions={scopedMetrics} onMetricChange={key => { setMetricKey(key); if (catalogue[key]?.category === 'Weather') setWeatherKey(key) }} selected={applied?.region} onSelect={selectRegion} /><p className="vg-map-caption"><MapPin size={12} /> Click a district to update all charts</p></div></div>
   </Panel>
   if (section) return <div className="vegetation-dashboard vegetation-section-dashboard">
-    <div className="vg-heading"><div className="vg-heading-mark"><Leaf size={30} /></div><div><span className="vg-eyebrow">NIWIS / EARTH OBSERVATION</span><h1>Vegetation Condition Monitoring</h1><p>{section === 'satellite' ? 'Primary Satellite Vegetation' : section === 'meteorological' ? 'Meteorological Drivers (SAWS)' : 'Vegetation Monitoring Derived Products'}</p></div><button className="vg-download" onClick={download} disabled={!result || loading}><Download size={15} /> Download data</button></div>
+    <div className="vg-heading"><div className="vg-heading-mark"><Leaf size={30} /></div><div><span className="vg-eyebrow">NIWIS / EARTH OBSERVATION</span><h1>Vegetation Condition Monitoring</h1><p>{section === 'satellite' ? 'Primary Satellite Vegetation' : section === 'meteorological' ? 'Meteorological Drivers (SAWS)' : 'Vegetation Monitoring Derived Products'}</p></div><DashboardDataExport
+      rows={result?.series || []}
+      disabled={loading || !result}
+      source={{ url: '/api/vegetation/dashboard', params: { region: result?.region, include_map: false }, minDate: meta?.months?.[0], maxDate: meta?.months?.at(-1), period: 'month' }}
+      dateField="month"
+      metrics={scopedMetrics}
+      extraFields={[{ key: 'complete', label: 'Complete period' }, { key: 'observed_days', label: 'Observed days' }, { key: 'expected_days', label: 'Expected days' }]}
+      context={{ Region: result?.region }}
+      filename={`NIWIS-vegetation-${section || 'all'}-${result?.region || 'data'}`}
+      triggerClassName="vg-download"
+    /></div>
     <form className="vg-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}>
       <label className="vg-region"><span><MapPin size={12} /> Region / District</span><select aria-label="Vegetation region" value={draft.region} onChange={event => setDraft({ ...draft, region: event.target.value })} disabled={!meta}><option value="National">South Africa (district average)</option>{meta?.regions.map(region => <option key={region}>{region}</option>)}</select></label>
       <label>From month<input aria-label="Vegetation start month" type="month" required min={meta?.months[0]} max={meta?.months.at(-1)} value={draft.start} onChange={event => setDraft({ ...draft, start: event.target.value })} /></label>
@@ -217,7 +221,17 @@ export default function VegetationCondition({ section = null }) {
     </>}
   </div>
   return <div className="vegetation-dashboard">
-    <div className="vg-heading"><div className="vg-heading-mark"><Leaf size={30} /></div><div><span className="vg-eyebrow">NIWIS / EARTH OBSERVATION</span><h1>Vegetation Condition Monitoring</h1><p>Satellite vegetation indices and the climate conditions that accompany them</p>{section && <small className="vg-section-context">{section === 'satellite' ? 'Primary Satellite Vegetation' : section === 'meteorological' ? 'Meteorological Drivers (SAWS)' : 'Vegetation Monitoring Derived Products'}</small>}</div><button className="vg-download" onClick={download} disabled={!result || loading}><Download size={15} /> Download data</button></div>
+    <div className="vg-heading"><div className="vg-heading-mark"><Leaf size={30} /></div><div><span className="vg-eyebrow">NIWIS / EARTH OBSERVATION</span><h1>Vegetation Condition Monitoring</h1><p>Satellite vegetation indices and the climate conditions that accompany them</p>{section && <small className="vg-section-context">{section === 'satellite' ? 'Primary Satellite Vegetation' : section === 'meteorological' ? 'Meteorological Drivers (SAWS)' : 'Vegetation Monitoring Derived Products'}</small>}</div><DashboardDataExport
+      rows={result?.series || []}
+      disabled={loading || !result}
+      source={{ url: '/api/vegetation/dashboard', params: { region: result?.region, include_map: false }, minDate: meta?.months?.[0], maxDate: meta?.months?.at(-1), period: 'month' }}
+      dateField="month"
+      metrics={scopedMetrics}
+      extraFields={[{ key: 'complete', label: 'Complete period' }, { key: 'observed_days', label: 'Observed days' }, { key: 'expected_days', label: 'Expected days' }]}
+      context={{ Region: result?.region }}
+      filename={`NIWIS-vegetation-${section || 'all'}-${result?.region || 'data'}`}
+      triggerClassName="vg-download"
+    /></div>
     <form className="vg-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}>
       <label className="vg-region"><span><MapPin size={12} /> Region / District</span><select aria-label="Vegetation region" value={draft.region} onChange={e => setDraft({ ...draft, region: e.target.value })} disabled={!meta}><option value="National">South Africa (district average)</option>{meta?.regions.map(region => <option key={region}>{region}</option>)}</select></label>
       <label>From month<input aria-label="Vegetation start month" type="month" required min={meta?.months[0]} max={meta?.months.at(-1)} value={draft.start} onChange={e => setDraft({ ...draft, start: e.target.value })} /></label>
@@ -240,7 +254,7 @@ export default function VegetationCondition({ section = null }) {
         <Panel title="Water & thermal conditions" note={selectedName}><select aria-label="Vegetation water and thermal indicator" value={waterKey} onChange={e => setWaterKey(e.target.value)}>{['NDWI', 'NDII', 'Surface_Soil_Moisture_m3m3', 'LST_Land_Surface_Temperature_C'].map(key => <option key={key} value={key}>{catalogue[key].description} ({catalogue[key].unit})</option>)}</select><Plot data={series} unit={catalogue[waterKey].unit} height={216} lines={[{ key: waterKey, label: catalogue[waterKey].label, color: '#389faf' }]} />{meta.constant_metrics.includes(waterKey) && <p className="vg-footnote">This source variable is constant throughout the dataset.</p>}</Panel>
       </div>
       <div className="vg-weather-grid">
-        <Panel title="Meteorological drivers" note="SAWS · monthly source values"><select aria-label="Vegetation weather indicator" value={weatherKey} onChange={e => setWeatherKey(e.target.value)}>{meta.metrics.filter(item => item.category === 'Weather').map(item => <option key={item.key} value={item.key}>{item.label} · {item.unit}</option>)}</select><Plot data={series} bars={weatherKey === 'Monthly_Rainfall_mm'} unit={catalogue[weatherKey].unit} height={240} lines={[{ key: weatherKey, label: catalogue[weatherKey].description, color: '#469bbc' }]} /></Panel>
+        <Panel title="Meteorological drivers" note="SAWS · monthly source values"><select aria-label="Vegetation weather indicator" value={weatherKey} onChange={e => setWeatherKey(e.target.value)}>{meta.metrics.filter(item => item.category === 'Weather').map(item => <option key={item.key} value={item.key}>{droughtIndicatorLabel(item.key, item.label)} · {item.unit}</option>)}</select><Plot data={series} bars={weatherKey === 'Monthly_Rainfall_mm'} unit={catalogue[weatherKey].unit} height={240} lines={[{ key: weatherKey, label: catalogue[weatherKey].description, color: '#469bbc' }]} /></Panel>
         <Panel title="Climate–vegetation relationships" note="Pearson correlation with monthly NDVI"><label className="vg-lag">Climate driver leads vegetation by<select aria-label="Vegetation driver lag" value={result.lag} onChange={e => { const selection = { ...applied, lag: Number(e.target.value) }; setDraft(selection); setApplied(selection) }}>{[0, 1, 2, 3].map(lag => <option key={lag} value={lag}>{lag} month{lag === 1 ? '' : 's'}</option>)}</select></label><div className="vg-correlations">{result.correlations.map(row => <div key={row.key}><CloudRain size={15} /><span>{catalogue[row.key].label}<small>{row.pairs} complete monthly pairs</small></span><div className="vg-correlation-track"><i style={{ left: row.r < 0 ? `${50 + row.r * 50}%` : '50%', width: `${Math.abs(row.r || 0) * 50}%`, background: row.r < 0 ? '#e7a072' : '#62b59c' }} /></div><b>{format(row.r)}</b></div>)}</div><p className="vg-footnote">At least 12 pairs and variable inputs required. Raw monthly correlations can reflect shared seasonality; they do not establish causation or predict future vegetation.</p></Panel>
         <Panel title="Data confidence" note="Coverage for this selection" className="vg-quality"><div className="vg-coverage-number">{format(result.coverage.observed_days / result.coverage.expected_days * 100, 1)}<small>% of expected days</small></div><progress value={result.coverage.observed_days} max={result.coverage.expected_days} /><p>{result.coverage.complete_months} / {result.coverage.months} complete monthly periods</p><div><Info size={16} /><span>Soil moisture is 0.22 m³/m³ in every supplied row; no moisture change can be inferred.</span></div><div><Leaf size={16} /><span>Land cover, biomass, fire risk, protected areas and catchment boundaries are not supplied.</span></div><div><MapPin size={16} /><span>National summaries give each district equal weight. No area weighting is available.</span></div></Panel>
       </div>

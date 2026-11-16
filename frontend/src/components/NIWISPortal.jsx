@@ -9,6 +9,8 @@ import { useTheme } from '../contexts/ThemeContext'
 import { ChevronDown, Droplets, Home, Menu } from 'lucide-react'
 import Plot from './LazyPlot'
 import { modelGroups, modelKey, preferredForecastTarget, requiresFeatureSelection } from '../lib/modelOptions'
+import { droughtIndicatorDetails, droughtIndicatorLabel } from '../lib/droughtIndicators'
+import DroughtIndicatorHelp from './DroughtIndicatorHelp'
 import { BALANCE, BLUEDROP, BOREHOLES, DCLASS, GREENDROP, INDICES, NAV, ROADMAP, SETTLEMENTS, SOURCES, STATIONS, TARIFFS, WQSITES, liveProvinces } from '../niwis/demoData'
 import { getProvinceSeries, getTrainingJob, loadMeteorologicalRegion, startTraining } from '../services/api'
 import { DTag, MapSVG } from '../niwis/svgCharts'
@@ -324,7 +326,7 @@ function OverviewForecastStudio({ region }) {
     ] : []),
     { x: forecastDates, y: forecastValues, type: 'scatter', mode: 'lines', name: `Forecast - ${String(result?.selected_model || model).toUpperCase()}`, line: { color: forecastChartColors.forecast, width: 2.6 } },
   ]
-  if (loading) return <div className="nw-forecast-loading">Loading {region} SPI-3 series for the LSTM forecast...</div>
+  if (loading) return <div className="nw-forecast-loading">Loading {region} observations for the forecast...</div>
   if (error && !dataset) return <div className="nw-error">{error}</div>
 
   return (
@@ -340,8 +342,8 @@ function OverviewForecastStudio({ region }) {
           </select>
         </label>
         <label><span>Target</span>
-          <select aria-label="Target" value={target} onChange={(e) => { setTarget(e.target.value); setJob(null) }} disabled={training}>
-            {numericColumns.map((column) => <option key={column}>{column}</option>)}
+          <select aria-label="Target" title={droughtIndicatorLabel(target)} value={target} onChange={(e) => { setTarget(e.target.value); setJob(null) }} disabled={training}>
+            {numericColumns.map((column) => <option key={column} value={column}>{droughtIndicatorLabel(column)}</option>)}
           </select>
         </label>
         <label><span>Horizon</span>
@@ -353,13 +355,14 @@ function OverviewForecastStudio({ region }) {
         </label>
         <button className="nw-btn pri" type="button" disabled={training || !target} onClick={train}>{training ? 'Training...' : `Run ${model}`}</button>
       </div>
+      <DroughtIndicatorHelp indicator={target} forecast />
       {multiFeatureModel && (
         <div className="nw-dash-features">
           <button type="button" className="nw-panel-link" onClick={() => setShowFeatures((open) => !open)}>{showFeatures ? 'Hide' : 'Show'} {model} inputs</button>
           {showFeatures && (
             <div className="nw-dash-feature-grid">
               {numericColumns.filter((column) => column !== target).map((column) => (
-                <label key={column}><input type="checkbox" checked={features.includes(column)} disabled={training} onChange={() => toggleFeature(column)} />{column}</label>
+                <label key={column}><input type="checkbox" checked={features.includes(column)} disabled={training} onChange={() => toggleFeature(column)} />{droughtIndicatorLabel(column)}</label>
               ))}
             </div>
           )}
@@ -379,7 +382,7 @@ function OverviewForecastStudio({ region }) {
               margin: { l: 42, r: 12, t: 28, b: 36 }, height: 250, hovermode: 'x unified',
               legend: { orientation: 'h', y: 1.18, font: { size: 10 } },
               xaxis: { gridcolor: forecastChartColors.grid, tickfont: { size: 10 } },
-              yaxis: { gridcolor: forecastChartColors.grid, title: target || 'SPI-3', zeroline: true, zerolinecolor: forecastChartColors.zero },
+              yaxis: { gridcolor: forecastChartColors.grid, title: { text: droughtIndicatorDetails(target) ? `${droughtIndicatorDetails(target).code} (index)` : target }, automargin: true, zeroline: true, zerolinecolor: forecastChartColors.zero },
               shapes: forecastDates[0] ? [{ type: 'line', x0: forecastDates[0], x1: forecastDates[0], y0: 0, y1: 1, yref: 'paper', line: { color: '#8C7BE0', width: 1, dash: 'dot' } }] : [],
               annotations: forecastDates[0] ? [{ x: forecastDates[0], y: 1, yref: 'paper', text: 'Forecast start', showarrow: false, font: { size: 10, color: '#8C7BE0' }, xanchor: 'left' }] : [],
             }}
@@ -387,7 +390,7 @@ function OverviewForecastStudio({ region }) {
             useResizeHandler
             style={{ width: '100%', minHeight: 250 }}
           />
-        ) : <div className="nw-forecast-empty">SPI-3 history will appear here once the selected area series is loaded.</div>}
+        ) : <div className="nw-forecast-empty">The selected variable's history will appear here once the area observations have loaded.</div>}
       </div>
       <div className="nw-forecast-meta">
         {threeMonth.map((point) => (

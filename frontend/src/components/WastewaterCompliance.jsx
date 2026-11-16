@@ -1,11 +1,12 @@
 import { chartColor } from '../lib/chartTheme'
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, ArrowDownRight, ArrowUpRight, BarChart3, CloudRain, Download, Droplets, Factory, FlaskConical, MapPin, RefreshCw, ShieldCheck } from 'lucide-react'
+import { Activity, ArrowDownRight, ArrowUpRight, BarChart3, CloudRain, Droplets, Factory, FlaskConical, MapPin, RefreshCw, ShieldCheck } from 'lucide-react'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import LoadingProgress from './LoadingProgress'
 import MonitoringMapPanel from './MonitoringMapPanel'
 import WastewaterChart, { WastewaterSparkline } from './WastewaterChart'
+import DashboardDataExport from './DashboardDataExport'
 import '../niwis/climate-dashboard.css'
 import '../niwis/rainfall-status.css'
 import '../niwis/wastewater.css'
@@ -27,15 +28,6 @@ async function getJSON(url, signal) {
     throw new Error(typeof payload.detail === 'string' ? payload.detail : Array.isArray(payload.detail) ? payload.detail.map(item => item.msg).join('; ') : `Wastewater service returned HTTP ${response.status}.`)
   }
   return payload
-}
-
-function saveCSV(result, metrics) {
-  const esc = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-  const rows = [['Region', 'Year', ...metrics.map(item => `${item.label} (${item.unit})`)], ...result.series.map(row => [result.region, row.year, ...metrics.map(item => row[item.key])])]
-  const blob = new Blob(['\uFEFF' + rows.map(row => row.map(esc).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' })
-  const link = document.createElement('a')
-  link.href = URL.createObjectURL(blob); link.download = `NIWIS-wastewater-${result.region.replaceAll(' ', '-')}-${result.start}-${result.end}.csv`; link.click()
-  setTimeout(() => URL.revokeObjectURL(link.href), 800)
 }
 
 function Change({ series, metricKey }) {
@@ -116,6 +108,7 @@ export default function WastewaterCompliance({ section = null }) {
   const metric = key => indicators.find(item => item.key === key)
   const byCategory = name => indicators.filter(item => item.category === name)
   const allowedCategories = section === 'operations' ? ['Operations'] : section === 'weather' ? ['Meteorological'] : section === 'effluent' ? ['Physical', 'Nutrients', 'Biological', 'Metals'] : null
+  const scopedMetrics = indicators.filter(item => !allowedCategories || allowedCategories.includes(item.category))
   const categories = [...new Set(indicators.map(item => item.category).filter(category => !allowedCategories || allowedCategories.includes(category)))]
   const activeCategory = categories.includes(category) ? category : categories[0] || ''
   const leadChoices = byCategory(activeCategory)
@@ -154,7 +147,16 @@ export default function WastewaterCompliance({ section = null }) {
   ].filter(([key]) => metric(key))
 
   return <div className="rainfall-dashboard wastewater-dashboard" data-section={section || 'all'}>
-    <div className="rf-heading ww-heading"><span className="rf-heading-icon wastewater-icon"><Factory size={29} /></span><div><span className="rf-eyebrow">NIWIS / MONITORING 11</span><h1>Wastewater Quality Compliance</h1><p>Explore effluent quality, treatment performance and the conditions shaping wastewater management.</p></div><button className="rf-export" onClick={() => result && saveCSV(result, indicators)} disabled={!result || loading}><Download size={15} /> Export data</button></div>
+    <div className="rf-heading ww-heading"><span className="rf-heading-icon wastewater-icon"><Factory size={29} /></span><div><span className="rf-eyebrow">NIWIS / MONITORING 11</span><h1>Wastewater Quality Compliance</h1><p>Explore effluent quality, treatment performance and the conditions shaping wastewater management.</p></div><DashboardDataExport
+      rows={result?.series || []}
+      disabled={loading || !result}
+      source={{ url: '/api/wastewater/dashboard', params: { region: result?.region }, minDate: meta?.years?.[0], maxDate: meta?.years?.at(-1), period: 'year' }}
+      dateField="year"
+      metrics={scopedMetrics}
+      context={{ Region: result?.region }}
+      filename={`NIWIS-wastewater-${section || 'all'}-${result?.region || 'data'}`}
+      triggerClassName="rf-export"
+    /></div>
     <form className="rf-filters wastewater-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}>
       <label className="rf-region">Region / district<select aria-label="Wastewater region" disabled={!meta} value={draft.region} onChange={event => setDraft({ ...draft, region: event.target.value })}><option value="National">South Africa (district average)</option>{districts.map(item => <option key={item}>{item}</option>)}</select></label>
       <label>From year<input aria-label="From year" type="number" required min="1900" max="2100" value={draft.start} onChange={event => setDraft({ ...draft, start: Number(event.target.value) })} /></label>

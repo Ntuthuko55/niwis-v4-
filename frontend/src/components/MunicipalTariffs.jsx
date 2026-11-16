@@ -6,6 +6,8 @@ import { PROVINCES } from './ProvinceMapLabels'
 import DashboardMap from './DashboardMap'
 import '../niwis/monitoring-map.css'
 import MonitoringMapPanel from './MonitoringMapPanel'
+import DashboardDataExport from './DashboardDataExport'
+import { tariffExportRows } from '../lib/dashboardExportAdapters'
 import { chartColor } from '../lib/chartTheme'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import '../niwis/municipal-tariffs.css'
@@ -568,6 +570,17 @@ export default function MunicipalTariffs({ section: navigationSection = null }) 
         <p>Explore raw-water tariffs, municipal pricing inputs and water-quality costs from the three source tables. Compare reported values by year and region, with each chart kept in the field's own unit.</p>
       </div>
       <div className="mt-source-badge"><Database size={15} aria-hidden="true" /> Three Supabase tables</div>
+      <DashboardDataExport
+        rows={tariffExportRows(analytics)}
+        disabled={loading || historyLoading || !analytics || !hasCurrentResult}
+        rowMetricField="indicator_key"
+        dateField="year"
+        metrics={metrics}
+        context={{ Dataset: summary?.label, Region: activeTrendRegion }}
+        source={{ url: '/api/municipal-tariffs/analytics', params: { dataset: datasetKey, region: activeTrendRegion }, minDate: summary?.years?.[0], maxDate: summary?.years?.at(-1), period: 'year', queryPeriod: false, selectRows: tariffExportRows }}
+        extraFields={[{ key: 'source_period', label: 'Source reporting label' }, { key: 'source_table', label: 'Source table' }, { key: 'source_column', label: 'Source column' }]}
+        filename={`NIWIS-tariffs-${datasetKey}-${activeTrendRegion || 'data'}`}
+      />
     </header>
 
     {error && <div className="mt-error" role="alert"><AlertTriangle size={17} /><span>{error}</span><button type="button" onClick={() => setRetry(value => value + 1)}><RefreshCw size={14} /> Retry</button></div>}

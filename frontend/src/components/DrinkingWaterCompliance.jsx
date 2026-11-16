@@ -1,11 +1,12 @@
 import { chartColor } from '../lib/chartTheme'
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, AlertTriangle, BarChart3, CalendarDays, Download, Droplets, FlaskConical, MapPin, RefreshCw, ShieldCheck } from 'lucide-react'
+import { Activity, AlertTriangle, BarChart3, CalendarDays, Droplets, FlaskConical, MapPin, RefreshCw, ShieldCheck } from 'lucide-react'
 import { dashboardFetch as fetch } from '../services/dashboardFetch'
 import { DistrictMap, normaliseDistrictName } from './DistrictMap'
 import WastewaterChart, { WastewaterSparkline } from './WastewaterChart'
 import LoadingProgress from './LoadingProgress'
 import MonitoringMapPanel from './MonitoringMapPanel'
+import DashboardDataExport from './DashboardDataExport'
 import '../niwis/climate-dashboard.css'
 import '../niwis/rainfall-status.css'
 import '../niwis/drinking-water.css'
@@ -28,14 +29,6 @@ async function getJSON(url, signal) {
   try { data = body ? JSON.parse(body) : {} } catch { throw new Error(body.trim().slice(0, 240) || `Drinking-water service returned HTTP ${response.status}.`) }
   if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : `Drinking-water service returned HTTP ${response.status}.`)
   return data
-}
-
-function exportCSV(result, indicators) {
-  const escape = value => `"${String(value ?? '').replaceAll('"', '""')}"`
-  const rows = [['Region', 'Period', 'Reported compliance score (%)', ...indicators.flatMap(item => [`${item.label} (${item.unit})`, `${item.label} checks passing (%)`])], ...result.monthly.map(row => [result.region, row.period, row.compliance_score, ...indicators.flatMap(item => [row[item.key], row[`${item.key}_pass_pct`]])])]
-  const blob = new Blob(['\uFEFF' + rows.map(row => row.map(escape).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' })
-  const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = `NIWIS-drinking-water-${result.region.replaceAll(' ', '-')}-${result.start}-${result.end}.csv`; anchor.click()
-  setTimeout(() => URL.revokeObjectURL(anchor.href), 800)
 }
 
 function Panel({ title, subtitle, icon: Icon = Activity, children, className = '', action }) {
@@ -107,6 +100,13 @@ export default function DrinkingWaterCompliance({ section = null }) {
   }, [applied])
 
   const indicators = meta?.indicators || []
+  const exportMetrics = [
+    { key: 'compliance_score', label: 'Reported compliance score', unit: '%' },
+    ...indicators,
+    ...indicators.map(item => ({ key: `${item.key}_pass_pct`, label: `${item.label} checks passing`, unit: '%' })),
+    { key: 'microbial_pass_pct', label: 'Microbiological checks passing', unit: '%' },
+    { key: 'health_pass_pct', label: 'Health class checks passing', unit: '%' },
+  ]
   const regions = meta?.regions || []
   const rows = result ? cadence === 'annual' ? result.series : result.monthly : []
   const xKey = cadence === 'annual' ? 'year' : 'period'
@@ -142,7 +142,17 @@ export default function DrinkingWaterCompliance({ section = null }) {
   const alerts = (result?.alerts || []).slice(0, allAlerts ? undefined : 8)
 
   return <div className="rainfall-dashboard drinking-water-dashboard" data-section={section || 'all'}>
-    <div className="rf-heading dw-heading"><span className="rf-heading-icon dw-heading-icon"><Droplets size={29} /></span><div><span className="rf-eyebrow">NIWIS / MONITORING 12</span><h1>Drinking Water Quality Compliance</h1><p>Explore reported water-quality compliance, parameter trends and district screening flags.</p></div><button className="rf-export" onClick={() => result && exportCSV(result, indicators)} disabled={!result || loading}><Download size={15} /> Export data</button></div>
+    <div className="rf-heading dw-heading"><span className="rf-heading-icon dw-heading-icon"><Droplets size={29} /></span><div><span className="rf-eyebrow">NIWIS / MONITORING 12</span><h1>Drinking Water Quality Compliance</h1><p>Explore reported water-quality compliance, parameter trends and district screening flags.</p></div><DashboardDataExport
+      rows={result?.monthly || []}
+      disabled={loading || !result}
+      unavailableReason={section === 'blue-drop' ? 'Blue Drop process observations are not supplied by this source.' : ''}
+      source={{ url: '/api/drinking-water/dashboard', params: { region: result?.region }, minDate: meta?.first_period, maxDate: meta?.last_period, period: 'month', queryPeriod: 'year', selectRows: payload => payload.monthly }}
+      dateField="period"
+      metrics={exportMetrics}
+      context={{ Region: result?.region }}
+      filename={`NIWIS-drinking-water-${result?.region || 'data'}`}
+      triggerClassName="rf-export"
+    /></div>
     <form className="rf-filters dw-filters" onSubmit={event => { event.preventDefault(); setApplied({ ...draft }) }}><label className="rf-region">Region / district<select aria-label="Drinking water region" value={draft.region} disabled={!meta} onChange={event => setDraft({ ...draft, region: event.target.value })}><option value="National">South Africa (district observations)</option>{regions.map(region => <option key={region}>{region}</option>)}</select></label><label>From year<select aria-label="Drinking water from year" value={draft.start} disabled={!meta} onChange={event => setDraft({ ...draft, start: Number(event.target.value) })}>{meta?.years.map(year => <option key={year}>{year}</option>)}</select></label><label>To year<select aria-label="Drinking water to year" value={draft.end} disabled={!meta} onChange={event => setDraft({ ...draft, end: Number(event.target.value) })}>{meta?.years.map(year => <option key={year}>{year}</option>)}</select></label><button className="rf-apply" disabled={loading || !meta || draft.start > draft.end}>Apply filters</button></form>
     {loading && <LoadingProgress className="rf-loading" message="Preparing drinking-water compliance graphs and district checks" />}
     {error && <div className="rf-error" role="alert">{error}<button onClick={() => meta ? setApplied({ ...applied }) : setRetry(value => value + 1)}><RefreshCw size={14} /> Retry</button></div>}

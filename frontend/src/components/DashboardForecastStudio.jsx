@@ -12,6 +12,8 @@ import {
 import { getTrainingJob, registerDashboardDataset, startTraining } from '../services/api'
 import LoadingProgress from './LoadingProgress'
 import { useTheme } from '../contexts/ThemeContext'
+import { droughtIndicatorDetails, droughtIndicatorLabel } from '../lib/droughtIndicators'
+import DroughtIndicatorHelp from './DroughtIndicatorHelp'
 import '../niwis/niwis-portal.css'
 
 // All dashboards use the same registration and /models/train path as the
@@ -426,8 +428,9 @@ export default function DashboardForecastStudio({ dashboard, section = null, sec
   const observedDates = observed.map((point) => point.date)
   const observedValues = observed.map((point) => point.value)
   const targetMetric = catalogue[target]
-  const targetLabel = targetMetric?.label || target || 'Selected variable'
-  const targetAxis = targetMetric?.unit ? `${targetLabel} (${targetMetric.unit})` : targetLabel
+  const targetLabel = droughtIndicatorLabel(target, targetMetric?.label) || 'Selected variable'
+  const targetIndex = droughtIndicatorDetails(target)
+  const targetAxis = targetIndex ? `${targetIndex.code} (index)` : targetMetric?.unit ? `${targetLabel} (${targetMetric.unit})` : targetLabel
   const forecastPoints = (Array.isArray(result?.forecast_dates) && Array.isArray(result?.forecast_values)
     ? result.forecast_dates.map((date, index) => ({ date, value: numericValue(result.forecast_values[index]), index }))
     : []).filter((point) => point.date && point.value != null)
@@ -461,11 +464,12 @@ export default function DashboardForecastStudio({ dashboard, section = null, sec
           <div className="nw-dash-forecast-controls">
             {options.length > 1 && <label><span>Region</span><select aria-label={`${config.label} forecast region`} value={region} onChange={(event) => setRegion(event.target.value)} disabled={training}>{options.map((option) => <option key={option}>{option}</option>)}</select></label>}
             <label><span>Model</span><select aria-label="Model" value={model} onChange={(event) => { setModel(event.target.value); setJob(null) }} disabled={training}>{availableModelGroups.map((group) => <optgroup key={group.label} label={group.label}>{group.items.map((item) => <option key={item}>{item}</option>)}</optgroup>)}</select></label>
-            <label><span>Target</span><select aria-label="Target" value={target} onChange={(event) => { setTarget(event.target.value); setJob(null) }} disabled={training}>{numericColumns.map((column) => <option key={column} value={column}>{catalogue[column]?.label || column}</option>)}</select></label>
+            <label><span>Target</span><select aria-label="Target" title={targetLabel} value={target} onChange={(event) => { setTarget(event.target.value); setJob(null) }} disabled={training}>{numericColumns.map((column) => <option key={column} value={column}>{droughtIndicatorLabel(column, catalogue[column]?.label)}</option>)}</select></label>
             <label><span>Horizon</span><select aria-label="Horizon" value={forecastDays} onChange={(event) => { setForecastDays(Number(event.target.value)); setJob(null) }} disabled={training}>{config.annualForecast ? <><option value={1}>1 year</option><option value={3}>3 years</option><option value={5}>5 years</option></> : <><option value={180}>6 months</option><option value={365}>1 year</option><option value={730}>2 years</option></>}</select></label>
             <button className="nw-btn pri" type="button" disabled={training || !target} onClick={train}>{training ? 'Training…' : `Run ${model}`}</button>
           </div>
-          {multiFeatureModel && <div className="nw-dash-features"><button type="button" className="nw-panel-link" onClick={() => setShowFeatures((open) => !open)}>{showFeatures ? 'Hide' : 'Show'} {model} inputs</button>{showFeatures && <div className="nw-dash-feature-grid">{numericColumns.filter((column) => column !== target).map((column) => <label key={column}><input type="checkbox" checked={features.includes(column)} disabled={training} onChange={() => setFeatures((values) => values.includes(column) ? values.filter((item) => item !== column) : [...values, column])} />{catalogue[column]?.label || column}</label>)}</div>}</div>}
+          <DroughtIndicatorHelp indicator={target} forecast />
+          {multiFeatureModel && <div className="nw-dash-features"><button type="button" className="nw-panel-link" onClick={() => setShowFeatures((open) => !open)}>{showFeatures ? 'Hide' : 'Show'} {model} inputs</button>{showFeatures && <div className="nw-dash-feature-grid">{numericColumns.filter((column) => column !== target).map((column) => <label key={column}><input type="checkbox" checked={features.includes(column)} disabled={training} onChange={() => setFeatures((values) => values.includes(column) ? values.filter((item) => item !== column) : [...values, column])} />{droughtIndicatorLabel(column, catalogue[column]?.label)}</label>)}</div>}</div>}
           {error && dataset && <div className="nw-error" role="alert">{error}</div>}
           {job?.status === 'completed' && <p className="nw-note">Forecast complete · {forecastValues.length} future observations</p>}
           {job?.status === 'completed' && !forecastValues.length && <p className="nw-forecast-unavailable" role="status">The model returned no usable forecast values. The chart still shows the available history.</p>}

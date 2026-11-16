@@ -1,0 +1,29 @@
+.nw .nw-data-export{position:relative;display:inline-flex;flex:0 0 auto;margin-left:auto;max-width:100%;gap:6px;flex-wrap:wrap}
+.nw :is(.cl-heading,.vg-heading,.rf-heading,.rq-heading)>.nw-data-export{flex:0 0 auto;min-width:0;margin-left:auto;max-width:100%}
+.nw .nw-data-export-trigger{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:9px 13px;min-height:37px;border:1px solid var(--dashboard-border,var(--rule));border-radius:7px;background:var(--dashboard-control,var(--ink-3));color:var(--dashboard-text,var(--text));font:inherit;font-size:12px;cursor:pointer;margin:0}
+.nw .nw-data-export-unavailable{flex-basis:100%;max-width:280px;font-size:10px;color:var(--text-dim)}
+.nw .nw-data-export-overlay{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px;background:rgba(2,15,25,.65);overscroll-behavior:contain}
+.nw .nw-data-export-menu{width:min(540px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:22px;border:1px solid var(--dashboard-border,var(--rule));border-radius:12px;background:var(--dashboard-surface,var(--ink-2));color:var(--dashboard-text,var(--text));box-shadow:0 18px 60px rgba(0,0,0,.32);font:13px/1.5 "IBM Plex Sans",system-ui,sans-serif;margin:0}
+.nw .nw-data-export-head,.nw .nw-data-export-variable-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nw .nw-data-export-head{padding-bottom:12px;border-bottom:1px solid var(--dashboard-border,var(--rule))}
+.nw .nw-data-export-head h2{font-size:18px;line-height:1.4;font-weight:700;margin:0;color:var(--dashboard-text,var(--text))}
+.nw .nw-data-export-head p{font-size:12px;color:var(--text-dim);margin:3px 0 0}
+.nw .nw-data-export-head>button{display:grid;place-items:center;width:34px;height:34px;flex:none;border:1px solid var(--rule);border-radius:7px;background:var(--dashboard-control,var(--ink-3));color:inherit}
+.nw .nw-data-export-coverage{font-size:11px;color:var(--text-dim);margin:13px 0}
+.nw .nw-data-export-dates{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.nw .nw-data-export-dates label{display:grid;gap:5px;color:var(--text-dim);font-size:12px;font-weight:600;min-width:0}
+.nw .nw-data-export-dates input{width:100%;min-width:0;min-height:38px;padding:7px 9px;border:1px solid var(--rule);border-radius:7px;background:var(--dashboard-control,var(--ink-3));color:var(--dashboard-text,var(--text));font:inherit}
+.nw .nw-data-export-variable-head{margin:15px 0 8px}
+.nw .nw-data-export-variable-head>div{display:flex;gap:5px;flex:none}
+.nw .nw-data-export-variable-head button{padding:5px 7px;background:transparent;color:var(--river);font:inherit;font-size:11px;text-decoration:underline;text-underline-offset:2px}
+.nw .nw-data-export-variables{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;max-height:250px;overflow:auto;padding:8px;border:1px solid var(--rule);border-radius:8px;background:var(--dashboard-control,var(--ink-3))}
+.nw .nw-data-export-variables label{display:flex;align-items:flex-start;gap:8px;min-width:0;padding:6px 4px;color:var(--dashboard-text,var(--text));font-size:12px;line-height:1.4;cursor:pointer;overflow-wrap:anywhere}
+.nw .nw-data-export-variables input{flex:none;width:15px;height:15px;margin:1px 0 0;accent-color:#1682ad}
+.nw .nw-data-export-note{margin:9px 0;color:var(--text-dim);font-size:11px}
+.nw .nw-data-export-error{padding:9px 11px;margin:10px 0;border:1px solid #cc5858;border-radius:7px;color:var(--dashboard-text,var(--text));font-size:12px}
+.nw .nw-data-export-download{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:40px;margin-top:14px;padding:9px 12px;border:1px solid #1475a0;border-radius:7px;background:#086c98;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.nw .nw-data-export :is(button,input):disabled,.nw .nw-data-export-menu :is(button,input):disabled{opacity:.55;cursor:not-allowed}
+.nw .nw-data-export-spinner{animation:nw-data-export-spin 1s linear infinite}
+@keyframes nw-data-export-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.nw .nw-data-export-spinner{animation:none}}
+@media(max-width:560px){.nw .nw-data-export-overlay{padding:12px}.nw .nw-data-export-menu{padding:16px;max-height:calc(100dvh - 24px)}.nw .nw-data-export-variables{grid-template-columns:1fr}.nw .nw-data-export-variable-head{flex-wrap:wrap}}

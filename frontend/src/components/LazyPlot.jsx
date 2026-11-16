@@ -47,17 +47,15 @@ function lightLayout(layout = {}) {
 
 export default function LazyPlot(props) {
   const { theme } = useTheme()
-  const revision = useMemo(() => {
-    const series = (props.data || []).map(trace => [trace.type || '', trace.name || '', trace.x?.length ?? '', trace.y?.length ?? ''].join(':')).join('|')
-    return `${theme}:${series}`
-  }, [props.data, theme])
   const data = useMemo(() => theme === 'navy' ? props.data : props.data?.map(trace => ({
     ...trace,
-    line: colourFields(trace.line, theme),
-    marker: colourFields(trace.marker, theme),
-    textfont: colourFields(trace.textfont, theme),
+    // Plotly expects optional style containers to be absent when unused.
+    // Adding `marker: undefined` makes Plotly's data cleanup throw in light mode.
+    ...(trace.line !== undefined ? { line: colourFields(trace.line, theme) } : {}),
+    ...(trace.marker !== undefined ? { marker: colourFields(trace.marker, theme) } : {}),
+    ...(trace.textfont !== undefined ? { textfont: colourFields(trace.textfont, theme) } : {}),
     ...(trace.fillcolor ? { fillcolor: plotColour(trace.fillcolor, theme) } : {}),
   })), [props.data, theme])
   const layout = useMemo(() => theme === 'navy' ? props.layout : lightLayout(props.layout), [props.layout, theme])
-  return <Suspense fallback={<LoadingProgress message="Loading chart" />}><Plot {...props} revision={props.revision ?? revision} data={data} layout={layout} /></Suspense>
+  return <Suspense fallback={<LoadingProgress message="Loading chart" />}><Plot {...props} revision={props.revision ?? (theme === 'light' ? 1 : 0)} data={data} layout={layout} /></Suspense>
 }
